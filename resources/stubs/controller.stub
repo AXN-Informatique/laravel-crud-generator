@@ -1,0 +1,242 @@
+<?php
+
+namespace {{namespace}};
+
+use Exception;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\Paginator;
+use {{model}} as Model;
+use {{storeRequest}};
+use {{updateRequest}};
+use {{updateContentRequest}};
+use DB, Notifier;
+
+class {{name}} extends BaseController
+{
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * @var string
+     */
+    protected $section = '{{section}}';
+
+    /**
+     * @var array
+     */
+    protected $options = [
+        'creatable'       => true,
+        'editable'        => true,
+        'contentEditable' => true,
+        'activatable'     => true,
+        'sortable'        => true,
+        'destroyable'     => true,
+    ];
+
+    /**
+     * Constructeur.
+     *
+     * @param  Model $model
+     * @return void
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * Affiche la liste des enregistrements et le formulaire d'ajout.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        return crud()->view($this->section, 'index', [
+            'section' => $this->section,
+            'options' => $this->options,
+            'list'    => $this->getList()
+        ]);
+    }
+
+    /**
+     * Affiche le formulaire d'édition d'un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        if (!$this->options['editable']) abort(404);
+
+        return crud()->view($this->section, 'index', [
+            'section' => $this->section,
+            'options' => $this->options,
+            'list'    => $this->getList(),
+            'record'  => $this->model->findOrFail($id),
+        ]);
+    }
+
+    /**
+     * Ajoute un nouvel enregistrement.
+     *
+     * @param  StoreRequest $request
+     * @return Response
+     */
+    public function store(StoreRequest $request)
+    {
+        if (!$this->options['creatable']) abort(404);
+
+        $data = [
+            'libelle' => $request->input('libelle')
+        ];
+        if ($this->options['sortable']) {
+            $data['ordre'] = $this->model->max('ordre') + 1;
+        }
+
+        $this->model->create($data);
+
+        Notifier::success(crud()->trans($this->section, 'store_success'));
+
+        return back();
+    }
+
+    /**
+     * Modifie un enregistrement existant.
+     *
+     * @param  mixed         $id
+     * @param  UpdateRequest $request
+     * @return Response
+     */
+    public function update($id, UpdateRequest $request)
+    {
+        if (!$this->options['editable']) abort(404);
+
+        $this->model->findOrFail($id)->update([
+            'libelle' => $request->input('libelle')
+        ]);
+
+        Notifier::success(crud()->trans($this->section, 'update_success'));
+
+        return back();
+    }
+
+    /**
+     * Modifie le libellé d'un enregistrement.
+     *
+     * @param  mixed                $id
+     * @param  UpdateContentRequest $request
+     * @return Response
+     */
+    public function updateContent($id, UpdateContentRequest $request)
+    {
+        if (!$this->options['contentEditable']) abort(404);
+
+        $this->model->findOrFail($id)->update([
+            'libelle' => $request->input('content')
+        ]);
+
+        return response()->json([
+            'message' => crud()->trans($this->section, 'update_success'),
+            'content' => $request->input('content')
+        ]);
+    }
+
+    /**
+     * Active un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function enable($id)
+    {
+        if (!$this->options['activatable']) abort(404);
+
+        $this->model->findOrFail($id)->update(['actif' => 1]);
+
+        Notifier::success(crud()->trans($this->section, 'enable_success'));
+
+        return back();
+    }
+
+    /**
+     * Désactive un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function disable($id)
+    {
+        if (!$this->options['activatable']) abort(404);
+
+        $this->model->findOrFail($id)->update(['actif' => 0]);
+
+        Notifier::success(crud()->trans($this->section, 'disable_success'));
+
+        return back();
+    }
+
+    /**
+     * Modifie l'ordre des enregistrements.
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    public function sort(Request $request)
+    {
+        if (!$this->options['sortable']) abort(404);
+
+        $sort = array_map('intval', $request->input('sort', []));
+
+        DB::transaction(function() use ($sort)
+        {
+            foreach ($sort as $value => $id) {
+                $this->model->whereId($id)->update(['ordre' => $value + 1]);
+            }
+        });
+
+        return response()->json([
+            'message' => crud()->trans($this->section, 'sort_success')
+        ]);
+    }
+
+    /**
+     * Supprime un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        if (!$this->options['destroyable']) abort(404);
+
+        try {
+            $this->model->destroy($id);
+        }
+        catch (Exception $e) {
+            return back()->withErrors(crud()->trans($this->section, 'destroy_failure'));
+        }
+
+        Notifier::success(crud()->trans($this->section, 'destroy_success'));
+
+        return back();
+    }
+
+    /**
+     * Récupère et retourne la liste des enregistrements.
+     *
+     * @return Collection|Paginator
+     */
+    protected function getList()
+    {
+        if ($this->options['sortable']) {
+            return $this->model->orderBy('ordre')->get();
+        }
+
+        return $this->model->paginate();
+    }
+}

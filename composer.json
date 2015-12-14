@@ -1,0 +1,14 @@
+{
+    "name": "axn/laravel-crud-generator",
+    "require": {
+        "illuminate/support": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Axn\\CrudGenerator\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    }
+}

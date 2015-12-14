@@ -1,0 +1,58 @@
+<?php
+
+namespace {{namespace}};
+
+use Illuminate\Foundation\Http\FormRequest;
+use Axn\RequestFilters\FilterableFormRequest;
+
+class UpdateContentRequest extends FormRequest
+{
+    use FilterableFormRequest;
+
+    /**
+     * Filtres à appliquer sur les données.
+     *
+     * @var array
+     */
+    public function filters()
+    {
+        return [
+            'content' => 'trim|stripped',
+        ];
+    }
+
+    /**
+     * Règles de validation des données.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'content' => 'required|max:100',
+        ];
+    }
+
+    /**
+     * Messages personnalisés.
+     *
+     * @return array.
+     */
+    public function messages()
+    {
+        return [
+            'content.required' => "Vous ne pouvez saisir un texte vide.",
+            'content.max'      => "Vous ne pouvez saisir plus de 100 caractères."
+        ];
+    }
+
+    /**
+     * Autorisation de la requête.
+     *
+     * @return boolean
+     */
+    public function authorize()
+    {
+        return true;
+    }
+}

@@ -1,0 +1,55 @@
+<?php
+
+Route::group([
+    'prefix'     => '{{baseUrl}}',
+    'middleware' => 'auth'
+], function()
+{
+    $section    = '{{section}}';
+    $controller = '{{controller}}';
+
+    get('/', [
+        'as'   => "$section.index",
+        'uses' => "$controller@index"
+    ]);
+
+    post('/', [
+        'as'   => "$section.store",
+        'uses' => "$controller@store"
+    ]);
+
+    get('{id}/edit', [
+        'as'   => "$section.edit",
+        'uses' => "$controller@edit"
+    ]);
+
+    put('{id}', [
+        'as'   => "$section.update",
+        'uses' => "$controller@update"
+    ]);
+
+    post('{id}/content', [
+        'as'   => "$section.update-content",
+        'uses' => "$controller@updateContent"
+    ]);
+
+    post('{id}/enable', [
+        'as'   => "$section.enable",
+        'uses' => "$controller@enable"
+    ]);
+
+    post('{id}/disable', [
+        'as'   => "$section.disable",
+        'uses' => "$controller@disable"
+    ]);
+
+    post('sort', [
+        'as'   => "$section.sort",
+        'uses' => "$controller@sort"
+    ]);
+
+    delete('{id}', [
+        'as'   => "$section.destroy",
+        'uses' => "$controller@destroy"
+    ]);
+});
