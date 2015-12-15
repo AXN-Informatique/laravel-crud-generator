@@ -115,8 +115,12 @@ class Generator
 
         $sectionSegmentsStudly = $this->sectionSegmentsStudly;
         $name = array_pop($sectionSegmentsStudly).'Controller';
-        $namespace = $this->appNs.'\Http\Controllers\\'.implode('\\', $sectionSegmentsStudly);
+        $namespace = $this->appNs.'\Http\Controllers';
         $requestsNs = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
+
+        if ($sectionSegmentsStudly) {
+            $namespace .= '\\'.implode('\\', $sectionSegmentsStudly);
+        }
 
         return strtr($stub, [
             '{{namespace}}'            => $namespace,
