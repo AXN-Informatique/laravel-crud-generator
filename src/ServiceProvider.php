@@ -39,10 +39,16 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang/', 'crud-generator');
 
         $this->publishes([
-            __DIR__.'/../resources/views/' => base_path('resources/views/vendor/crud-generator'),
-            __DIR__.'/../resources/lang/fr/' => base_path('resources/lang/packages/fr/crud-generator'),
+            __DIR__.'/../resources/views/' => base_path('resources/views/vendor/crud-generator')
+        ], 'views');
+
+        $this->publishes([
+            __DIR__.'/../resources/lang/fr/' => base_path('resources/lang/packages/fr/crud-generator')
+        ], 'lang');
+
+        $this->publishes([
             __DIR__.'/../resources/stubs/' => base_path('resources/stubs/vendor/crud-generator'),
-        ]);
+        ], 'stubs');
     }
 
     /**

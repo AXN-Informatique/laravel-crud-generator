@@ -93,8 +93,17 @@ class Crud
      */
     public function viewName($section, $view)
     {
-        if ($this->viewFactory->exists("$section.$view")) {
-            return "$section.$view";
+        $segments = explode('.', $section);
+        $nbSegments = count($segments);
+
+        for ($i = 0; $i < $nbSegments; $i++) {
+            $section = implode('.', $segments);
+
+            if ($this->viewFactory->exists("$section.$view")) {
+                return "$section.$view";
+            }
+
+            array_pop($segments);
         }
 
         return "crud-generator::$view";
