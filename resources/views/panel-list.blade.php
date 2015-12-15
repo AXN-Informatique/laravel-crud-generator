@@ -47,7 +47,7 @@
                         @endif
 
                         @if ($options['editable'])
-                            <a href="{!! route($section.'.edit', ['id' => $item->id] + ($list instanceof Paginator ? ['page' => Input::get('page')] : [])) !!}"
+                            <a href="{!! route($section.'.edit', ['id' => $item->id] + ($list instanceof Paginator && $list->hasPages() ? ['page' => Input::get('page')] : [])) !!}"
                                class="btn btn-info btn-xs"
                                title="{{ crud()->trans($section, 'edit_tooltip', ['name' => $item->libelle]) }}"
                                data-toggle="tooltip">
@@ -75,7 +75,7 @@
 
     </ul>
 
-    @if ($list instanceof Paginator)
+    @if ($list instanceof Paginator && $list->hasPages())
         <div class="pull-right">
             {!! $list->render() !!}
         </div>
