@@ -2,6 +2,8 @@
 
 namespace Axn\CrudGenerator;
 
+use ReflectionClass, Exception;
+
 class Generator
 {
     /**
@@ -48,6 +50,7 @@ class Generator
      */
     public function __construct($section, $modelClass)
     {
+        $this->validateModelClass($modelClass);
         $explodedModelClass = explode('\\', $modelClass);
 
         $this->section = $section;
@@ -210,6 +213,22 @@ class Generator
         }
 
         return file_get_contents($path);
+    }
+
+    /**
+     * Vérifie que la classe modèle est bien instanciable et est bien une instance
+     * de Illuminate\Database\Eloquent\Model. Lève une exception le cas échéant.
+     *
+     * @param  string $modelClass
+     * @return void
+     */
+    protected function validateModelClass($modelClass)
+    {
+        $rc = new ReflectionClass($modelClass);
+
+        if (!$rc->isInstantiable() || !$rc->isSubclassOf('Illuminate\Database\Eloquent\Model')) {
+            throw new Exception("$modelClass is not instantiable or is not an instance of Illuminate\Database\Eloquent\Model");
+        }
     }
 
     /**

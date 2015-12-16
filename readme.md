@@ -16,10 +16,17 @@ Ajouter le service provider au tableau des providers dans `config/app.php` :
 'Axn\CrudGenerator\ServiceProvider',
 ```
 
-Publier les vues, les traductions et les templates (stubs) du package via la commande :
+Publier les vues, les traductions et les templates (stubs) du package via les commandes :
 
 ```
-php artisan vendor:publish
+// vues
+php artisan vendor:publish --tag=views --provider=Axn\\CrudGenerator\\ServiceProvider
+
+// traductions
+php artisan vendor:publish --tag=lang --provider=Axn\\CrudGenerator\\ServiceProvider
+
+// stubs
+php artisan vendor:publish --tag=stubs --provider=Axn\\CrudGenerator\\ServiceProvider
 ```
 
 Les templates sont publiés dans `resources/stubs/vendor/crud-generator/`
