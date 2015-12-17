@@ -8,46 +8,61 @@ Route::group([
     $section    = '{{section}}';
     $controller = '{{controller}}';
 
+    // Liste des enregistrements
     get('/', [
         'as'   => "$section.index",
         'uses' => "$controller@index"
     ]);
 
-    post('/', [
-        'as'   => "$section.store",
-        'uses' => "$controller@store"
+    // Formulaire d'ajout
+    get('create', [
+        'as'   => "$section.index",
+        'uses' => "$controller@create"
     ]);
 
+    // Formulaire d'édition
     get('{id}/edit', [
         'as'   => "$section.edit",
         'uses' => "$controller@edit"
     ]);
 
+    // Ajout d'un enregistrement
+    post('/', [
+        'as'   => "$section.store",
+        'uses' => "$controller@store"
+    ]);
+
+    // Modification d'un enregistrement
     put('{id}', [
         'as'   => "$section.update",
         'uses' => "$controller@update"
     ]);
 
+    // Modification du contenu "content editable" d'un enregistrement
     post('{id}/content', [
         'as'   => "$section.update-content",
         'uses' => "$controller@updateContent"
     ]);
 
+    // Activation d'un enregistrement
     post('{id}/enable', [
         'as'   => "$section.enable",
         'uses' => "$controller@enable"
     ]);
 
+    // Désactivation d'un enregistrement
     post('{id}/disable', [
         'as'   => "$section.disable",
         'uses' => "$controller@disable"
     ]);
 
+    // Réordonnement des enregistrements
     post('sort', [
         'as'   => "$section.sort",
         'uses' => "$controller@sort"
     ]);
 
+    // Suppression d'un enregistrement
     delete('{id}', [
         'as'   => "$section.destroy",
         'uses' => "$controller@destroy"

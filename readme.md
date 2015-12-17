@@ -16,7 +16,7 @@ Ajouter le service provider au tableau des providers dans `config/app.php` :
 'Axn\CrudGenerator\ServiceProvider',
 ```
 
-Publier les vues, les traductions et les templates (stubs) du package via les commandes :
+Publier si besoin les vues, les traductions et les templates (stubs) du package via les commandes :
 
 ```
 // vues
@@ -33,19 +33,32 @@ Les templates sont publiés dans `resources/stubs/vendor/crud-generator/`
 Les vues sont publiées dans `resources/views/vendor/crud-generator/`
 Les traductions sont publiées dans `resources/lang/packages/{lang}/crud-generator/`
 
-Les modifier si nécessaire.
+Y faire les modifications souhaitées.
 
 ## Utilisation
 
 Lancer la commande :
 
 ```
-php artisan crud:generate {nom_section} {nom_classe_modèle}
+php artisan crud:generate <section> <model> [--stubs]
 ```
 
-**Attention à bien doubler les slashs dans le nom de classe du modèle !!**
+**Arguments :**
 
-Exemple :
+* **section :** Nom de la section à créer. Les dossiers/noms/namespaces du contrôleur,
+    des routes et des requêtes sont déterminés à partir de ce nom.
+
+* **model :** Nom de la classe du modèle à injecter dans le contrôleur. Cette classe
+    doit être existante ou une erreur sera levée. **Attention à bien doubler les slashs
+    dans le nom !!**
+
+**Options :**
+
+* **--stubs :** Permet de spécifier le groupe de templates à utiliser pour générer
+    le contrôleur, le fichier de routes et les requêtes. Par défaut : 'default'.
+
+
+*Exemple concret d'utilisation :*
 
 ```
 artisan crud:generate params.commande-statuts App\\Models\\CommandeStatut
@@ -83,10 +96,23 @@ foreach (File::allFiles(__DIR__.'/routes') as $file) {
 }
 ```
 
-Au besoin, les fichiers générés peuvent être modifiés, mais des options sont disponibles
-dans le contrôleur (attribut `$options`) pour activer/désactiver rapidement des fonctions
-de la section sans avoir à toucher au code :
+### Options dans le contrôleur
 
+Les fichiers générés peuvent être modifiés au besoin, mais des options sont disponibles
+dans le contrôleur (attribut `$crud`) pour personnaliser rapidement la section sans avoir
+à toucher au code (ces options sont disponibles dans les vues via la variable $crud) :
+
+- **section** : Nom de la section (ce qui a été renseigné en argument dans la commande)
+    qui sert notamment au nommage des routes. Par exemple pour récupérer la route "index"
+    d'une section, faire : `route($crud['section'].'.index')`
+- **viewsMainPath** : Chemin principal vers les vues de la section. Si une vue n'est pas trouvée
+    à cette endroit, on ira la chercher dans `viewsDefaultPath`. Voir le helper `crud_view_name()`
+    pour faire cette sélection.
+- **viewsDefaultPath** : Chemin utilisé par défaut si vue non trouvée dans `viewsMainPath`.
+- **langMainFile** : Chemin principal vers le fichier de traduction de la section. Si une traduction
+    n'est pas trouvée à cette endroit, on ira la chercher dans `langDefaultFile`. Voir le helper
+    `crud_trans_id()` pour faire cette sélection.
+- **langDefaultFile** : Chemin utilisé par défaut si traduction non trouvée dans `langMainFile`.
 - **creatable** : Indique si la section permet d'ajouter des enregistrements.
 - **editable** : Indique si la section permet de modifier des enregistrements.
 - **contentEditable** : Indique si la section permet l'édition à la volée du libellé d'un enregistrement.
@@ -94,39 +120,24 @@ de la section sans avoir à toucher au code :
 - **sortable** : Indique si la section permet d'ordonner manuellement les enregistrements.
 - **destroyable** : Indique si la section permet de supprimer des enregistrements.
 
-Par défaut, la section utilise les vues et traductions publiées via la commande
-`vendor:publish`, mais il est possible de demander à la section d'utiliser ses
-propres vues et traductions.
+### Groupes de templates
 
-Par exemple, pour que la section "params.commande-statuts" utilise sa propre vue
-"form", il suffit de créer le fichier suivant :
+Comme précisé dans les options de la commande, il est possible de créer différents
+groupes de templates et d'ainsi choisir les templates à utiliser pour générer une section.
+Par défaut (si l'option `--stubs` de la commande n'est pas renseignée), c'est le groupe
+"default" fourni par le package qui est utilisé. Les groupes de templates doivent être
+placés dans le répertoire de publication des templates du package.
 
-```
-resources/
-    views/
-        params/
-            commande-statuts/
-                form.blade.php
-```
-
-De même pour les traductions :
+Exemple :
 
 ```
 resources/
-    lang/
-        fr/
-            params/
-                commande-statuts.php
+    stubs/
+        vendor/
+            crud-generator/
+                default/ <= Groupe par défaut
+                params/ <= Groupe ajouté
 ```
 
-Concernant les traductions, ne renseigner que les clés à personnaliser. Exemple :
-
-```php
-// resources/lang/fr/params/commande-statuts.php
-
-return [
-    'list_title' => "Liste des statuts des commandes",
-    'edit_title' => "Modification d'un statut de commande"
-    // Et pour le reste, la section utilisera les traductions par défaut.
-];
-```
+Si un template n'existe pas dans un groupe, le fichier correspondant n'est tout simplement
+pas généré. Pratique si on veut par exemple ne générer que le contrôleur pour un groupe.

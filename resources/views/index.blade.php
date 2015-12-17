@@ -1,20 +1,20 @@
 @extends('layouts.app', [
-    'title' => crud()->trans($section, !empty($record) ? 'edit_title' : 'list_title')
+    'title' => trans( crud_trans_id($crud, !empty($record) ? 'edit_title' : 'list_title') )
 ])
 
 @section('content')
     <div class="row">
-        <div class="col-xs-12 {!! $options['creatable'] || !empty($record) ? 'col-md-8' : 'col-md-12' !!}">
-            @include(crud()->viewName($section, 'panel-list'))
+        <div class="col-xs-12 {!! $crud['creatable'] || !empty($record) ? 'col-md-8' : 'col-md-12' !!}">
+            @include( crud_view_name($crud, 'panel-list') )
         </div>
 
         @if (!empty($record))
             <div class="col-xs-12 col-md-4">
-                @include(crud()->viewName($section, 'panel-edit'))
+                @include( crud_view_name($crud, 'panel-edit') )
             </div>
-        @elseif ($options['creatable'])
+        @elseif ($crud['creatable'])
             <div class="col-xs-12 col-md-4">
-                @include(crud()->viewName($section, 'panel-create'))
+                @include( crud_view_name($crud, 'panel-create') )
             </div>
         @endif
     </div>

@@ -2,6 +2,7 @@
 
 namespace Axn\CrudGenerator\Console;
 
+use Exception;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,37 +33,34 @@ class GenerateCommand extends Command
     {
         $section = $this->argument('section');
         $modelClass = $this->argument('model');
+        $stubsGroup = $this->option('stubs');
 
-        $generator = new Generator($section, $modelClass);
+        try {
+            $generator = new Generator($section, $modelClass, $stubsGroup);
 
-        if ($generator->generateController()) {
-            $this->line("Controller generated");
-        } else {
-            $this->error("Error while writing controller");
+            if ($generator->generateController()) {
+                $this->line("Controller generated");
+            }
+
+            if ($generator->generateRoutes()) {
+                $this->line("Routes file generated");
+            }
+
+            if ($generator->generateRequest('store')) {
+                $this->line("Store request generated");
+            }
+
+            if ($generator->generateRequest('update')) {
+                $this->line("Update request generated");
+            }
+
+            if ($generator->generateRequest('updateContent')) {
+                $this->line("Update content request generated");
+            }
         }
-
-        if ($generator->generateRoutes()) {
-            $this->line("Routes file generated");
-        } else {
-            $this->error("Error while writing routes file");
-        }
-
-        if ($generator->generateRequest('store')) {
-            $this->line("Store request generated");
-        } else {
-            $this->error("Error while writing store request");
-        }
-
-        if ($generator->generateRequest('update')) {
-            $this->line("Update request generated");
-        } else {
-            $this->error("Error while writing update request");
-        }
-
-        if ($generator->generateRequest('updateContent')) {
-            $this->line("Update content request generated");
-        } else {
-            $this->error("Error while writing update content request");
+        catch (Exception $e) {
+            $this->error('Exception catched: '.$e->getMessage());
+            $this->line($e->getTraceAsString());
         }
     }
 
@@ -87,7 +85,7 @@ class GenerateCommand extends Command
 	protected function getOptions()
 	{
 		return [
-			//['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
+            ['stubs', null, InputOption::VALUE_OPTIONAL, 'Stubs group to use', 'default'],
 		];
 	}
 }

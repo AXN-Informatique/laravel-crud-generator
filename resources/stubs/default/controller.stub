@@ -22,20 +22,23 @@ class {{name}} extends BaseController
     protected $model;
 
     /**
-     * @var string
-     */
-    protected $section = '{{section}}';
-
-    /**
      * @var array
      */
-    protected $options = [
-        'creatable'       => true,
-        'editable'        => true,
-        'contentEditable' => true,
-        'activatable'     => true,
-        'sortable'        => true,
-        'destroyable'     => true,
+    protected $crud = [
+        'section'          => '{{section}}',
+
+        'viewsMainPath'    => '{{section}}.',
+        'viewsDefaultPath' => 'crud-generator::'
+
+        'langMainFile'     => '{{section}}',
+        'langDefaultFile'  => 'crud-generator::default',
+
+        'creatable'        => true,
+        'editable'         => true,
+        'contentEditable'  => true,
+        'activatable'      => true,
+        'sortable'         => true,
+        'destroyable'      => true,
     ];
 
     /**
@@ -56,10 +59,24 @@ class {{name}} extends BaseController
      */
     public function index()
     {
-        return crud()->view($this->section, 'index', [
-            'section' => $this->section,
-            'options' => $this->options,
-            'list'    => $this->getList()
+        return view(crud_view_name($this->crud, 'index'), [
+            'crud' => $this->crud,
+            'list' => $this->getList()
+        ]);
+    }
+
+    /**
+     * Affiche le formulaire de création d'un enregistrement.
+     *
+     * @return Response
+     */
+    public function create()
+    {
+        if (!$this->crud['creatable']) abort(404);
+
+        return view(crud_view_name($this->crud, 'index'), [
+            'crud' => $this->crud,
+            'list' => $this->getList()
         ]);
     }
 
@@ -71,13 +88,12 @@ class {{name}} extends BaseController
      */
     public function edit($id)
     {
-        if (!$this->options['editable']) abort(404);
+        if (!$this->crud['editable']) abort(404);
 
-        return crud()->view($this->section, 'index', [
-            'section' => $this->section,
-            'options' => $this->options,
-            'list'    => $this->getList(),
-            'record'  => $this->model->findOrFail($id),
+        return view(crud_view_name($this->crud, 'index'), [
+            'crud'   => $this->crud,
+            'list'   => $this->getList(),
+            'record' => $this->model->findOrFail($id),
         ]);
     }
 
@@ -89,18 +105,18 @@ class {{name}} extends BaseController
      */
     public function store(StoreRequest $request)
     {
-        if (!$this->options['creatable']) abort(404);
+        if (!$this->crud['creatable']) abort(404);
 
         $data = [
             'libelle' => $request->input('libelle')
         ];
-        if ($this->options['sortable']) {
+        if ($this->crud['sortable']) {
             $data['ordre'] = $this->model->max('ordre') + 1;
         }
 
         $this->model->create($data);
 
-        Notifier::success(crud()->trans($this->section, 'store_success'));
+        Notifier::success(trans( crud_trans_id($this->crud, 'store_success') ));
 
         return back();
     }
@@ -114,19 +130,19 @@ class {{name}} extends BaseController
      */
     public function update($id, UpdateRequest $request)
     {
-        if (!$this->options['editable']) abort(404);
+        if (!$this->crud['editable']) abort(404);
 
         $this->model->findOrFail($id)->update([
             'libelle' => $request->input('libelle')
         ]);
 
-        Notifier::success(crud()->trans($this->section, 'update_success'));
+        Notifier::success(trans( crud_trans_id($this->crud, 'update_success') ));
 
         return back();
     }
 
     /**
-     * Modifie le libellé d'un enregistrement.
+     * Modifie le contenu "content editable" d'un enregistrement.
      *
      * @param  mixed                $id
      * @param  UpdateContentRequest $request
@@ -134,14 +150,14 @@ class {{name}} extends BaseController
      */
     public function updateContent($id, UpdateContentRequest $request)
     {
-        if (!$this->options['contentEditable']) abort(404);
+        if (!$this->crud['contentEditable']) abort(404);
 
         $this->model->findOrFail($id)->update([
             'libelle' => $request->input('content')
         ]);
 
         return response()->json([
-            'message' => crud()->trans($this->section, 'update_success'),
+            'message' => trans( crud_trans_id($this->crud, 'update_success') ),
             'content' => $request->input('content')
         ]);
     }
@@ -154,11 +170,11 @@ class {{name}} extends BaseController
      */
     public function enable($id)
     {
-        if (!$this->options['activatable']) abort(404);
+        if (!$this->crud['activatable']) abort(404);
 
         $this->model->findOrFail($id)->update(['actif' => 1]);
 
-        Notifier::success(crud()->trans($this->section, 'enable_success'));
+        Notifier::success(trans( crud_trans_id($this->crud, 'enable_success') ));
 
         return back();
     }
@@ -171,11 +187,11 @@ class {{name}} extends BaseController
      */
     public function disable($id)
     {
-        if (!$this->options['activatable']) abort(404);
+        if (!$this->crud['activatable']) abort(404);
 
         $this->model->findOrFail($id)->update(['actif' => 0]);
 
-        Notifier::success(crud()->trans($this->section, 'disable_success'));
+        Notifier::success(trans( crud_trans_id($this->crud, 'disable_success') ));
 
         return back();
     }
@@ -188,7 +204,7 @@ class {{name}} extends BaseController
      */
     public function sort(Request $request)
     {
-        if (!$this->options['sortable']) abort(404);
+        if (!$this->crud['sortable']) abort(404);
 
         $sort = array_map('intval', $request->input('sort', []));
 
@@ -200,7 +216,7 @@ class {{name}} extends BaseController
         });
 
         return response()->json([
-            'message' => crud()->trans($this->section, 'sort_success')
+            'message' => trans( crud_trans_id($this->crud, 'sort_success') )
         ]);
     }
 
@@ -212,16 +228,16 @@ class {{name}} extends BaseController
      */
     public function destroy($id)
     {
-        if (!$this->options['destroyable']) abort(404);
+        if (!$this->crud['destroyable']) abort(404);
 
         try {
             $this->model->destroy($id);
         }
         catch (Exception $e) {
-            return back()->withErrors(crud()->trans($this->section, 'destroy_failure'));
+            return back()->withErrors(trans( crud_trans_id($this->crud, 'destroy_failure') ));
         }
 
-        Notifier::success(crud()->trans($this->section, 'destroy_success'));
+        Notifier::success(trans( crud_trans_id($this->crud, 'destroy_success') ));
 
         return back();
     }
@@ -233,7 +249,7 @@ class {{name}} extends BaseController
      */
     protected function getList()
     {
-        if ($this->options['sortable']) {
+        if ($this->crud['sortable']) {
             return $this->model->orderBy('ordre')->get();
         }
 

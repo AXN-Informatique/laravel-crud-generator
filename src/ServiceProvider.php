@@ -13,10 +13,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('crud', function($app) {
-            return new Crud($app['translator'], $app['view']);
-        });
-
         $this->app['command.crud.generate'] = $this->app->share(function() {
             return new Console\GenerateCommand;
         });
@@ -24,8 +20,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->commands([
             'command.crud.generate'
         ]);
-
-        $this->app->alias('crud', 'Axn\CrudGenerator\Crud');
     }
 
     /**
@@ -59,7 +53,6 @@ class ServiceProvider extends BaseServiceProvider
     public function provides()
     {
         return [
-            'crud',
             'command.crud.generate'
         ];
     }

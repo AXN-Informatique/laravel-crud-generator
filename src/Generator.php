@@ -28,6 +28,13 @@ class Generator
     protected $modelClass;
 
     /**
+     * Nom du groupe de templates à utiliser.
+     *
+     * @var string
+     */
+    protected $stubsGroup;
+
+    /**
      * Tableau des segments qui composent la section.
      *
      * @var array
@@ -46,9 +53,10 @@ class Generator
      *
      * @param  string $section
      * @param  string $modelClass
+     * @param  string $stubsGroup
      * @return void
      */
-    public function __construct($section, $modelClass)
+    public function __construct($section, $modelClass, $stubsGroup)
     {
         $this->validateModelClass($modelClass);
         $explodedModelClass = explode('\\', $modelClass);
@@ -56,6 +64,7 @@ class Generator
         $this->section = $section;
         $this->appNs = $explodedModelClass[0];
         $this->modelClass = $modelClass;
+        $this->stubsGroup = $stubsGroup;
 
         $this->sectionSegments = explode('.', $section);
         $this->sectionSegmentsStudly = array_map('studly_case', $this->sectionSegments);
@@ -68,12 +77,12 @@ class Generator
      */
     public function generateController()
     {
+        if (!$content = $this->getControllerContent()) return false;
+
         $path = app_path('Http/Controllers/'.implode('/', $this->sectionSegmentsStudly).'Controller.php');
-
         $this->createMissingDirs($path);
-        $content = $this->getControllerContent();
 
-        return @file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false;
     }
 
     /**
@@ -83,12 +92,12 @@ class Generator
      */
     public function generateRoutes()
     {
+        if (!$content = $this->getRoutesContent()) return false;
+
         $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
-
         $this->createMissingDirs($path);
-        $content = $this->getRoutesContent();
 
-        return @file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false;
     }
 
     /**
@@ -99,12 +108,12 @@ class Generator
      */
     public function generateRequest($name)
     {
+        if (!$content = $this->getRequestContent($name)) return false;
+
         $path = app_path('Http/Requests/'.implode('/', $this->sectionSegmentsStudly).'/'.studly_case($name).'Request.php');
-
         $this->createMissingDirs($path);
-        $content = $this->getRequestContent($name);
 
-        return @file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false;
     }
 
     /**
@@ -114,7 +123,7 @@ class Generator
      */
     protected function getControllerContent()
     {
-        $stub = $this->getControllerStub();
+        if (!$stub = $this->getControllerStub()) return '';
 
         $sectionSegmentsStudly = $this->sectionSegmentsStudly;
         $name = array_pop($sectionSegmentsStudly).'Controller';
@@ -143,7 +152,7 @@ class Generator
      */
     protected function getRoutesContent()
     {
-        $stub = $this->getRoutesStub();
+        if (!$stub = $this->getRoutesStub()) return '';
 
         return strtr($stub, [
             '{{baseUrl}}'    => str_replace('.', '/', $this->section),
@@ -160,7 +169,7 @@ class Generator
      */
     protected function getRequestContent($name)
     {
-        $stub = $this->getRequestStub(camel_case($name));
+        if (!$stub = $this->getRequestStub(camel_case($name))) return '';
 
         $namespace = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
 
@@ -208,7 +217,9 @@ class Generator
      */
     protected function getStub($name)
     {
-        if (!is_file($path = base_path("resources/stubs/vendor/crud-generator/$name.stub"))) {
+        if (!is_file($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$name.stub"))) {
+            if ($this->stubsGroup !== 'default') return '';
+
             $path = __DIR__."/../resources/stubs/$name.stub";
         }
 
@@ -240,7 +251,7 @@ class Generator
     protected function createMissingDirs($filePath)
     {
         if (!is_dir($dirPath = dirname($filePath))) {
-            @mkdir($dirPath, 0755, true);
+            mkdir($dirPath, 0755, true);
         }
     }
 }

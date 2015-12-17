@@ -21,6 +21,7 @@ return [
     'destroy_confirm'    => "Êtes-vous sûr de vouloir supprimer l'enregistrement «&nbsp;:name&nbsp;»&nbsp;?",
 
     // Formulaire d'ajout
+    'create_title'       => "Ajout d'un nouvel enregistrement",
     'create_form_title'  => "Nouveau",
     'create_form_submit' => "Ajouter",
 
@@ -28,6 +29,7 @@ return [
     'edit_title'         => "Modification d'un enregistrement",
     'edit_form_title'    => "Modification",
     'edit_form_submit'   => "Mettre à jour",
+
     'back_to_list'       => "Retour à la liste",
 
 ];
