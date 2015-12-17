@@ -16,7 +16,7 @@ Route::group([
 
     // Formulaire d'ajout
     get('create', [
-        'as'   => "$section.index",
+        'as'   => "$section.create",
         'uses' => "$controller@create"
     ]);
 
