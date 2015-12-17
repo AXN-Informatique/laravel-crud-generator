@@ -28,7 +28,7 @@ class {{name}} extends BaseController
         'section'          => '{{section}}',
 
         'viewsMainPath'    => '{{section}}.',
-        'viewsDefaultPath' => 'crud-generator::'
+        'viewsDefaultPath' => 'crud-generator::',
 
         'langMainFile'     => '{{section}}',
         'langDefaultFile'  => 'crud-generator::default',
