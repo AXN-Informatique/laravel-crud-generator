@@ -31,7 +31,7 @@ php artisan vendor:publish --tag=stubs --provider=Axn\\CrudGenerator\\ServicePro
 
 Les templates sont publiés dans `resources/stubs/vendor/crud-generator/`
 Les vues sont publiées dans `resources/views/vendor/crud-generator/`
-Les traductions sont publiées dans `resources/lang/packages/{lang}/crud-generator/`
+Les traductions sont publiées dans `resources/lang/vendor/crud-generator/`
 
 Y faire les modifications souhaitées.
 

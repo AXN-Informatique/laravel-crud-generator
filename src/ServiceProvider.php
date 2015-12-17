@@ -36,9 +36,16 @@ class ServiceProvider extends BaseServiceProvider
             __DIR__.'/../resources/views/' => base_path('resources/views/vendor/crud-generator')
         ], 'views');
 
-        $this->publishes([
-            __DIR__.'/../resources/lang/fr/' => base_path('resources/lang/packages/fr/crud-generator')
-        ], 'lang');
+        if (version_compare($this->app->version(), '5.1') < 0) {
+            // Compatibilité Laravel 5.0 pour la publication des traductions
+            $this->publishes([
+                __DIR__.'/../resources/lang/fr/' => base_path('resources/lang/packages/fr/crud-generator')
+            ], 'lang');
+        } else {
+            $this->publishes([
+                __DIR__.'/../resources/lang/' => base_path('resources/lang/vendor/crud-generator')
+            ], 'lang');
+        }
 
         $this->publishes([
             __DIR__.'/../resources/stubs/' => base_path('resources/stubs/vendor/crud-generator'),
