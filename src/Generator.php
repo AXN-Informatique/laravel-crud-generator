@@ -220,7 +220,7 @@ class Generator
         if (!is_file($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$name.stub"))) {
             if ($this->stubsGroup !== 'default') return '';
 
-            $path = __DIR__."/../resources/stubs/$name.stub";
+            $path = __DIR__."/../resources/stubs/default/$name.stub";
         }
 
         return file_get_contents($path);
