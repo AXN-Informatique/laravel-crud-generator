@@ -5,7 +5,7 @@
 @section('content')
     <div class="row">
         <div class="col-xs-12 {!! $options['creatable'] || !empty($record) ? 'col-md-8' : 'col-md-12' !!}">
-            @include($views['index'])
+            @include($views['panel-list'])
         </div>
 
         @if (!empty($record))

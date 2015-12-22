@@ -96,6 +96,7 @@ resources/
             params/
                 commandes-statuts/
                     index.blade.php
+                    panel-list.blade.php
                     panel-create.blade.php
                     panel-edit.blade.php
                     form.blade.php
