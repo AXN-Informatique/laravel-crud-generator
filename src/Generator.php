@@ -249,22 +249,22 @@ class Generator
         $lcfUndefArticle = ($feminine ? 'une' : 'un');
 
         return strtr($stub, [
-            'store_success'   => "$ucfSingular a été ".($feminine ? 'créée' : 'créé')." avec succès.",
-            'update_success'  => "$ucfSingular a été ".($feminine ? 'mise' : 'mis')." à jour avec succès.",
-            'enable_success'  => "$ucfSingular a été ".($feminine ? 'activée' : 'activé')." avec succès.",
-            'disable_success' => "$ucfSingular a été ".($feminine ? 'désactivée' : 'désactivé')." avec succès.",
-            'sort_success'    => "L'ordre des $lcfPlural a été modifié avec succès.",
-            'destroy_success' => "{$ucfDefArticle}$ucfSingular a été ".($feminine ? 'supprimée' : 'supprimé')." avec succès.",
-            'destroy_failure' => "Suppression impossible : {$lcfDefArticle}$ucfSingular est peut-être ".($feminine ? 'liée' : 'lié')." à d'autres enregistrements.",
-            'list_title'      => "Liste des $lcfPlural",
-            'empty'           => "Il n'y a ".($feminine ? 'aucune' : 'aucun')." enregistrement à afficher.",
-            'edit_tooltip'    => "Modifier {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
-            'enable_tooltip'  => "Activer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
-            'disable_tooltip' => "Désactiver {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
-            'destroy_tooltip' => "Supprimer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
-            'destroy_confirm' => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;»&nbsp;?",
-            'create_title'    => "Création d'{$lcfUndefArticle} ".($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau'))." $ucfSingular",
-            'edit_title'      => "Modification d'{$lcfUndefArticle} $ucfSingular"
+            '{{storeSuccess}}'   => "$ucfSingular a été ".($feminine ? 'créée' : 'créé')." avec succès.",
+            '{{updateSuccess}}'  => "$ucfSingular a été ".($feminine ? 'mise' : 'mis')." à jour avec succès.",
+            '{{enableSuccess}}'  => "$ucfSingular a été ".($feminine ? 'activée' : 'activé')." avec succès.",
+            '{{disableSuccess}}' => "$ucfSingular a été ".($feminine ? 'désactivée' : 'désactivé')." avec succès.",
+            '{{sortSuccess}}'    => "L'ordre des $lcfPlural a été modifié avec succès.",
+            '{{destroySuccess}}' => "{$ucfDefArticle}$ucfSingular a été ".($feminine ? 'supprimée' : 'supprimé')." avec succès.",
+            '{{destroyFailure}}' => "Suppression impossible : {$lcfDefArticle}$ucfSingular est peut-être ".($feminine ? 'liée' : 'lié')." à d'autres enregistrements.",
+            '{{listTitle}}'      => "Liste des $lcfPlural",
+            '{{listEmpty}}'      => "Il n'y a ".($feminine ? 'aucune' : 'aucun')." enregistrement à afficher.",
+            '{{editTooltip}}'    => "Modifier {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            '{{enableTooltip}}'  => "Activer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            '{{disableTooltip}}' => "Désactiver {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            '{{destroyTooltip}}' => "Supprimer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            '{{destroyConfirm}}' => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;»&nbsp;?",
+            '{{createTitle}}'    => "Création d'{$lcfUndefArticle} ".($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau'))." $ucfSingular",
+            '{{editTitle}}'      => "Modification d'{$lcfUndefArticle} $ucfSingular"
         ]);
     }
 

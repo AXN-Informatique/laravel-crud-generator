@@ -49,7 +49,7 @@ class {{name}} extends BaseController
         'panel-create'    => '{{viewBaseName}}.panel-create',
         'panel-edit'      => '{{viewBaseName}}.panel-edit',
         'form'            => '{{viewBaseName}}.form',
-    ]
+    ];
 
     /**
      * Options permettant d'activer/désactiver rapidement des fonctionnalités
