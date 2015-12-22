@@ -257,7 +257,7 @@ class Generator
             '{{destroySuccess}}' => "{$ucfDefArticle}$lcfSingular a été ".($feminine ? 'supprimée' : 'supprimé')." avec succès.",
             '{{destroyFailure}}' => "Suppression impossible : {$lcfDefArticle}$lcfSingular est peut-être ".($feminine ? 'liée' : 'lié')." à d'autres enregistrements.",
             '{{listTitle}}'      => "Liste des $lcfPlural",
-            '{{listEmpty}}'      => "Il n'y a ".($feminine ? 'aucune' : 'aucun')." enregistrement à afficher.",
+            '{{listEmpty}}'      => "Il n'y a ".($feminine ? 'aucune' : 'aucun')." $lcfSingular à afficher.",
             '{{editTooltip}}'    => "Modifier {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
             '{{enableTooltip}}'  => "Activer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
             '{{disableTooltip}}' => "Désactiver {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
