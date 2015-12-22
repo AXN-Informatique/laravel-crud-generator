@@ -16,22 +16,14 @@ Ajouter le service provider au tableau des providers dans `config/app.php` :
 'Axn\CrudGenerator\ServiceProvider',
 ```
 
-Publier si besoin les vues, les traductions et les templates (stubs) du package via les commandes :
+Publier si besoin les templates (stubs) du package via la commande :
 
 ```
-// vues
-php artisan vendor:publish --tag=views --provider=Axn\\CrudGenerator\\ServiceProvider
-
-// traductions
-php artisan vendor:publish --tag=lang --provider=Axn\\CrudGenerator\\ServiceProvider
-
 // stubs
-php artisan vendor:publish --tag=stubs --provider=Axn\\CrudGenerator\\ServiceProvider
+php artisan vendor:publish --tag=crud-generator.stubs
 ```
 
 Les templates sont publiés dans `resources/stubs/vendor/crud-generator/`
-Les vues sont publiées dans `resources/views/vendor/crud-generator/`
-Les traductions sont publiées dans `resources/lang/vendor/crud-generator/`
 
 Y faire les modifications souhaitées.
 
@@ -40,7 +32,7 @@ Y faire les modifications souhaitées.
 Lancer la commande :
 
 ```
-php artisan crud:generate <section> <model> [--stubs]
+php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir]
 ```
 
 **Arguments :**
@@ -49,19 +41,32 @@ php artisan crud:generate <section> <model> [--stubs]
     des routes et des requêtes sont déterminés à partir de ce nom.
 
 * **model :** Nom de la classe du modèle à injecter dans le contrôleur. Cette classe
-    doit être existante ou une erreur sera levée. **Attention à bien doubler les slashs
-    dans le nom !!**
+    doit être existante ou une erreur sera levée. **Attention à bien mettre des quotes
+    autour de la classe : les anti-slashs peuvent poser problème sinon.**
 
 **Options :**
 
 * **--stubs :** Permet de spécifier le groupe de templates à utiliser pour générer
     le contrôleur, le fichier de routes et les requêtes. Par défaut : 'default'.
 
+* **--langdir :** Permet de spécifier un sous-répertoire dans lequel générer le fichier
+    des traductions. Ce sous-répertoire est ajouté entre le chemin de basedes traductions
+    en français (resources/lang/fr) et l'arborescence de la section. Par défaut : ''.
+
+* **--viewsdir :** Permet de spécifier un sous-répertoire dans lequel générer les fichiers
+    de vues. Ce sous-répertoire est ajouté entre le chemin de base des vues (resources/views/)
+    et l'arborescence de la section. Par défaut : ''.
+
+Des questions sont de plus posées pour générer les textes en français :
+
+- L'intitulé de la section, au singulier. Ex : "statut de commande".
+- L'intitulé de la section, au pluriel. Ex : "statuts des commandes".
+- L'intitulé est-il féminin ? y = oui ; n = non. Par défaut : n.
 
 *Exemple concret d'utilisation :*
 
 ```
-artisan crud:generate params.commande-statuts App\\Models\\CommandeStatut
+artisan crud:generate params.commande-statuts "App\Models\CommandeStatut" --viewsdir=modules
 ```
 
 ...qui génère les fichiers suivants :
@@ -81,6 +86,19 @@ app/
         routes/
             params/
                 commande-statuts.php
+resources/
+    lang/
+        fr/
+            params/
+                commande-statuts.php
+    views/
+        modules/ <= viewsdir
+            params/
+                commandes-statuts/
+                    index.blade.php
+                    panel-create.blade.php
+                    panel-edit.blade.php
+                    form.blade.php
 ```
 
 Attention à ne pas oublier d'inclure le fichier de routes :
@@ -99,26 +117,15 @@ foreach (File::allFiles(__DIR__.'/routes') as $file) {
 ### Options dans le contrôleur
 
 Les fichiers générés peuvent être modifiés au besoin, mais des options sont disponibles
-dans le contrôleur (attribut `$crud`) pour personnaliser rapidement la section sans avoir
-à toucher au code (ces options sont disponibles dans les vues via la variable $crud) :
+dans le contrôleur (attribut `$options`) pour personnaliser rapidement la section
+sans avoir à toucher au code :
 
-- **section** : Nom de la section (ce qui a été renseigné en argument dans la commande)
-    qui sert notamment au nommage des routes. Par exemple pour récupérer la route "index"
-    d'une section, faire : `route($crud['section'].'.index')`
-- **viewsMainPath** : Chemin principal vers les vues de la section. Si une vue n'est pas trouvée
-    à cette endroit, on ira la chercher dans `viewsDefaultPath`. Voir le helper `crud_view_name()`
-    pour faire cette sélection.
-- **viewsDefaultPath** : Chemin utilisé par défaut si vue non trouvée dans `viewsMainPath`.
-- **langMainFile** : Chemin principal vers le fichier de traduction de la section. Si une traduction
-    n'est pas trouvée à cette endroit, on ira la chercher dans `langDefaultFile`. Voir le helper
-    `crud_trans_id()` pour faire cette sélection.
-- **langDefaultFile** : Chemin utilisé par défaut si traduction non trouvée dans `langMainFile`.
-- **creatable** : Indique si la section permet d'ajouter des enregistrements.
-- **editable** : Indique si la section permet de modifier des enregistrements.
-- **contentEditable** : Indique si la section permet l'édition à la volée du libellé d'un enregistrement.
-- **activatable** : Indique si la section permet d'activer/désactiver un enregistrement.
-- **sortable** : Indique si la section permet d'ordonner manuellement les enregistrements.
-- **destroyable** : Indique si la section permet de supprimer des enregistrements.
+- **creatable** : Pour afficher le formulaire de création à côté de la liste et autoriser la création.
+- **editable** : Pour afficher le bouton de modification (qui amène au formulaire) dans la liste et autoriser la modification.
+- **contentEditable** : Pour autoriser l'édition à la volée du libellé d'un enregistrement directement depuis la liste.
+- **activatable** : Pour afficher le bouton actif/inactif dans la liste et autoriser l'activation/désactivation.
+- **sortable** : Pour autoriser le réordonnement manuel des enregistrements dans la liste.
+- **destroyable** : Pour afficher le bouton de suppression dans la liste et autoriser la suppression.
 
 ### Groupes de templates
 
@@ -136,8 +143,8 @@ resources/
         vendor/
             crud-generator/
                 default/ <= Groupe par défaut
-                params/ <= Groupe ajouté
+                params/  <= Groupe ajouté
 ```
 
 Si un template n'existe pas dans un groupe, le fichier correspondant n'est tout simplement
-pas généré. Pratique si on veut par exemple ne générer que le contrôleur pour un groupe.
+pas généré. Pratique si l'on veut par exemple ne générer que le contrôleur pour un groupe.

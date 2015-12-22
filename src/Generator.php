@@ -3,6 +3,7 @@
 namespace Axn\CrudGenerator;
 
 use ReflectionClass, Exception;
+use Illuminate\Filesystem\Filesystem;
 
 class Generator
 {
@@ -35,6 +36,20 @@ class Generator
     protected $stubsGroup;
 
     /**
+     * Sous-répertoire dans lequel générer le fichier de langue.
+     *
+     * @var string
+     */
+    protected $langDir;
+
+    /**
+     * Sous-répertoire dans lequel générer les vues.
+     *
+     * @var string
+     */
+    protected $viewsDir;
+
+    /**
      * Tableau des segments qui composent la section.
      *
      * @var array
@@ -56,16 +71,18 @@ class Generator
      * @param  string $stubsGroup
      * @return void
      */
-    public function __construct($section, $modelClass, $stubsGroup)
+    public function __construct($section, $modelClass, $stubsGroup, $langDir, $viewsDir)
     {
         $this->validateModelClass($modelClass);
         $explodedModelClass = explode('\\', $modelClass);
 
-        $this->section = $section;
-        $this->appNs = $explodedModelClass[0];
+        $this->section    = $section;
         $this->modelClass = $modelClass;
         $this->stubsGroup = $stubsGroup;
+        $this->langDir    = $langDir;
+        $this->viewsDir   = $viewsDir;
 
+        $this->appNs = $explodedModelClass[0];
         $this->sectionSegments = explode('.', $section);
         $this->sectionSegmentsStudly = array_map('studly_case', $this->sectionSegments);
     }
@@ -101,6 +118,30 @@ class Generator
     }
 
     /**
+     * Génère le fichier des traductions.
+     *
+     * @param  string  $singular
+     * @param  string  $plural
+     * @param  boolean $feminine
+     * @return boolean
+     */
+    public function generateLang($singular, $plural, $feminine)
+    {
+        if (!$content = $this->getLangContent($singular, $plural, $feminine)) return false;
+
+        $sectionSegments = $this->sectionSegments;
+
+        if ($this->langDir) {
+            array_unshift($sectionSegments, $this->langDir);
+        }
+
+        $path = base_path('resources/lang/fr/'.implode('/', $sectionSegments).'.php');
+        $this->createMissingDirs($path);
+
+        return file_put_contents($path, $content) !== false;
+    }
+
+    /**
      * Génère le fichier d'une requête.
      *
      * @param  string $name
@@ -114,6 +155,31 @@ class Generator
         $this->createMissingDirs($path);
 
         return file_put_contents($path, $content) !== false;
+    }
+
+    /**
+     * Copie l'ensemble des vues du répertoire "views" vers la destination.
+     *
+     * @param  Filesystem $fs
+     * @return boolean
+     */
+    public function copyViews(Filesystem $fs)
+    {
+        if (!is_dir($src = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/views/"))) {
+            if ($this->stubsGroup !== 'default') return false;
+
+            $src = __DIR__."/../resources/stubs/default/views/";
+        }
+
+        $sectionSegments = $this->sectionSegments;
+
+        if ($this->viewsDir) {
+            array_unshift($sectionSegments, $this->viewsDir);
+        }
+
+        $dest = base_path('resources/views/'.implode('/', $sectionSegments).'/');
+
+        return $fs->copyDirectory($src, $dest);
     }
 
     /**
@@ -137,7 +203,9 @@ class Generator
         return strtr($stub, [
             '{{namespace}}'            => $namespace,
             '{{name}}'                 => $name,
-            '{{section}}'              => $this->section,
+            '{{routeBaseAlias}}'       => $this->section,
+            '{{langBaseKey}}'          => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
+            '{{viewBaseName}}'         => ($this->viewsDir ? $this->viewsDir.'.' : '').$this->section,
             '{{model}}'                => $this->modelClass,
             '{{storeRequest}}'         => $requestsNs.'\StoreRequest',
             '{{updateRequest}}'        => $requestsNs.'\UpdateRequest',
@@ -155,9 +223,48 @@ class Generator
         if (!$stub = $this->getRoutesStub()) return '';
 
         return strtr($stub, [
-            '{{baseUrl}}'    => str_replace('.', '/', $this->section),
-            '{{section}}'    => $this->section,
+            '{{baseUrl}}'    => implode('/', $this->sectionSegments),
+            '{{baseAlias}}'  => $this->section,
             '{{controller}}' => implode('\\', $this->sectionSegmentsStudly).'Controller',
+        ]);
+    }
+
+    /**
+     * Retourne le contenu généré pour le fichier des traductions (en français).
+     *
+     * @param  string  $singular
+     * @param  string  $plural
+     * @param  boolean $feminine
+     * @return array
+     */
+    protected function getLangContent($singular, $plural, $feminine)
+    {
+        if (!$stub = $this->getLangStub()) return '';
+
+        $ucfSingular     = ucfirst($singular);
+        $lcfPlural       = lcfirst($plural);
+        $startsWithVowel = starts_with($singular, ['a', 'e', 'i', 'o', 'u']);
+        $lcfDefArticle   = ($startsWithVowel ? "l'" : ($feminine ? 'la ' : 'le '));
+        $ucfDefArticle   = ucfirst($lcfDefArticle);
+        $lcfUndefArticle = ($feminine ? 'une' : 'un');
+
+        return strtr($stub, [
+            'store_success'   => "$ucfSingular a été ".($feminine ? 'créée' : 'créé')." avec succès.",
+            'update_success'  => "$ucfSingular a été ".($feminine ? 'mise' : 'mis')." à jour avec succès.",
+            'enable_success'  => "$ucfSingular a été ".($feminine ? 'activée' : 'activé')." avec succès.",
+            'disable_success' => "$ucfSingular a été ".($feminine ? 'désactivée' : 'désactivé')." avec succès.",
+            'sort_success'    => "L'ordre des $lcfPlural a été modifié avec succès.",
+            'destroy_success' => "{$ucfDefArticle}$ucfSingular a été ".($feminine ? 'supprimée' : 'supprimé')." avec succès.",
+            'destroy_failure' => "Suppression impossible : {$lcfDefArticle}$ucfSingular est peut-être ".($feminine ? 'liée' : 'lié')." à d'autres enregistrements.",
+            'list_title'      => "Liste des $lcfPlural",
+            'empty'           => "Il n'y a ".($feminine ? 'aucune' : 'aucun')." enregistrement à afficher.",
+            'edit_tooltip'    => "Modifier {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            'enable_tooltip'  => "Activer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            'disable_tooltip' => "Désactiver {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            'destroy_tooltip' => "Supprimer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;».",
+            'destroy_confirm' => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$ucfSingular «&nbsp;:name&nbsp;»&nbsp;?",
+            'create_title'    => "Création d'{$lcfUndefArticle} ".($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau'))." $ucfSingular",
+            'edit_title'      => "Modification d'{$lcfUndefArticle} $ucfSingular"
         ]);
     }
 
@@ -196,6 +303,17 @@ class Generator
     protected function getRoutesStub()
     {
         return $this->getStub('routes');
+    }
+
+    /**
+     * Retourne le contenu du template du fichier des traductions.
+     *
+     * @param  string $name
+     * @return string
+     */
+    protected function getLangStub()
+    {
+        return $this->getStub('lang');
     }
 
     /**

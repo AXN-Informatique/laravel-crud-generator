@@ -5,66 +5,66 @@ Route::group([
     'middleware' => 'auth'
 ], function()
 {
-    $section    = '{{section}}';
+    $baseAlias  = '{{baseAlias}}';
     $controller = '{{controller}}';
 
     // Liste des enregistrements
     get('/', [
-        'as'   => "$section.index",
+        'as'   => "$baseAlias.index",
         'uses' => "$controller@index"
     ]);
 
     // Formulaire d'ajout
     get('create', [
-        'as'   => "$section.create",
+        'as'   => "$baseAlias.create",
         'uses' => "$controller@create"
     ]);
 
     // Formulaire d'édition
     get('{id}/edit', [
-        'as'   => "$section.edit",
+        'as'   => "$baseAlias.edit",
         'uses' => "$controller@edit"
     ]);
 
     // Ajout d'un enregistrement
     post('/', [
-        'as'   => "$section.store",
+        'as'   => "$baseAlias.store",
         'uses' => "$controller@store"
     ]);
 
     // Modification d'un enregistrement
     put('{id}', [
-        'as'   => "$section.update",
+        'as'   => "$baseAlias.update",
         'uses' => "$controller@update"
     ]);
 
     // Modification du contenu "content editable" d'un enregistrement
     post('{id}/content', [
-        'as'   => "$section.update-content",
+        'as'   => "$baseAlias.update-content",
         'uses' => "$controller@updateContent"
     ]);
 
     // Activation d'un enregistrement
     post('{id}/enable', [
-        'as'   => "$section.enable",
+        'as'   => "$baseAlias.enable",
         'uses' => "$controller@enable"
     ]);
 
     // Désactivation d'un enregistrement
     post('{id}/disable', [
-        'as'   => "$section.disable",
+        'as'   => "$baseAlias.disable",
         'uses' => "$controller@disable"
     ]);
 
     // Réordonnement des enregistrements
     post('sort', [
-        'as'   => "$section.sort",
+        'as'   => "$baseAlias.sort",
         'uses' => "$controller@sort"
     ]);
 
     // Suppression d'un enregistrement
     delete('{id}', [
-        'as'   => "$section.destroy",
+        'as'   => "$baseAlias.destroy",
         'uses' => "$controller@destroy"
     ]);
 });

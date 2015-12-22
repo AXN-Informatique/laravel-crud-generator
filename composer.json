@@ -6,9 +6,6 @@
     "autoload": {
         "psr-4": {
             "Axn\\CrudGenerator\\": "src/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+        }
     }
 }

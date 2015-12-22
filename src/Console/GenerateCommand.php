@@ -31,12 +31,22 @@ class GenerateCommand extends Command
      */
     public function handle()
     {
-        $section = $this->argument('section');
-        $modelClass = $this->argument('model');
-        $stubsGroup = $this->option('stubs');
+        // Arguments
+        $section     = $this->argument('section');
+        $modelClass  = $this->argument('model');
+
+        // Options
+        $stubsGroup  = $this->option('stubs');
+        $langDir     = $this->option('langdir');
+        $viewsDir    = $this->option('viewsdir');
+
+        // Questions
+        $singular    = $this->ask('Singular name of the section (fr): ');
+        $plural      = $this->ask('Plural name of the section (fr): ');
+        $feminine    = $this->confirm('Feminine? [y|n]', false);
 
         try {
-            $generator = new Generator($section, $modelClass, $stubsGroup);
+            $generator = new Generator($section, $modelClass, $stubsGroup, $langDir, $viewsDir);
 
             if ($generator->generateController()) {
                 $this->line("Controller generated");
@@ -44,6 +54,10 @@ class GenerateCommand extends Command
 
             if ($generator->generateRoutes()) {
                 $this->line("Routes file generated");
+            }
+
+            if ($generator->generateLang($singular, $plural, $feminine)) {
+                $this->line("Lang file (fr) generated");
             }
 
             if ($generator->generateRequest('store')) {
@@ -56,6 +70,10 @@ class GenerateCommand extends Command
 
             if ($generator->generateRequest('updateContent')) {
                 $this->line("Update content request generated");
+            }
+
+            if ($generator->copyViews($this->laravel['files'])) {
+                $this->line("Views copied");
             }
         }
         catch (Exception $e) {
@@ -86,6 +104,8 @@ class GenerateCommand extends Command
 	{
 		return [
             ['stubs', null, InputOption::VALUE_OPTIONAL, 'Stubs group to use', 'default'],
+            ['langdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for lang file', ''],
+            ['viewsdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for views files', ''],
 		];
 	}
 }

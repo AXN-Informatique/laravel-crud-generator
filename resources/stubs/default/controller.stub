@@ -22,23 +22,49 @@ class {{name}} extends BaseController
     protected $model;
 
     /**
+     * Base des alias des routes nommées.
+     * Exemple : route("{$this->routeBaseAlias}.edit");
+     *
+     * @var string
+     */
+    protected $routeBaseAlias = '{{routeBaseAlias}}';
+
+    /**
+     * Base des clés des traductions.
+     * Exemple : trans("{$this->langBaseKey}.store_success");
+     *
+     * @var string
+     */
+    protected $langBaseKey = '{{langBaseKey}}';
+
+    /**
+     * Noms complets des différentes vues.
+     * Exemple : view($this->views['index']);
+     *
      * @var array
      */
-    protected $crud = [
-        'section'          => '{{section}}',
+    protected $views = [
+        'index'           => '{{viewBaseName}}.index',
+        'panel-list'      => '{{viewBaseName}}.panel-list',
+        'panel-create'    => '{{viewBaseName}}.panel-create',
+        'panel-edit'      => '{{viewBaseName}}.panel-edit',
+        'form'            => '{{viewBaseName}}.form',
+    ]
 
-        'viewsMainPath'    => '{{section}}.',
-        'viewsDefaultPath' => 'crud-generator::',
-
-        'langMainFile'     => '{{section}}',
-        'langDefaultFile'  => 'crud-generator::default',
-
-        'creatable'        => true,
-        'editable'         => true,
-        'contentEditable'  => true,
-        'activatable'      => true,
-        'sortable'         => true,
-        'destroyable'      => true,
+    /**
+     * Options permettant d'activer/désactiver rapidement des fonctionnalités
+     * des écrans de CRUD sans avoir à aller rechercher les modifications à
+     * faire dans le code.
+     *
+     * @var array
+     */
+    protected $options = [
+        'creatable'       => true, // afficher le formulaire de création à côté de la liste
+        'editable'        => true, // afficher le bouton de modification dans la liste
+        'contentEditable' => true, // rendre éditable les libellés des enregistrements depuis la liste
+        'activatable'     => true, // afficher le bouton actif/inactif dans la liste
+        'sortable'        => true, // rendre ordonnable manuellement les enregistrements dans la liste
+        'destroyable'     => true, // afficher le bouton de suppression dans la liste
     ];
 
     /**
@@ -59,10 +85,11 @@ class {{name}} extends BaseController
      */
     public function index()
     {
-        return view(crud_view_name($this->crud, 'index'), [
-            'crud' => $this->crud,
+        $variables = array_merge($this->compactAttributes(), [
             'list' => $this->getList()
         ]);
+
+        return view($this->views['index'], $variables);
     }
 
     /**
@@ -72,12 +99,13 @@ class {{name}} extends BaseController
      */
     public function create()
     {
-        if (!$this->crud['creatable']) abort(404);
+        if (!$this->options['creatable']) abort(404);
 
-        return view(crud_view_name($this->crud, 'index'), [
-            'crud' => $this->crud,
+        $variables = array_merge($this->compactAttributes(), [
             'list' => $this->getList()
         ]);
+
+        return view($this->views['index'], $variables);
     }
 
     /**
@@ -88,13 +116,14 @@ class {{name}} extends BaseController
      */
     public function edit($id)
     {
-        if (!$this->crud['editable']) abort(404);
+        if (!$this->options['editable']) abort(404);
 
-        return view(crud_view_name($this->crud, 'index'), [
-            'crud'   => $this->crud,
+        $variables = array_merge($this->compactAttributes(), [
             'list'   => $this->getList(),
-            'record' => $this->model->findOrFail($id),
+            'record' => $this->model->findOrFail($id)
         ]);
+
+        return view($this->views['index'], $variables);
     }
 
     /**
@@ -105,18 +134,18 @@ class {{name}} extends BaseController
      */
     public function store(StoreRequest $request)
     {
-        if (!$this->crud['creatable']) abort(404);
+        if (!$this->options['creatable']) abort(404);
 
         $data = [
             'libelle' => $request->input('libelle')
         ];
-        if ($this->crud['sortable']) {
+        if ($this->options['sortable']) {
             $data['ordre'] = $this->model->max('ordre') + 1;
         }
 
         $this->model->create($data);
 
-        Notifier::success(trans( crud_trans_id($this->crud, 'store_success') ));
+        Notifier::success( trans("{$this->langBaseKey}.store_success") );
 
         return back();
     }
@@ -130,13 +159,13 @@ class {{name}} extends BaseController
      */
     public function update($id, UpdateRequest $request)
     {
-        if (!$this->crud['editable']) abort(404);
+        if (!$this->options['editable']) abort(404);
 
         $this->model->findOrFail($id)->update([
             'libelle' => $request->input('libelle')
         ]);
 
-        Notifier::success(trans( crud_trans_id($this->crud, 'update_success') ));
+        Notifier::success( trans("{$this->langBaseKey}.update_success") );
 
         return back();
     }
@@ -150,14 +179,14 @@ class {{name}} extends BaseController
      */
     public function updateContent($id, UpdateContentRequest $request)
     {
-        if (!$this->crud['contentEditable']) abort(404);
+        if (!$this->options['contentEditable']) abort(404);
 
         $this->model->findOrFail($id)->update([
             'libelle' => $request->input('content')
         ]);
 
         return response()->json([
-            'message' => trans( crud_trans_id($this->crud, 'update_success') ),
+            'message' => trans("{$this->langBaseKey}.update_success"),
             'content' => $request->input('content')
         ]);
     }
@@ -170,11 +199,11 @@ class {{name}} extends BaseController
      */
     public function enable($id)
     {
-        if (!$this->crud['activatable']) abort(404);
+        if (!$this->options['activatable']) abort(404);
 
         $this->model->findOrFail($id)->update(['actif' => 1]);
 
-        Notifier::success(trans( crud_trans_id($this->crud, 'enable_success') ));
+        Notifier::success( trans("{$this->langBaseKey}.enable_success") );
 
         return back();
     }
@@ -187,11 +216,11 @@ class {{name}} extends BaseController
      */
     public function disable($id)
     {
-        if (!$this->crud['activatable']) abort(404);
+        if (!$this->options['activatable']) abort(404);
 
         $this->model->findOrFail($id)->update(['actif' => 0]);
 
-        Notifier::success(trans( crud_trans_id($this->crud, 'disable_success') ));
+        Notifier::success( trans("{$this->langBaseKey}.disable_success") );
 
         return back();
     }
@@ -204,7 +233,7 @@ class {{name}} extends BaseController
      */
     public function sort(Request $request)
     {
-        if (!$this->crud['sortable']) abort(404);
+        if (!$this->options['sortable']) abort(404);
 
         $sort = array_map('intval', $request->input('sort', []));
 
@@ -216,7 +245,7 @@ class {{name}} extends BaseController
         });
 
         return response()->json([
-            'message' => trans( crud_trans_id($this->crud, 'sort_success') )
+            'message' => trans("{$this->langBaseKey}.sort_success")
         ]);
     }
 
@@ -228,19 +257,23 @@ class {{name}} extends BaseController
      */
     public function destroy($id)
     {
-        if (!$this->crud['destroyable']) abort(404);
+        if (!$this->options['destroyable']) abort(404);
 
         try {
             $this->model->destroy($id);
         }
         catch (Exception $e) {
-            return back()->withErrors(trans( crud_trans_id($this->crud, 'destroy_failure') ));
+            return back()->withErrors( trans("{$this->langBaseKey}.destroy_failure") );
         }
 
-        Notifier::success(trans( crud_trans_id($this->crud, 'destroy_success') ));
+        Notifier::success( trans("{$this->langBaseKey}.destroy_success") );
 
         return back();
     }
+
+    // ------------------------------------------------------------------------
+    // METHODES HELPER
+    // ------------------------------------------------------------------------
 
     /**
      * Récupère et retourne la liste des enregistrements.
@@ -249,10 +282,25 @@ class {{name}} extends BaseController
      */
     protected function getList()
     {
-        if ($this->crud['sortable']) {
+        if ($this->options['sortable']) {
             return $this->model->orderBy('ordre')->get();
         }
 
         return $this->model->paginate();
+    }
+
+    /**
+     * Compacte les valeurs des attributs pour les passer aux vues.
+     *
+     * @return array
+     */
+    protected function compactAttributes()
+    {
+        return [
+            'routeBaseAlias' => $this->routeBaseAlias,
+            'langBaseKey'    => $this->langBaseKey,
+            'views'          => $this->views,
+            'options'        => $this->options
+        ];
     }
 }
