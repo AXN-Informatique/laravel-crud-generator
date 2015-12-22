@@ -41,8 +41,8 @@ class GenerateCommand extends Command
         $viewsDir    = $this->option('viewsdir');
 
         // Questions
-        $singular    = $this->ask('Singular name of the section (fr): ');
-        $plural      = $this->ask('Plural name of the section (fr): ');
+        $singular    = html_entity_decode($this->ask('Singular name of the section (fr)'));
+        $plural      = html_entity_decode($this->ask('Plural name of the section (fr)'));
         $feminine    = $this->confirm('Feminine? [y|n]', false);
 
         try {

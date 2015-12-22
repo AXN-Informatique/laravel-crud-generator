@@ -78,6 +78,10 @@ class {{name}} extends BaseController
         $this->model = $model;
     }
 
+    // ------------------------------------------------------------------------
+    // ACTIONS
+    // ------------------------------------------------------------------------
+
     /**
      * Affiche la liste des enregistrements et le formulaire d'ajout.
      *
