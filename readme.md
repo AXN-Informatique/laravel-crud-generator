@@ -32,7 +32,7 @@ Y faire les modifications souhaitées.
 Lancer la commande :
 
 ```
-php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir]
+php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir] [--breadcrumbs|-b]
 ```
 
 **Arguments :**
@@ -56,6 +56,9 @@ php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir]
 * **--viewsdir :** Permet de spécifier un sous-répertoire dans lequel générer les fichiers
     de vues. Ce sous-répertoire est ajouté entre le chemin de base des vues (resources/views/)
     et l'arborescence de la section. Par défaut : ''.
+
+* **--breadcrumbs (ou -b) :** Si cette option est précisée, les breadcrumbs seront
+    concaténés à la fin du fichier app/Http/breadcrumbs.php
 
 Des questions sont de plus posées pour générer les textes en français :
 

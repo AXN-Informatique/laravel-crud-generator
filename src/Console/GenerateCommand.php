@@ -22,7 +22,7 @@ class GenerateCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generates CRUD files';
+    protected $description = 'Generates CRUD files for a section';
 
     /**
      * Exécute la commande.
