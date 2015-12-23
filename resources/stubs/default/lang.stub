@@ -14,7 +14,7 @@ return [
     // Breadcrumbs
     'breadcrumbs_index'  => "{{breadcrumbsIndex}}",
     'breadcrumbs_create' => "Nouveau",
-    'breadcrumbs_edit'   => "Éditer",
+    'breadcrumbs_edit'   => "Modifier",
 
     // Liste des enregistrements
     'list_title'         => "{{listTitle}}",
