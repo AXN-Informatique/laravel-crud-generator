@@ -11,6 +11,11 @@ return [
     'destroy_success'    => "{{destroySuccess}}",
     'destroy_failure'    => "{{destroyFailure}}",
 
+    // Breadcrumbs
+    'breadcrumbs_index'  => "{{breadcrumbsIndex}}",
+    'breadcrumbs_create' => "Nouveau",
+    'breadcrumbs_edit'   => "Éditer",
+
     // Liste des enregistrements
     'list_title'         => "{{listTitle}}",
     'list_empty'         => "{{listEmpty}}",

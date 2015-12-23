@@ -183,6 +183,21 @@ class Generator
     }
 
     /**
+     * Ajoute les breadcrumbs au fichier de breadcrumbs app/Http/breadcrumbs.php
+     *
+     * @param  string $title
+     * @return boolean
+     */
+    public function appendBreadcrumbs($title)
+    {
+        if (!$content = $this->getBreadcrumbsContent($title)) return false;
+
+        $path = app_path('Http/breadcrumbs.php');
+
+        return file_put_contents($path, $content, FILE_APPEND) !== false;
+    }
+
+    /**
      * Retourne le contenu généré pour le contrôleur.
      *
      * @return string
@@ -226,6 +241,23 @@ class Generator
             '{{baseUrl}}'    => implode('/', $this->sectionSegments),
             '{{baseAlias}}'  => $this->section,
             '{{controller}}' => implode('\\', $this->sectionSegmentsStudly).'Controller',
+        ]);
+    }
+
+    /**
+     * Retourne le contenu généré pour les breadcrumbs.
+     *
+     * @param  string $title
+     * @return array
+     */
+    protected function getBreadcrumbsContent($title)
+    {
+        if (!$stub = $this->getBreadcrumbsStub()) return '';
+
+        return strtr($stub, [
+            '{{title}}'          => ucfirst($title),
+            '{{routeBaseAlias}}' => $this->section,
+            '{{langBaseKey}}'    => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
         ]);
     }
 
@@ -303,6 +335,17 @@ class Generator
     protected function getRoutesStub()
     {
         return $this->getStub('routes');
+    }
+
+    /**
+     * Retourne le contenu du template des breadcrumbs.
+     *
+     * @param  string $name
+     * @return string
+     */
+    protected function getBreadcrumbsStub()
+    {
+        return $this->getStub('breadcrumbs');
     }
 
     /**

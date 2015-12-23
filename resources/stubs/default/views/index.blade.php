@@ -1,5 +1,6 @@
 @extends('layouts.app', [
-    'title' => trans(!empty($record) ? "{$langBaseKey}.edit_title" : "{$langBaseKey}.list_title")
+    'title'       => $title,
+    'breadcrumbs' => $breadcrumbs,
 ])
 
 @section('content')

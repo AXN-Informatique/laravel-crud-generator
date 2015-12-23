@@ -12,7 +12,7 @@ use {{model}} as Model;
 use {{storeRequest}};
 use {{updateRequest}};
 use {{updateContentRequest}};
-use DB, Notifier;
+use Breadcrumbs, DB, Notifier;
 
 class {{name}} extends BaseController
 {
@@ -89,11 +89,12 @@ class {{name}} extends BaseController
      */
     public function index()
     {
-        $variables = array_merge($this->compactAttributes(), [
-            'list' => $this->getList()
-        ]);
-
-        return view($this->views['index'], $variables);
+        return view($this->views['index'], array_merge($this->compactAttributes(),
+        [
+            'title'       => trans("{$this->langBaseKey}.list_title"),
+            'breadcrumbs' => Breadcrumbs::renderIfExists("{$this->routeBaseAlias}.index"),
+            'list'        => $this->getList(),
+        ]));
     }
 
     /**
@@ -105,11 +106,12 @@ class {{name}} extends BaseController
     {
         if (!$this->options['creatable']) abort(404);
 
-        $variables = array_merge($this->compactAttributes(), [
-            'list' => $this->getList()
-        ]);
-
-        return view($this->views['index'], $variables);
+        return view($this->views['index'], array_merge($this->compactAttributes(),
+        [
+            'title'       => trans("{$this->langBaseKey}.create_title"),
+            'breadcrumbs' => Breadcrumbs::renderIfExists("{$this->routeBaseAlias}.create"),
+            'list'        => $this->getList(),
+        ]));
     }
 
     /**
@@ -122,12 +124,15 @@ class {{name}} extends BaseController
     {
         if (!$this->options['editable']) abort(404);
 
-        $variables = array_merge($this->compactAttributes(), [
-            'list'   => $this->getList(),
-            'record' => $this->model->findOrFail($id)
-        ]);
+        $record = $this->model->findOrFail($id);
 
-        return view($this->views['index'], $variables);
+        return view($this->views['index'], array_merge($this->compactAttributes(),
+        [
+            'title'       => trans("{$this->langBaseKey}.edit_title"),
+            'breadcrumbs' => Breadcrumbs::renderIfExists("{$this->routeBaseAlias}.edit", $record),
+            'list'        => $this->getList(),
+            'record'      => $record,
+        ]));
     }
 
     /**

@@ -39,6 +39,7 @@ class GenerateCommand extends Command
         $stubsGroup  = $this->option('stubs');
         $langDir     = $this->option('langdir');
         $viewsDir    = $this->option('viewsdir');
+        $breadcrumbs = $this->option('breadcrumbs');
 
         // Questions
         $singular    = $this->fixEncoding($this->ask('Singular name of the section (fr)'));
@@ -74,6 +75,10 @@ class GenerateCommand extends Command
 
             if ($generator->copyViews($this->laravel['files'])) {
                 $this->line("Views copied");
+            }
+
+            if ($breadcrumbs && $generator->appendBreadcrumbs($plural)) {
+                $this->line("Breadcrumbs appended to breadcrumbs file");
             }
         }
         catch (Exception $e) {
@@ -125,6 +130,7 @@ class GenerateCommand extends Command
             ['stubs', null, InputOption::VALUE_OPTIONAL, 'Stubs group to use', 'default'],
             ['langdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for lang file', ''],
             ['viewsdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for views files', ''],
+            ['breadcrumbs', 'b', InputOption::VALUE_NONE, 'Append breadcrumbs to breadcrumbs file'],
 		];
 	}
 }
