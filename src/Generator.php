@@ -97,6 +97,9 @@ class Generator
         if (!$content = $this->getControllerContent()) return false;
 
         $path = app_path('Http/Controllers/'.implode('/', $this->sectionSegmentsStudly).'Controller.php');
+
+        if (is_file($path)) return false;
+
         $this->createMissingDirs($path);
 
         return file_put_contents($path, $content) !== false;
@@ -112,6 +115,9 @@ class Generator
         if (!$content = $this->getRoutesContent()) return false;
 
         $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
+
+        if (is_file($path)) return false;
+
         $this->createMissingDirs($path);
 
         return file_put_contents($path, $content) !== false;
@@ -136,6 +142,9 @@ class Generator
         }
 
         $path = base_path('resources/lang/fr/'.implode('/', $sectionSegments).'.php');
+
+        if (is_file($path)) return false;
+
         $this->createMissingDirs($path);
 
         return file_put_contents($path, $content) !== false;
@@ -152,6 +161,9 @@ class Generator
         if (!$content = $this->getRequestContent($name)) return false;
 
         $path = app_path('Http/Requests/'.implode('/', $this->sectionSegmentsStudly).'/'.studly_case($name).'Request.php');
+
+        if (is_file($path)) return false;
+
         $this->createMissingDirs($path);
 
         return file_put_contents($path, $content) !== false;
@@ -178,6 +190,8 @@ class Generator
         }
 
         $dest = base_path('resources/views/'.implode('/', $sectionSegments).'/');
+
+        if (is_dir($dest)) return false;
 
         return $fs->copyDirectory($src, $dest);
     }
