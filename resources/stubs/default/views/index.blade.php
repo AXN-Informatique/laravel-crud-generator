@@ -1,6 +1,5 @@
 @extends('layouts.app', [
-    'title'       => $title,
-    'breadcrumbs' => $breadcrumbs,
+    'title' => $title,
 ])
 
 @section('content')

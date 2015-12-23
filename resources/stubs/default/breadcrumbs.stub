@@ -5,13 +5,13 @@
 
 Breadcrumbs::register('{{routeBaseAlias}}.index', function($breadcrumbs) {
     //$breadcrumbs->parent('home');
-    $breadcrumbs->push(trans("{{langBaseKey}}.breadcrumbs_index_label"), route('{{routeBaseAlias}}.index'));
+    $breadcrumbs->push( trans("{{langBaseKey}}.breadcrumbs_index"), route('{{routeBaseAlias}}.index') );
 });
     Breadcrumbs::register('{{routeBaseAlias}}.create', function($breadcrumbs) {
         $breadcrumbs->parent('{{routeBaseAlias}}.index');
-        $breadcrumbs->push(trans("{{langBaseKey}}.breadcrumbs_create_label"), route('{{routeBaseAlias}}.create'));
+        $breadcrumbs->push( trans("{{langBaseKey}}.breadcrumbs_create") );
     });
-    Breadcrumbs::register('{{routeBaseAlias}}.edit', function($breadcrumbs, $record) {
+    Breadcrumbs::register('{{routeBaseAlias}}.edit', function($breadcrumbs) {
         $breadcrumbs->parent('{{routeBaseAlias}}.index');
-        $breadcrumbs->push(trans("{{langBaseKey}}.breadcrumbs_edit_label"), route('{{routeBaseAlias}}.edit', $record->id));
+        $breadcrumbs->push( trans("{{langBaseKey}}.breadcrumbs_edit") );
     });

@@ -91,9 +91,8 @@ class {{name}} extends BaseController
     {
         return view($this->views['index'], array_merge($this->compactAttributes(),
         [
-            'title'       => trans("{$this->langBaseKey}.list_title"),
-            'breadcrumbs' => Breadcrumbs::renderIfExists("{$this->routeBaseAlias}.index"),
-            'list'        => $this->getList(),
+            'title' => trans("{$this->langBaseKey}.list_title"),
+            'list'  => $this->getList(),
         ]));
     }
 
@@ -108,9 +107,8 @@ class {{name}} extends BaseController
 
         return view($this->views['index'], array_merge($this->compactAttributes(),
         [
-            'title'       => trans("{$this->langBaseKey}.create_title"),
-            'breadcrumbs' => Breadcrumbs::renderIfExists("{$this->routeBaseAlias}.create"),
-            'list'        => $this->getList(),
+            'title' => trans("{$this->langBaseKey}.create_title"),
+            'list'  => $this->getList(),
         ]));
     }
 
@@ -128,10 +126,9 @@ class {{name}} extends BaseController
 
         return view($this->views['index'], array_merge($this->compactAttributes(),
         [
-            'title'       => trans("{$this->langBaseKey}.edit_title"),
-            'breadcrumbs' => Breadcrumbs::renderIfExists("{$this->routeBaseAlias}.edit", $record),
-            'list'        => $this->getList(),
-            'record'      => $record,
+            'title'  => trans("{$this->langBaseKey}.edit_title"),
+            'list'   => $this->getList(),
+            'record' => $record,
         ]));
     }
 
