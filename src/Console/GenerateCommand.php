@@ -41,8 +41,8 @@ class GenerateCommand extends Command
         $viewsDir    = $this->option('viewsdir');
 
         // Questions
-        $singular    = html_entity_decode($this->ask('Singular name of the section (fr)'));
-        $plural      = html_entity_decode($this->ask('Plural name of the section (fr)'));
+        $singular    = $this->fixEncoding($this->ask('Singular name of the section (fr)'));
+        $plural      = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
         $feminine    = $this->confirm('Feminine? [y|n]', false);
 
         try {
@@ -80,6 +80,25 @@ class GenerateCommand extends Command
             $this->error('Exception catched: '.$e->getMessage());
             $this->line($e->getTraceAsString());
         }
+    }
+
+    /**
+     * Corrige le problème d'encodage des caractères sous Windows lorsque l'input
+     * provient de la console (saisie utilisateur).
+     *
+     * @param  string $input
+     * @return string
+     */
+    protected function fixEncoding($input)
+    {
+        // Windows only
+        if (DIRECTORY_SEPARATOR === '\\') {
+            preg_match('/[0-9]+/', shell_exec('chcp'), $m);
+
+            return iconv("CP{$m[0]}", 'UTF-8', $input);
+        }
+
+        return $input;
     }
 
     /**

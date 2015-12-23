@@ -63,9 +63,6 @@ Des questions sont de plus posées pour générer les textes en français :
 - L'intitulé de la section, au pluriel. Ex : "statuts des commandes".
 - L'intitulé est-il féminin ? y = oui ; n = non. Par défaut : n.
 
-**Attention :** Utiliser des caractères HTML pour les caractères non ASCII car ceux-ci
-sont mal retranscrits. Par exemple, utiliser "&eacute;" à la place de "é".
-
 *Exemple concret d'utilisation :*
 
 ```
