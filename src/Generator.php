@@ -2,7 +2,6 @@
 
 namespace Axn\CrudGenerator;
 
-use ReflectionClass, Exception;
 use Illuminate\Filesystem\Filesystem;
 
 class Generator
@@ -73,7 +72,6 @@ class Generator
      */
     public function __construct($section, $modelClass, $stubsGroup, $langDir, $viewsDir)
     {
-        $this->validateModelClass($modelClass);
         $explodedModelClass = explode('\\', $modelClass);
 
         $this->section    = $section;
@@ -88,39 +86,49 @@ class Generator
     }
 
     /**
-     * Génère le fichier du contrôleur.
+     * Est-ce que le générateur devra générer le fichier des traductions ?
      *
      * @return boolean
      */
+    public function shouldGenerateLang()
+    {
+        return $this->getLangStub() !== '' && !is_file($this->getLangPath());
+    }
+
+    /**
+     * Génère le fichier du contrôleur.
+     *
+     * @return string
+     */
     public function generateController()
     {
-        if (!$content = $this->getControllerContent()) return false;
+        if (!$content = $this->getControllerContent()) return '';
 
         $path = app_path('Http/Controllers/'.implode('/', $this->sectionSegmentsStudly).'Controller.php');
 
-        if (is_file($path)) return false;
+        if (is_file($path)) return '';
 
         $this->createMissingDirs($path);
 
-        return file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false ? $path : '';
     }
 
     /**
      * Génère le fichier des routes.
      *
-     * @return boolean
+     * @return string
      */
     public function generateRoutes()
     {
-        if (!$content = $this->getRoutesContent()) return false;
+        if (!$content = $this->getRoutesContent()) return '';
 
         $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
 
-        if (is_file($path)) return false;
+        if (is_file($path)) return '';
 
         $this->createMissingDirs($path);
 
-        return file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false ? $path : '';
     }
 
     /**
@@ -129,25 +137,19 @@ class Generator
      * @param  string  $singular
      * @param  string  $plural
      * @param  boolean $feminine
-     * @return boolean
+     * @return string
      */
     public function generateLang($singular, $plural, $feminine)
     {
-        if (!$content = $this->getLangContent($singular, $plural, $feminine)) return false;
+        if (!$content = $this->getLangContent($singular, $plural, $feminine)) return '';
 
-        $sectionSegments = $this->sectionSegments;
+        $path = $this->getLangPath();
 
-        if ($this->langDir) {
-            array_unshift($sectionSegments, $this->langDir);
-        }
-
-        $path = base_path('resources/lang/fr/'.implode('/', $sectionSegments).'.php');
-
-        if (is_file($path)) return false;
+        if (is_file($path)) return '';
 
         $this->createMissingDirs($path);
 
-        return file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false ? $path : '';
     }
 
     /**
@@ -403,19 +405,19 @@ class Generator
     }
 
     /**
-     * Vérifie que la classe modèle est bien instanciable et est bien une instance
-     * de Illuminate\Database\Eloquent\Model. Lève une exception le cas échéant.
+     * Retourne le chemin vers le fichier des traductions.
      *
-     * @param  string $modelClass
-     * @return void
+     * @return string
      */
-    protected function validateModelClass($modelClass)
+    protected function getLangPath()
     {
-        $rc = new ReflectionClass($modelClass);
+        $sectionSegments = $this->sectionSegments;
 
-        if (!$rc->isInstantiable() || !$rc->isSubclassOf('Illuminate\Database\Eloquent\Model')) {
-            throw new Exception("$modelClass is not instantiable or is not an instance of Illuminate\Database\Eloquent\Model");
+        if ($this->langDir) {
+            array_unshift($sectionSegments, $this->langDir);
         }
+
+        return base_path('resources/lang/fr/'.implode('/', $sectionSegments).'.php');
     }
 
     /**

@@ -5,13 +5,15 @@
         <p>{{ trans("{$langBaseKey}.list_empty") }}</p>
     </div>
 @else
-    <ul class="list-group {!! $options['sortable'] && empty($record) ? 'sortable' : '' !!}">
+    <?php $sortable = $list->first()->ordre && empty($record); ?>
+
+    <ul class="list-group {!! $sortable ? 'sortable' : '' !!}">
 
         @foreach ($list as $item)
             <li class="list-group-item clearfix {!! !empty($record) && $record->id == $item->id ? 'editing' : '' !!}" data-sort="{{ $item->id }}">
 
                 <div class="pull-left">
-                    @if ($options['sortable'] && empty($record))
+                    @if ($sortable)
                         <i class="fa fa-arrows-v"></i>&nbsp;
                     @endif
 

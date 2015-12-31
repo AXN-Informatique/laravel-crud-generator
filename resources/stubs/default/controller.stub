@@ -6,13 +6,14 @@ use Exception;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\Paginator;
 use {{model}} as Model;
 use {{storeRequest}};
 use {{updateRequest}};
 use {{updateContentRequest}};
-use Breadcrumbs, DB, Notifier;
+use DB, Notifier;
 
 class {{name}} extends BaseController
 {
@@ -59,12 +60,11 @@ class {{name}} extends BaseController
      * @var array
      */
     protected $options = [
-        'creatable'       => true, // afficher le formulaire de création à côté de la liste
-        'editable'        => true, // afficher le bouton de modification dans la liste
-        'contentEditable' => true, // rendre éditable les libellés des enregistrements depuis la liste
-        'activatable'     => true, // afficher le bouton actif/inactif dans la liste
-        'sortable'        => true, // rendre ordonnable manuellement les enregistrements dans la liste
-        'destroyable'     => true, // afficher le bouton de suppression dans la liste
+        'creatable'       => true,  // afficher le formulaire de création à côté de la liste
+        'editable'        => false, // afficher le bouton de modification dans la liste
+        'contentEditable' => true,  // rendre éditable les libellés des enregistrements depuis la liste
+        'activatable'     => true,  // afficher le bouton actif/inactif dans la liste
+        'destroyable'     => true,  // afficher le bouton de suppression dans la liste
     ];
 
     /**
@@ -85,51 +85,58 @@ class {{name}} extends BaseController
     /**
      * Affiche la liste des enregistrements et le formulaire d'ajout.
      *
-     * @return Response
+     * @return View
      */
     public function index()
     {
-        return view($this->views['index'], array_merge($this->compactAttributes(),
-        [
+        $viewData = array_merge($this->compactAttributes(), [
             'title' => trans("{$this->langBaseKey}.list_title"),
             'list'  => $this->getList(),
-        ]));
+        ]);
+
+        return view($this->views['index'], $viewData);
     }
 
     /**
      * Affiche le formulaire de création d'un enregistrement.
      *
-     * @return Response
+     * @return View
      */
     public function create()
     {
-        if (!$this->options['creatable']) abort(404);
+        if (!$this->options['creatable']) {
+            abort(404);
+        }
 
-        return view($this->views['index'], array_merge($this->compactAttributes(),
-        [
+        $viewData = array_merge($this->compactAttributes(), [
             'title' => trans("{$this->langBaseKey}.create_title"),
             'list'  => $this->getList(),
-        ]));
+        ]);
+
+        return view($this->views['index'], $viewData);
     }
 
     /**
      * Affiche le formulaire d'édition d'un enregistrement.
      *
      * @param  mixed $id
-     * @return Response
+     * @return View
      */
     public function edit($id)
     {
-        if (!$this->options['editable']) abort(404);
+        if (!$this->options['editable']) {
+            abort(404);
+        }
 
         $record = $this->model->findOrFail($id);
 
-        return view($this->views['index'], array_merge($this->compactAttributes(),
-        [
+        $viewData = array_merge($this->compactAttributes(), [
             'title'  => trans("{$this->langBaseKey}.edit_title"),
             'list'   => $this->getList(),
             'record' => $record,
-        ]));
+        ]);
+
+        return view($this->views['index'], $viewData);
     }
 
     /**
@@ -140,14 +147,20 @@ class {{name}} extends BaseController
      */
     public function store(StoreRequest $request)
     {
-        if (!$this->options['creatable']) abort(404);
+        if (!$this->options['creatable']) {
+            abort(404);
+        }
 
         $data = [
             'libelle' => $request->input('libelle')
         ];
-        if ($this->options['sortable']) {
-            $data['ordre'] = $this->model->max('ordre') + 1;
+
+        // On tente de renseigner l'ordre...
+        try {
+            $ordre = $this->model->max('ordre');
+            $data['ordre'] = $ordre + 1;
         }
+        catch (Exception $e) {}
 
         $this->model->create($data);
 
@@ -165,7 +178,9 @@ class {{name}} extends BaseController
      */
     public function update($id, UpdateRequest $request)
     {
-        if (!$this->options['editable']) abort(404);
+        if (!$this->options['editable']) {
+            abort(404);
+        }
 
         $this->model->findOrFail($id)->update([
             'libelle' => $request->input('libelle')
@@ -185,7 +200,9 @@ class {{name}} extends BaseController
      */
     public function updateContent($id, UpdateContentRequest $request)
     {
-        if (!$this->options['contentEditable']) abort(404);
+        if (!$this->options['contentEditable']) {
+            abort(404);
+        }
 
         $this->model->findOrFail($id)->update([
             'libelle' => $request->input('content')
@@ -205,7 +222,9 @@ class {{name}} extends BaseController
      */
     public function enable($id)
     {
-        if (!$this->options['activatable']) abort(404);
+        if (!$this->options['activatable']) {
+            abort(404);
+        }
 
         $this->model->findOrFail($id)->update(['actif' => 1]);
 
@@ -222,7 +241,9 @@ class {{name}} extends BaseController
      */
     public function disable($id)
     {
-        if (!$this->options['activatable']) abort(404);
+        if (!$this->options['activatable']) {
+            abort(404);
+        }
 
         $this->model->findOrFail($id)->update(['actif' => 0]);
 
@@ -239,8 +260,6 @@ class {{name}} extends BaseController
      */
     public function sort(Request $request)
     {
-        if (!$this->options['sortable']) abort(404);
-
         $sort = array_map('intval', $request->input('sort', []));
 
         DB::transaction(function() use ($sort)
@@ -263,7 +282,9 @@ class {{name}} extends BaseController
      */
     public function destroy($id)
     {
-        if (!$this->options['destroyable']) abort(404);
+        if (!$this->options['destroyable']) {
+            abort(404);
+        }
 
         try {
             $this->model->destroy($id);
@@ -288,10 +309,12 @@ class {{name}} extends BaseController
      */
     protected function getList()
     {
-        if ($this->options['sortable']) {
+        // S'il y a un champ "ordre", on retourne toutes la liste ordonnée selon ce champ
+        if ($first = $this->model->first() && $first->ordre) {
             return $this->model->orderBy('ordre')->get();
         }
 
+        // Sinon, on retourne une liste paginée
         return $this->model->paginate();
     }
 

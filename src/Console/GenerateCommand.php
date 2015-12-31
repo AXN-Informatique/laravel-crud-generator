@@ -2,7 +2,7 @@
 
 namespace Axn\CrudGenerator\Console;
 
-use Exception;
+use ReflectionClass, Exception;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,8 +32,13 @@ class GenerateCommand extends Command
     public function handle()
     {
         // Arguments
-        $section     = $this->argument('section');
-        $modelClass  = $this->argument('model');
+        $section    = $this->argument('section');
+        $modelClass = $this->argument('model');
+
+        if (!$this->isValidModel($modelClass)) {
+            $this->error("$modelClass is not instantiable or is not an instance of Illuminate\Database\Eloquent\Model");
+            return;
+        }
 
         // Options
         $stubsGroup  = $this->option('stubs');
@@ -41,24 +46,31 @@ class GenerateCommand extends Command
         $viewsDir    = $this->option('viewsdir');
         $breadcrumbs = $this->option('breadcrumbs');
 
-        // Questions
-        $singular    = $this->fixEncoding($this->ask('Singular name of the section (fr)'));
-        $plural      = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
-        $feminine    = $this->confirm('Feminine? [y|n]', false);
+        $generator = new Generator($section, $modelClass, $stubsGroup, $langDir, $viewsDir);
+
+        // Questions, si nécessaire
+        if ($generator->shouldGenerateLang()) {
+            $singular = $this->fixEncoding($this->ask('Singular name of the section (fr)'));
+            $plural   = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
+            $feminine = $this->confirm('Feminine? [y|n]', false);
+        }
+        elseif ($breadcrumbs) {
+            $plural   = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
+        }
 
         try {
-            $generator = new Generator($section, $modelClass, $stubsGroup, $langDir, $viewsDir);
-
-            if ($generator->generateController()) {
-                $this->line("Controller generated");
+            if ($generatedFile = $generator->generateController()) {
+                $this->line("Controller generated in $generatedFile");
             }
 
-            if ($generator->generateRoutes()) {
-                $this->line("Routes file generated");
+            if ($generatedFile = $generator->generateRoutes()) {
+                $this->line("Routes generated in $generatedFile");
             }
 
-            if ($generator->generateLang($singular, $plural, $feminine)) {
-                $this->line("Lang file (fr) generated");
+            if ($generator->shouldGenerateLang()) {
+                if ($generatedFile = $generator->generateLang($singular, $plural, $feminine)) {
+                    $this->line("French translations generated in $generatedFile");
+                }
             }
 
             if ($generator->generateRequest('store')) {
@@ -85,6 +97,21 @@ class GenerateCommand extends Command
             $this->error('Exception catched: '.$e->getMessage());
             $this->line($e->getTraceAsString());
         }
+    }
+
+    /**
+     * Indique si la classe modèle est bien instanciable et est bien une instance
+     * de Illuminate\Database\Eloquent\Model.
+     *
+     * @param  string $modelClass
+     * @return void
+     */
+    protected function isValidModel($modelClass)
+    {
+        $rc = new ReflectionClass($modelClass);
+
+        return $rc->isInstantiable()
+               && $rc->isSubclassOf('Illuminate\Database\Eloquent\Model');
     }
 
     /**
