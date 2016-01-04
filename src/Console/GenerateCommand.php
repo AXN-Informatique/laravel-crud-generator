@@ -2,7 +2,7 @@
 
 namespace Axn\CrudGenerator\Console;
 
-use ReflectionClass, Exception;
+use ReflectionClass, ReflectionException, Exception;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -60,33 +60,33 @@ class GenerateCommand extends Command
 
         try {
             if ($generatedFile = $generator->generateController()) {
-                $this->line("Controller generated in $generatedFile");
+                $this->line('<info>Controller generated:</info> '.realpath($generatedFile));
             }
 
             if ($generatedFile = $generator->generateRoutes()) {
-                $this->line("Routes generated in $generatedFile");
+                $this->line('<info>Routes generated:</info> '.realpath($generatedFile));
             }
 
             if ($generator->shouldGenerateLang()) {
                 if ($generatedFile = $generator->generateLang($singular, $plural, $feminine)) {
-                    $this->line("French translations generated in $generatedFile");
+                    $this->line('<info>Translations generated:</info> '.realpath($generatedFile));
                 }
             }
 
             foreach ($generator->getStubsNamesInDirectory('requests') as $requestName) {
                 if ($generatedFile = $generator->generateRequest($requestName)) {
-                    $this->line("Request $requestName generated in $generatedFile");
+                    $this->line('<info>Request generated:</info> '.realpath($generatedFile));
                 }
             }
 
             foreach ($generator->getStubsNamesInDirectory('views') as $viewName) {
                 if ($generatedFile = $generator->generateView($viewName)) {
-                    $this->line("View $viewName generated in $generatedFile");
+                    $this->line('<info>View generated:</info> '.realpath($generatedFile));
                 }
             }
 
-            if ($breadcrumbs && $generator->appendBreadcrumbs($plural)) {
-                $this->line("Breadcrumbs appended to breadcrumbs file");
+            if ($breadcrumbs && ($breadcrumbsFile = $generator->appendBreadcrumbs($plural))) {
+                $this->line('<info>Breadcrumbs appended to:</info> '.realpath($breadcrumbsFile));
             }
         }
         catch (Exception $e) {
@@ -100,14 +100,19 @@ class GenerateCommand extends Command
      * de Illuminate\Database\Eloquent\Model.
      *
      * @param  string $modelClass
-     * @return void
+     * @return boolean
      */
     protected function isValidModel($modelClass)
     {
-        $rc = new ReflectionClass($modelClass);
+        try {
+            $rc = new ReflectionClass($modelClass);
 
-        return $rc->isInstantiable()
-               && $rc->isSubclassOf('Illuminate\Database\Eloquent\Model');
+            return $rc->isInstantiable()
+                && $rc->isSubclassOf('Illuminate\Database\Eloquent\Model');
+        }
+        catch (ReflectionException $e) {
+            return false;
+        }
     }
 
     /**

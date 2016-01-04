@@ -189,23 +189,23 @@ class Generator
      * Génère le fichier d'une requête.
      *
      * @param  string $name
-     * @return boolean
+     * @return string
      */
     public function generateRequest($name)
     {
         if (!$content = $this->getRequestContent($name)) {
-            return false;
+            return '';
         }
 
         $path = app_path('Http/Requests/'.implode('/', $this->sectionSegmentsStudly).'/'.studly_case($name).'.php');
 
         if (is_file($path)) {
-            return false;
+            return '';
         }
 
         $this->createMissingDirs($path);
 
-        return file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false ? $path : '';
     }
 
     /**
@@ -217,7 +217,7 @@ class Generator
     public function generateView($name)
     {
         if (!$content = $this->getViewContent($name)) {
-            return false;
+            return '';
         }
 
         $sectionSegments = $this->sectionSegments;
@@ -229,29 +229,29 @@ class Generator
         $path = base_path('resources/views/'.implode('/', $sectionSegments).'/'.$name.'.php');
 
         if (is_file($path)) {
-            return false;
+            return '';
         }
 
         $this->createMissingDirs($path);
 
-        return file_put_contents($path, $content) !== false;
+        return file_put_contents($path, $content) !== false ? $path : '';
     }
 
     /**
      * Ajoute les breadcrumbs au fichier de breadcrumbs app/Http/breadcrumbs.php
      *
      * @param  string $title
-     * @return boolean
+     * @return string
      */
     public function appendBreadcrumbs($title)
     {
         if (!$content = $this->getBreadcrumbsContent($title)) {
-            return false;
+            return '';
         }
 
         $path = app_path('Http/breadcrumbs.php');
 
-        return file_put_contents($path, $content, FILE_APPEND) !== false;
+        return file_put_contents($path, $content, FILE_APPEND) !== false ? $path : '';
     }
 
     // ------------------------------------------------------------------------
