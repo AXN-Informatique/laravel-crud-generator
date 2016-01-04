@@ -73,20 +73,16 @@ class GenerateCommand extends Command
                 }
             }
 
-            if ($generator->generateRequest('store')) {
-                $this->line("Store request generated");
+            foreach ($generator->getStubsNamesInDirectory('requests') as $requestName) {
+                if ($generatedFile = $generator->generateRequest($requestName)) {
+                    $this->line("Request $requestName generated in $generatedFile");
+                }
             }
 
-            if ($generator->generateRequest('update')) {
-                $this->line("Update request generated");
-            }
-
-            if ($generator->generateRequest('updateContent')) {
-                $this->line("Update content request generated");
-            }
-
-            if ($generator->copyViews($this->laravel['files'])) {
-                $this->line("Views copied");
+            foreach ($generator->getStubsNamesInDirectory('views') as $viewName) {
+                if ($generatedFile = $generator->generateView($viewName)) {
+                    $this->line("View $viewName generated in $generatedFile");
+                }
             }
 
             if ($breadcrumbs && $generator->appendBreadcrumbs($plural)) {

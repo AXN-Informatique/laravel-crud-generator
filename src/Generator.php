@@ -2,8 +2,6 @@
 
 namespace Axn\CrudGenerator;
 
-use Illuminate\Filesystem\Filesystem;
-
 class Generator
 {
     /**
@@ -96,17 +94,44 @@ class Generator
     }
 
     /**
+     * Retourne les noms de tous les templates contenus dans un répertoire.
+     *
+     * @return array
+     */
+    public function getStubsNamesInDirectory($directoryName)
+    {
+        if (!$path = $this->getStubDirPath($directoryName)) {
+            return [];
+        }
+
+        return array_map(
+            function($file) {
+                return basename($file, '.stub');
+            },
+            glob("$path/*.stub")
+        );
+    }
+
+    // ------------------------------------------------------------------------
+    // GENERATE
+    // ------------------------------------------------------------------------
+
+    /**
      * Génère le fichier du contrôleur.
      *
      * @return string
      */
     public function generateController()
     {
-        if (!$content = $this->getControllerContent()) return '';
+        if (!$content = $this->getControllerContent()) {
+            return '';
+        }
 
         $path = app_path('Http/Controllers/'.implode('/', $this->sectionSegmentsStudly).'Controller.php');
 
-        if (is_file($path)) return '';
+        if (is_file($path)) {
+            return '';
+        }
 
         $this->createMissingDirs($path);
 
@@ -120,11 +145,15 @@ class Generator
      */
     public function generateRoutes()
     {
-        if (!$content = $this->getRoutesContent()) return '';
+        if (!$content = $this->getRoutesContent()) {
+            return '';
+        }
 
         $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
 
-        if (is_file($path)) return '';
+        if (is_file($path)) {
+            return '';
+        }
 
         $this->createMissingDirs($path);
 
@@ -141,11 +170,15 @@ class Generator
      */
     public function generateLang($singular, $plural, $feminine)
     {
-        if (!$content = $this->getLangContent($singular, $plural, $feminine)) return '';
+        if (!$content = $this->getLangContent($singular, $plural, $feminine)) {
+            return '';
+        }
 
         $path = $this->getLangPath();
 
-        if (is_file($path)) return '';
+        if (is_file($path)) {
+            return '';
+        }
 
         $this->createMissingDirs($path);
 
@@ -160,11 +193,15 @@ class Generator
      */
     public function generateRequest($name)
     {
-        if (!$content = $this->getRequestContent($name)) return false;
+        if (!$content = $this->getRequestContent($name)) {
+            return false;
+        }
 
-        $path = app_path('Http/Requests/'.implode('/', $this->sectionSegmentsStudly).'/'.studly_case($name).'Request.php');
+        $path = app_path('Http/Requests/'.implode('/', $this->sectionSegmentsStudly).'/'.studly_case($name).'.php');
 
-        if (is_file($path)) return false;
+        if (is_file($path)) {
+            return false;
+        }
 
         $this->createMissingDirs($path);
 
@@ -172,17 +209,15 @@ class Generator
     }
 
     /**
-     * Copie l'ensemble des vues du répertoire "views" vers la destination.
+     * Génère le fichier d'une vue.
      *
-     * @param  Filesystem $fs
+     * @param  string $name
      * @return boolean
      */
-    public function copyViews(Filesystem $fs)
+    public function generateView($name)
     {
-        if (!is_dir($src = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/views/"))) {
-            if ($this->stubsGroup !== 'default') return false;
-
-            $src = __DIR__."/../resources/stubs/default/views/";
+        if (!$content = $this->getViewContent($name)) {
+            return false;
         }
 
         $sectionSegments = $this->sectionSegments;
@@ -191,11 +226,15 @@ class Generator
             array_unshift($sectionSegments, $this->viewsDir);
         }
 
-        $dest = base_path('resources/views/'.implode('/', $sectionSegments).'/');
+        $path = base_path('resources/views/'.implode('/', $sectionSegments).'/'.$name.'.php');
 
-        if (is_dir($dest)) return false;
+        if (is_file($path)) {
+            return false;
+        }
 
-        return $fs->copyDirectory($src, $dest);
+        $this->createMissingDirs($path);
+
+        return file_put_contents($path, $content) !== false;
     }
 
     /**
@@ -206,12 +245,18 @@ class Generator
      */
     public function appendBreadcrumbs($title)
     {
-        if (!$content = $this->getBreadcrumbsContent($title)) return false;
+        if (!$content = $this->getBreadcrumbsContent($title)) {
+            return false;
+        }
 
         $path = app_path('Http/breadcrumbs.php');
 
         return file_put_contents($path, $content, FILE_APPEND) !== false;
     }
+
+    // ------------------------------------------------------------------------
+    // GET CONTENTS
+    // ------------------------------------------------------------------------
 
     /**
      * Retourne le contenu généré pour le contrôleur.
@@ -220,28 +265,25 @@ class Generator
      */
     protected function getControllerContent()
     {
-        if (!$stub = $this->getControllerStub()) return '';
+        if (!$stub = $this->getControllerStub()) {
+            return '';
+        }
 
         $sectionSegmentsStudly = $this->sectionSegmentsStudly;
-        $name = array_pop($sectionSegmentsStudly).'Controller';
+
+        $name      = array_pop($sectionSegmentsStudly).'Controller';
         $namespace = $this->appNs.'\Http\Controllers';
-        $requestsNs = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
+        $requestNs = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
 
         if ($sectionSegmentsStudly) {
             $namespace .= '\\'.implode('\\', $sectionSegmentsStudly);
         }
 
-        return strtr($stub, [
-            '{{namespace}}'            => $namespace,
-            '{{name}}'                 => $name,
-            '{{routeBaseAlias}}'       => $this->section,
-            '{{langBaseKey}}'          => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
-            '{{viewBaseName}}'         => ($this->viewsDir ? $this->viewsDir.'.' : '').$this->section,
-            '{{model}}'                => $this->modelClass,
-            '{{storeRequest}}'         => $requestsNs.'\StoreRequest',
-            '{{updateRequest}}'        => $requestsNs.'\UpdateRequest',
-            '{{updateContentRequest}}' => $requestsNs.'\UpdateContentRequest',
-        ]);
+        return strtr($stub, array_merge($this->getCommonReplacements(), [
+            '{{namespace}}'        => $namespace,
+            '{{name}}'             => $name,
+            '{{requestNamespace}}' => $requestNs,
+        ]));
     }
 
     /**
@@ -251,13 +293,14 @@ class Generator
      */
     protected function getRoutesContent()
     {
-        if (!$stub = $this->getRoutesStub()) return '';
+        if (!$stub = $this->getRoutesStub()) {
+            return '';
+        }
 
-        return strtr($stub, [
+        return strtr($stub, array_merge($this->getCommonReplacements(), [
             '{{baseUrl}}'    => implode('/', $this->sectionSegments),
-            '{{baseAlias}}'  => $this->section,
             '{{controller}}' => implode('\\', $this->sectionSegmentsStudly).'Controller',
-        ]);
+        ]));
     }
 
     /**
@@ -268,13 +311,13 @@ class Generator
      */
     protected function getBreadcrumbsContent($title)
     {
-        if (!$stub = $this->getBreadcrumbsStub()) return '';
+        if (!$stub = $this->getBreadcrumbsStub()) {
+            return '';
+        }
 
-        return strtr($stub, [
-            '{{title}}'          => ucfirst($title),
-            '{{routeBaseAlias}}' => $this->section,
-            '{{langBaseKey}}'    => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
-        ]);
+        return strtr($stub, array_merge($this->getCommonReplacements(), [
+            '{{title}}' => ucfirst($title),
+        ]));
     }
 
     /**
@@ -287,7 +330,9 @@ class Generator
      */
     protected function getLangContent($singular, $plural, $feminine)
     {
-        if (!$stub = $this->getLangStub()) return '';
+        if (!$stub = $this->getLangStub()) {
+            return '';
+        }
 
         $lcfSingular     = lcfirst($singular);
         $lcfPlural       = lcfirst($plural);
@@ -325,14 +370,50 @@ class Generator
      */
     protected function getRequestContent($name)
     {
-        if (!$stub = $this->getRequestStub(camel_case($name))) return '';
+        if (!$stub = $this->getRequestStub($name)) {
+            return '';
+        }
 
         $namespace = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
 
-        return strtr($stub, [
+        return strtr($stub, array_merge($this->getCommonReplacements(), [
             '{{namespace}}' => $namespace,
-        ]);
+        ]));
     }
+
+    /**
+     * Retourne le contenu généré pour une vue.
+     *
+     * @param  string $name
+     * @return string
+     */
+    protected function getViewContent($name)
+    {
+        if (!$stub = $this->getViewStub($name)) {
+            return '';
+        }
+
+        return strtr($stub, $this->getCommonReplacements());
+    }
+
+    /**
+     * Retourne les remplacements communs à tous les templates (sauf traductions).
+     *
+     * @return array
+     */
+    protected function getCommonReplacements()
+    {
+        return [
+            '{{routeBaseAlias}}' => $this->section,
+            '{{langBaseKey}}'    => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
+            '{{viewBaseName}}'   => ($this->viewsDir ? $this->viewsDir.'.' : '').$this->section,
+            '{{modelClass}}'     => $this->modelClass,
+        ];
+    }
+
+    // ------------------------------------------------------------------------
+    // GET PATHS
+    // ------------------------------------------------------------------------
 
     /**
      * Retourne le contenu du template du contrôleur.
@@ -388,6 +469,17 @@ class Generator
     }
 
     /**
+     * Retourne le contenu du template d'une vue.
+     *
+     * @param  string $name
+     * @return string
+     */
+    protected function getViewStub($name)
+    {
+        return $this->getStub("views/$name");
+    }
+
+    /**
      * Retourne le contenu d'un template.
      *
      * @param  string $name
@@ -396,12 +488,33 @@ class Generator
     protected function getStub($name)
     {
         if (!is_file($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$name.stub"))) {
-            if ($this->stubsGroup !== 'default') return '';
+            if ($this->stubsGroup !== 'default') {
+                return '';
+            }
 
             $path = __DIR__."/../resources/stubs/default/$name.stub";
         }
 
         return file_get_contents($path);
+    }
+
+    /**
+     * Retourne le chemin complet vers un répertoire de remplates.
+     *
+     * @param  string $dirName
+     * @return string
+     */
+    protected function getStubDirPath($dirName)
+    {
+        if (!is_dir($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$dirName/"))) {
+            if ($this->stubsGroup !== 'default') {
+                return '';
+            }
+
+            $path = __DIR__."/../resources/stubs/default/$dirName/";
+        }
+
+        return $path;
     }
 
     /**
@@ -419,6 +532,10 @@ class Generator
 
         return base_path('resources/lang/fr/'.implode('/', $sectionSegments).'.php');
     }
+
+    // ------------------------------------------------------------------------
+    // HELPERS
+    // ------------------------------------------------------------------------
 
     /**
      * Crée les sous-dossiers d'un fichier si ceux-ci n'existent pas.

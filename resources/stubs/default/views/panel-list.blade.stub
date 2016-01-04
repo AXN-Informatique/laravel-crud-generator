@@ -5,7 +5,7 @@
         <p>{{ trans("{$langBaseKey}.list_empty") }}</p>
     </div>
 @else
-    <?php $sortable = $list->first()->ordre && empty($record); ?>
+    <?php $sortable = ($list->first()->ordre && empty($record)); ?>
 
     <ul class="list-group {!! $sortable ? 'sortable' : '' !!}">
 

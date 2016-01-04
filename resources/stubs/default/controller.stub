@@ -9,10 +9,10 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\Paginator;
-use {{model}} as Model;
-use {{storeRequest}};
-use {{updateRequest}};
-use {{updateContentRequest}};
+use {{modelClass}} as Model;
+use {{requestNamespace}}\StoreRequest;
+use {{requestNamespace}}\UpdateRequest;
+use {{requestNamespace}}\UpdateContentRequest;
 use DB, Notifier;
 
 class {{name}} extends BaseController
@@ -310,7 +310,7 @@ class {{name}} extends BaseController
     protected function getList()
     {
         // S'il y a un champ "ordre", on retourne toutes la liste ordonnée selon ce champ
-        if ($first = $this->model->first() && $first->ordre) {
+        if (($first = $this->model->first()) && $first->ordre) {
             return $this->model->orderBy('ordre')->get();
         }
 

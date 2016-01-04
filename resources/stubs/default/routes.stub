@@ -5,7 +5,7 @@ Route::group([
     'middleware' => 'auth'
 ], function()
 {
-    $baseAlias  = '{{baseAlias}}';
+    $baseAlias  = '{{routeBaseAlias}}';
     $controller = '{{controller}}';
 
     // Liste des enregistrements
