@@ -120,7 +120,7 @@ foreach (File::allFiles(__DIR__.'/routes') as $file) {
 
 ### Options dans le contrôleur
 
-Les fichiers générés peuvent être modifiés au besoin, mais des options sont disponibles
+Les fichiers générés peuvent être modifiés au besoin, mais des options sont proposées
 dans le contrôleur (attribut `$options`) pour personnaliser rapidement la section
 sans avoir à toucher au code :
 
@@ -128,7 +128,6 @@ sans avoir à toucher au code :
 - **editable** : Pour afficher le bouton de modification (qui amène au formulaire) dans la liste et autoriser la modification.
 - **contentEditable** : Pour autoriser l'édition à la volée du libellé d'un enregistrement directement depuis la liste.
 - **activatable** : Pour afficher le bouton actif/inactif dans la liste et autoriser l'activation/désactivation.
-- **sortable** : Pour autoriser le réordonnement manuel des enregistrements dans la liste.
 - **destroyable** : Pour afficher le bouton de suppression dans la liste et autoriser la suppression.
 
 ### Groupes de templates
