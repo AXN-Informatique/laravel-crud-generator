@@ -1,6 +1,6 @@
 # Changelog for Laravel Crud Generator
 
-## 2.0.0-dev
+## 2.0.0 (2016-01-05)
 
 - Questions posées uniquement si besoin.
 - Vérification de la validité du modèle avant de poser les questions.
