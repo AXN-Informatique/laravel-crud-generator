@@ -1,5 +1,9 @@
 # Changelog for Laravel Crud Generator
 
+## 2.0.1 (2016-01-07)
+
+- complétion du fichier composer.json
+
 ## 2.0.0 (2016-01-05)
 
 - Questions posées uniquement si besoin.
