@@ -1,11 +1,13 @@
 {
-    "name": "axn/laravel-crud-generator",
-    "require": {
-        "illuminate/support": "^5.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Axn\\CrudGenerator\\": "src/"
-        }
-    }
+	"name" : "axn/laravel-crud-generator",
+	"require" : {
+		"illuminate/support" : "^5.0"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Axn\\CrudGenerator\\" : "src/"
+		}
+	},
+	"homepage" : "https://bitbucket.org/axn/laravel-crud-generator",
+	"description" : "Génération des écrans de CRUD."
 }
