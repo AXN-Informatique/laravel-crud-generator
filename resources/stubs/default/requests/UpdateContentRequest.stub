@@ -11,22 +11,6 @@ class UpdateContentRequest extends FormRequest
     use FilterableFormRequest;
 
     /**
-     * @var Model
-     */
-    protected $model;
-
-    /**
-     * Constructeur.
-     *
-     * @param  Model $model
-     * @return void
-     */
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
-    }
-
-    /**
      * Filtres à appliquer sur les données.
      *
      * @var array
@@ -45,11 +29,11 @@ class UpdateContentRequest extends FormRequest
      */
     public function rules()
     {
-        $table = $this->model->getTable();
+        $table = (new Model)->getTable();
         $id = $this->route('id');
 
         return [
-            'content' => 'required|max:1000|unique:'.$table.',libelle,'.$id,
+            'content' => 'required|max:100|unique:'.$table.',libelle,'.$id,
         ];
     }
 

@@ -1,5 +1,9 @@
 # Changelog for Laravel Crud Generator
 
+## 2.0.3 (2016-01-12)
+
+- Revert injection modèle dans requests (problématique).
+
 ## 2.0.2 (2016-01-12)
 
 - Injection du modèle dans les requests.

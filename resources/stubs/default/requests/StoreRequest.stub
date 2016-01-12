@@ -11,22 +11,6 @@ class StoreRequest extends FormRequest
     use FilterableFormRequest;
 
     /**
-     * @var Model
-     */
-    protected $model;
-
-    /**
-     * Constructeur.
-     *
-     * @param  Model $model
-     * @return void
-     */
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
-    }
-
-    /**
      * Filtres à appliquer sur les données.
      *
      * @var array
@@ -45,7 +29,7 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-        $table = $this->model->getTable();
+        $table = (new Model)->getTable();
 
         return [
             'libelle' => 'required|max:100|unique:'.$table.',libelle',
