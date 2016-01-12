@@ -4,8 +4,8 @@
 
 @section('content')
     <p>
-        <a href="{!! route("{$routeBaseAlias}.create") !!}" class="btn btn-success">
-            <i class="fa fa-user-plus"></i> {{ trans("{$langBaseKey}.add") }}
+        <a href="{!! route($routeBaseAlias.'.create') !!}" class="btn btn-success">
+            <i class="fa fa-user-plus"></i> {{ trans("{$langBaseKey}.create_button") }}
         </a>
     </p>
 

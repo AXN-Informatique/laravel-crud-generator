@@ -3,29 +3,20 @@
 ])
 
 @section('content')
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ trans("{$langBaseKey}.create_form_title") }}</h3>
+    {!! Form::open(['route' => "{$routeBaseAlias}.store"]) !!}
+        <div class="form-group">
+            {!! Form::label('libelle', "Intitulé") !!}
+            {!! Form::text('libelle', old('libelle'), ['class' => 'form-control']) !!}
         </div>
-        <div class="panel-body">
 
-            {!! Form::open(['route' => "{$routeBaseAlias}.store"]) !!}
-                <div class="form-group">
-                    {!! Form::label('libelle', "Intitulé") !!}
-                    {!! Form::text('libelle', old('libelle'), ['class' => 'form-control']) !!}
-                </div>
-
-                <div class="form-group">
-                    {!! Form::button(
-                        '<i class="fa fa-plus"></i> '.trans("{$langBaseKey}.create_form_submit"),
-                        ['type' => 'submit', 'class' => 'btn btn-success']
-                    ) !!}
-                    <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default">
-                        <i class="fa fa-undo"></i> {{ trans("{$langBaseKey}.back_to_list") }}
-                    </a>
-                </div>
-            {!! Form::close() !!}
-
+        <div class="form-group">
+            {!! Form::button(
+                '<i class="fa fa-plus"></i> '.trans("{$langBaseKey}.create_form_submit"),
+                ['type' => 'submit', 'class' => 'btn btn-success']
+            ) !!}
+            <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default">
+                <i class="fa fa-undo"></i> {{ trans("{$langBaseKey}.back_to_list") }}
+            </a>
         </div>
-    </div>
+    {!! Form::close() !!}
 @endsection

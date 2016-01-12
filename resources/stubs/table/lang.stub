@@ -23,12 +23,10 @@ return [
 
     // Formulaire d'ajout
     'create_title'       => "{{createTitle}}",
-    'create_form_title'  => "Nouveau",
     'create_form_submit' => "Ajouter",
 
     // Formulaire d'édition
     'edit_title'         => "{{editTitle}}",
-    'edit_form_title'    => "Modification",
     'edit_form_submit'   => "Mettre à jour",
 
     'back_to_list'       => "Retour à la liste",
