@@ -142,8 +142,8 @@ class GenerateCommand extends Command
 	protected function getArguments()
 	{
 		return [
-			['section', InputArgument::REQUIRED, 'Section name'],
-            ['model', InputArgument::REQUIRED, 'Model class name (with namespace)'],
+			['section', InputArgument::REQUIRED, 'Section name.'],
+            ['model', InputArgument::REQUIRED, 'Model class name (with namespace).'],
 		];
 	}
 
@@ -155,10 +155,10 @@ class GenerateCommand extends Command
 	protected function getOptions()
 	{
 		return [
-            ['stubs', null, InputOption::VALUE_OPTIONAL, 'Stubs group to use', 'default'],
-            ['langdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for lang file', ''],
-            ['viewsdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for views files', ''],
-            ['breadcrumbs', 'b', InputOption::VALUE_NONE, 'Append breadcrumbs to breadcrumbs file'],
+            ['stubs', null, InputOption::VALUE_OPTIONAL, 'Stubs group to use.', 'default'],
+            ['langdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for lang file.', ''],
+            ['viewsdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for views files.', ''],
+            ['breadcrumbs', 'b', InputOption::VALUE_NONE, 'Append breadcrumbs to breadcrumbs file.'],
 		];
 	}
 }

@@ -1,5 +1,10 @@
 # Changelog for Laravel Crud Generator
 
+## 2.0.2-dev
+
+- Injection du modèle dans les requests.
+- Ajout de la règle de validation d'unicité du libellé dans les requests.
+
 ## 2.0.0 (2016-01-05)
 
 - Questions posées uniquement si besoin.

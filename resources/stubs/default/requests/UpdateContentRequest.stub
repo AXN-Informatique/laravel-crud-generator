@@ -4,10 +4,27 @@ namespace {{namespace}};
 
 use Illuminate\Foundation\Http\FormRequest;
 use Axn\RequestFilters\FilterableFormRequest;
+use {{modelClass}} as Model;
 
 class UpdateContentRequest extends FormRequest
 {
     use FilterableFormRequest;
+
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * Constructeur.
+     *
+     * @param  Model $model
+     * @return void
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
 
     /**
      * Filtres à appliquer sur les données.
@@ -28,8 +45,11 @@ class UpdateContentRequest extends FormRequest
      */
     public function rules()
     {
+        $table = $this->model->getTable();
+        $id = $this->route('id');
+
         return [
-            'content' => 'required|max:100',
+            'content' => 'required|max:1000|unique:'.$table.',libelle,'.$id,
         ];
     }
 
@@ -42,7 +62,8 @@ class UpdateContentRequest extends FormRequest
     {
         return [
             'content.required' => "Vous ne pouvez saisir un texte vide.",
-            'content.max'      => "Vous ne pouvez saisir plus de 100 caractères."
+            'content.max'      => "Vous ne pouvez saisir plus de 100 caractères.",
+            'content.unique'   => "Ce libellé est déjà utilisé."
         ];
     }
 

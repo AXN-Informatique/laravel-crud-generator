@@ -4,10 +4,27 @@ namespace {{namespace}};
 
 use Illuminate\Foundation\Http\FormRequest;
 use Axn\RequestFilters\FilterableFormRequest;
+use {{modelClass}} as Model;
 
 class StoreRequest extends FormRequest
 {
     use FilterableFormRequest;
+
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * Constructeur.
+     *
+     * @param  Model $model
+     * @return void
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
 
     /**
      * Filtres à appliquer sur les données.
@@ -28,8 +45,10 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
+        $table = $this->model->getTable();
+
         return [
-            'libelle' => 'required|max:100',
+            'libelle' => 'required|max:100|unique:'.$table.',libelle',
         ];
     }
 
