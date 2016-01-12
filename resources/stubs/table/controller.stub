@@ -1,0 +1,170 @@
+<?php
+
+namespace {{namespace}};
+
+use Exception;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
+use {{modelClass}} as Model;
+use {{requestNamespace}}\StoreRequest;
+use {{requestNamespace}}\UpdateRequest;
+use DB, Notifier;
+
+class {{name}} extends BaseController
+{
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * Base des alias des routes nommées.
+     * Exemple : route("{$this->routeBaseAlias}.edit");
+     *
+     * @var string
+     */
+    protected $routeBaseAlias = '{{routeBaseAlias}}';
+
+    /**
+     * Base des clés des traductions.
+     * Exemple : trans("{$this->langBaseKey}.store_success");
+     *
+     * @var string
+     */
+    protected $langBaseKey = '{{langBaseKey}}';
+
+    /**
+     * Constructeur.
+     *
+     * @param  Model $model
+     * @return void
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
+    // ------------------------------------------------------------------------
+    // ACTIONS
+    // ------------------------------------------------------------------------
+
+    /**
+     * Affiche la liste des enregistrements et le formulaire d'ajout.
+     *
+     * @return View
+     */
+    public function index()
+    {
+        $viewData = array_merge($this->compactAttributes(), [
+            'title' => trans("{$this->langBaseKey}.list_title"),
+            'list'  => $this->model->paginate(),
+        ]);
+
+        return view('{{viewBaseName}}.index', $viewData);
+    }
+
+    /**
+     * Affiche le formulaire de création d'un enregistrement.
+     *
+     * @return View
+     */
+    public function create()
+    {
+        $viewData = array_merge($this->compactAttributes(), [
+            'title' => trans("{$this->langBaseKey}.create_title"),
+        ]);
+
+        return view('{{viewBaseName}}.create', $viewData);
+    }
+
+    /**
+     * Affiche le formulaire d'édition d'un enregistrement.
+     *
+     * @param  mixed $id
+     * @return View
+     */
+    public function edit($id)
+    {
+        $record = $this->model->findOrFail($id);
+
+        $viewData = array_merge($this->compactAttributes(), [
+            'title'  => trans("{$this->langBaseKey}.edit_title"),
+            'record' => $record,
+        ]);
+
+        return view('{{viewBaseName}}.edit', $viewData);
+    }
+
+    /**
+     * Ajoute un nouvel enregistrement.
+     *
+     * @param  StoreRequest $request
+     * @return Response
+     */
+    public function store(StoreRequest $request)
+    {
+        $this->model->create([
+            'libelle' => $request->input('libelle')
+        ]);
+
+        Notifier::success( trans("{$this->langBaseKey}.store_success") );
+
+        return back();
+    }
+
+    /**
+     * Modifie un enregistrement existant.
+     *
+     * @param  mixed         $id
+     * @param  UpdateRequest $request
+     * @return Response
+     */
+    public function update($id, UpdateRequest $request)
+    {
+        $this->model->findOrFail($id)->update([
+            'libelle' => $request->input('libelle')
+        ]);
+
+        Notifier::success( trans("{$this->langBaseKey}.update_success") );
+
+        return back();
+    }
+
+    /**
+     * Supprime un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        try {
+            $this->model->destroy($id);
+        }
+        catch (Exception $e) {
+            return back()->withErrors( trans("{$this->langBaseKey}.destroy_failure") );
+        }
+
+        Notifier::success( trans("{$this->langBaseKey}.destroy_success") );
+
+        return back();
+    }
+
+    // ------------------------------------------------------------------------
+    // HELPERS
+    // ------------------------------------------------------------------------
+
+    /**
+     * Compacte les valeurs des attributs pour les passer aux vues.
+     *
+     * @return array
+     */
+    protected function compactAttributes()
+    {
+        return [
+            'routeBaseAlias' => $this->routeBaseAlias,
+            'langBaseKey'    => $this->langBaseKey
+        ];
+    }
+}

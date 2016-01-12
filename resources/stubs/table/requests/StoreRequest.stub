@@ -1,0 +1,48 @@
+<?php
+
+namespace {{namespace}};
+
+use Illuminate\Foundation\Http\FormRequest;
+use Axn\RequestFilters\FilterableFormRequest;
+use {{modelClass}} as Model;
+
+class StoreRequest extends FormRequest
+{
+    use FilterableFormRequest;
+
+    /**
+     * Filtres à appliquer sur les données.
+     *
+     * @var array
+     */
+    public function filters()
+    {
+        return [
+            'libelle' => 'trim|stripped',
+        ];
+    }
+
+    /**
+     * Règles de validation des données.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        $table = (new Model)->getTable();
+
+        return [
+            'libelle' => 'required|max:100|unique:'.$table.',libelle',
+        ];
+    }
+
+    /**
+     * Autorisation de la requête.
+     *
+     * @return boolean
+     */
+    public function authorize()
+    {
+        return true;
+    }
+}

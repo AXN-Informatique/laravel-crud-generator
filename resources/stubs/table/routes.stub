@@ -1,0 +1,46 @@
+<?php
+
+Route::group([
+    'prefix'     => '{{baseUrl}}',
+    'middleware' => 'auth'
+], function()
+{
+    $baseAlias  = '{{routeBaseAlias}}';
+    $controller = '{{controller}}';
+
+    // Liste des enregistrements
+    get('/', [
+        'as'   => "$baseAlias.index",
+        'uses' => "$controller@index"
+    ]);
+
+    // Formulaire d'ajout
+    get('create', [
+        'as'   => "$baseAlias.create",
+        'uses' => "$controller@create"
+    ]);
+
+    // Formulaire d'édition
+    get('{id}/edit', [
+        'as'   => "$baseAlias.edit",
+        'uses' => "$controller@edit"
+    ]);
+
+    // Ajout d'un enregistrement
+    post('/', [
+        'as'   => "$baseAlias.store",
+        'uses' => "$controller@store"
+    ]);
+
+    // Modification d'un enregistrement
+    put('{id}', [
+        'as'   => "$baseAlias.update",
+        'uses' => "$controller@update"
+    ]);
+
+    // Suppression d'un enregistrement
+    delete('{id}', [
+        'as'   => "$baseAlias.destroy",
+        'uses' => "$controller@destroy"
+    ]);
+});

@@ -1,0 +1,56 @@
+@extends('layouts.app', [
+    'title' => $title,
+])
+
+@section('content')
+    @if ($list->isEmpty())
+        <div class="well">
+            <p>{{ trans("{$langBaseKey}.list_empty") }}</p>
+        </div>
+    @else
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Libelle</th>
+                        <th scope="col" class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($list as $item)
+                        <tr>
+                            <td>{{ $item->libelle }}</td>
+                            <td>
+                                <div class="pull-right">
+                                    <a href="{!! route($routeBaseAlias.'.edit', ['id' => $item->id]) !!}"
+                                       class="btn btn-info btn-xs"
+                                       title="{{ trans("{$langBaseKey}.edit_tooltip", ['name' => $item->libelle]) }}"
+                                       data-toggle="tooltip">
+
+                                        <i class="fa fa-pencil"></i><span class="hidden-xs hidden-sm"> Modifier</span>
+                                    </a>
+
+                                    {!! Form::open(['route' => ["{$routeBaseAlias}.destroy", $item->id], 'method' => 'DELETE', 'class' => 'form-inline', 'style' => 'display:inline']) !!}
+                                        {!! Form::button('<i class="fa fa-trash"></i><span class="hidden-xs hidden-sm"> Supprimer</span>', [
+                                            'type'         => 'submit',
+                                            'class'        => 'btn btn-danger btn-xs',
+                                            'title'        => trans("{$langBaseKey}.destroy_tooltip", ['name' => $item->libelle]),
+                                            'data-confirm' => trans("{$langBaseKey}.destroy_confirm", ['name' => $item->libelle]),
+                                            'data-toggle'  => 'tooltip'
+                                        ]) !!}
+                                    {!! Form::close() !!}
+                                </div>
+                            </td>
+                        </li>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        @if ($list->hasPages())
+            <div class="pull-right">
+                {!! $list->render() !!}
+            </div>
+        @endif
+    @endif
+@endsection

@@ -1,5 +1,9 @@
 # Changelog for Laravel Crud Generator
 
+## 2.1.0-dev
+
+- Ajout des templates pour la présentation des listes en tableaux.
+
 ## 2.0.3 (2016-01-12)
 
 - Revert injection modèle dans requests (problématique).
