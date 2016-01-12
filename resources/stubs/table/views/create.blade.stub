@@ -20,6 +20,9 @@
                         '<i class="fa fa-plus"></i> '.trans("{$langBaseKey}.create_form_submit"),
                         ['type' => 'submit', 'class' => 'btn btn-success']
                     ) !!}
+                    <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default">
+                        <i class="fa fa-undo"></i> {{ trans("{$langBaseKey}.back_to_list") }}
+                    </a>
                 </div>
             {!! Form::close() !!}
 

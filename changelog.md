@@ -3,6 +3,7 @@
 ## 2.1.0-dev
 
 - Ajout des templates pour la présentation des listes en tableaux.
+- Ajout de la clé de remplacement {{createButton}} dans le template de langue.
 - Correction de la recherche du chemin d'un template ou d'un répertoire de templates.
 
 ## 2.0.3 (2016-01-12)

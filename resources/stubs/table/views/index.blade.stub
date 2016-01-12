@@ -3,6 +3,12 @@
 ])
 
 @section('content')
+    <p>
+        <a href="{!! route("{$routeBaseAlias}.create") !!}" class="btn btn-success">
+            <i class="fa fa-user-plus"></i> {{ trans("{$langBaseKey}.add") }}
+        </a>
+    </p>
+
     @if ($list->isEmpty())
         <div class="well">
             <p>{{ trans("{$langBaseKey}.list_empty") }}</p>
