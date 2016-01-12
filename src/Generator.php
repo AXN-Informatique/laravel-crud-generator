@@ -487,15 +487,15 @@ class Generator
      */
     protected function getStub($name)
     {
-        if (!is_file($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$name.stub"))) {
-            if ($this->stubsGroup !== 'default') {
-                return '';
-            }
-
-            $path = __DIR__."/../resources/stubs/default/$name.stub";
+        if (is_file($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$name.stub"))) {
+            return file_get_contents($path);
         }
 
-        return file_get_contents($path);
+        if (is_file($path = __DIR__."/../resources/stubs/{$this->stubsGroup}/$name.stub")) {
+            return file_get_contents($path);
+        }
+
+        return '';
     }
 
     /**
@@ -506,15 +506,15 @@ class Generator
      */
     protected function getStubDirPath($dirName)
     {
-        if (!is_dir($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$dirName/"))) {
-            if ($this->stubsGroup !== 'default') {
-                return '';
-            }
-
-            $path = __DIR__."/../resources/stubs/default/$dirName/";
+        if (is_dir($path = base_path("resources/stubs/vendor/crud-generator/{$this->stubsGroup}/$dirName/"))) {
+            return $path;
         }
 
-        return $path;
+        if (is_dir($path = __DIR__."/../resources/stubs/{$this->stubsGroup}/$dirName/")) {
+            return $path;
+        }
+
+        return '';
     }
 
     /**
