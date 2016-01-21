@@ -1,6 +1,6 @@
 # Changelog for Laravel Crud Generator
 
-## 2.1.0-dev
+## 2.1.0 (2016-01-21)
 
 - Ajout des templates pour la présentation des listes en tableaux.
 - Ajout de la clé de remplacement {{createButton}} dans le template de langue.
