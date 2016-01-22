@@ -1,5 +1,9 @@
 # Changelog for Laravel Crud Generator
 
+## 2.1.1-dev
+
+- Use Route facade instead of route helper functions in stubs
+
 ## 2.1.0 (2016-01-21)
 
 - Ajout des templates pour la présentation des listes en tableaux.

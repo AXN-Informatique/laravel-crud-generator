@@ -9,37 +9,37 @@ Route::group([
     $controller = '{{controller}}';
 
     // Liste des enregistrements
-    get('/', [
+    Route::get('/', [
         'as'   => "$baseAlias.index",
         'uses' => "$controller@index"
     ]);
 
     // Formulaire d'ajout
-    get('create', [
+    Route::get('create', [
         'as'   => "$baseAlias.create",
         'uses' => "$controller@create"
     ]);
 
     // Formulaire d'édition
-    get('{id}/edit', [
+    Route::get('{id}/edit', [
         'as'   => "$baseAlias.edit",
         'uses' => "$controller@edit"
     ]);
 
     // Ajout d'un enregistrement
-    post('/', [
+    Route::post('/', [
         'as'   => "$baseAlias.store",
         'uses' => "$controller@store"
     ]);
 
     // Modification d'un enregistrement
-    put('{id}', [
+    Route::put('{id}', [
         'as'   => "$baseAlias.update",
         'uses' => "$controller@update"
     ]);
 
     // Suppression d'un enregistrement
-    delete('{id}', [
+    Route::delete('{id}', [
         'as'   => "$baseAlias.destroy",
         'uses' => "$controller@destroy"
     ]);
