@@ -1,29 +1,38 @@
-# Changelog for Laravel Crud Generator
+Changelog for Laravel Crud Generator
+====================================
 
-## 2.1.1-dev
+2.2.0 (2016-03-22)
+------------------
 
+- Source code released with the MIT license
+- Added license file
 - Use Route facade instead of route helper functions in stubs
 
-## 2.1.0 (2016-01-21)
+2.1.0 (2016-01-21)
+------------------
 
 - Ajout des templates pour la présentation des listes en tableaux.
 - Ajout de la clé de remplacement {{createButton}} dans le template de langue.
 - Correction de la recherche du chemin d'un template ou d'un répertoire de templates.
 
-## 2.0.3 (2016-01-12)
+2.0.3 (2016-01-12)
+------------------
 
 - Revert injection modèle dans requests (problématique).
 
-## 2.0.2 (2016-01-12)
+2.0.2 (2016-01-12)
+------------------
 
 - Injection du modèle dans les requests.
 - Ajout de la règle de validation d'unicité du libellé dans les requests.
 
-## 2.0.1 (2016-01-07)
+2.0.1 (2016-01-07)
+------------------
 
 - Complétion du fichier composer.json
 
-## 2.0.0 (2016-01-05)
+2.0.0 (2016-01-05)
+------------------
 
 - Questions posées uniquement si besoin.
 - Vérification de la validité du modèle avant de poser les questions.
@@ -35,6 +44,7 @@
   peuvent être utilisées dans tous les templates (vues comprises).
 - Auto-détection de la présence du champ "ordre" à la place de l'option "sortable".
 
-## 1.0.0 (2015-12-23)
+1.0.0 (2015-12-23)
+------------------
 
 - First release.
