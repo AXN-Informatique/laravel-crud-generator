@@ -1,7 +1,17 @@
 {
     "name" : "axn/laravel-crud-generator",
-    "homepage" : "https://bitbucket.org/axn/laravel-crud-generator",
     "description" : "Génération des écrans de CRUD.",
+    "homepage" : "https://bitbucket.org/axn/laravel-crud-generator",
+    "support" : {
+        "issues" : "https://bitbucket.org/axn/laravel-crud-generator/issues?status=new&status=open"
+    },
+    "authors" : [{
+            "name" : "AXN Informatique",
+            "email" : "developpement@axn.fr"
+        }
+    ],
+    "license" : "MIT",
+    "minimum-stability" : "stable",
     "require" : {
         "illuminate/support" : "^5.0"
     },
