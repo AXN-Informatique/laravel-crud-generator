@@ -50,17 +50,17 @@ php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir] [
     le contrôleur, le fichier de routes et les requêtes. Par défaut : 'default'.
 
 * **--langdir :** Permet de spécifier un sous-répertoire dans lequel générer le fichier
-    des traductions. Ce sous-répertoire est ajouté entre le chemin de basedes traductions
-    en français (resources/lang/fr) et l'arborescence de la section. Par défaut : ''.
+    des traductions. Ce sous-répertoire est ajouté entre le chemin de base des traductions
+    en français (resources/lang/fr) et l'arborescence de la section. Par défaut : '' (vide).
 
 * **--viewsdir :** Permet de spécifier un sous-répertoire dans lequel générer les fichiers
     de vues. Ce sous-répertoire est ajouté entre le chemin de base des vues (resources/views/)
-    et l'arborescence de la section. Par défaut : ''.
+    et l'arborescence de la section. Par défaut : '' (vide).
 
 * **--breadcrumbs (ou -b) :** Si cette option est précisée, les breadcrumbs seront
     concaténés à la fin du fichier app/Http/breadcrumbs.php
 
-Des questions sont de plus posées pour générer les textes en français :
+D plus, des questions sont posées pour générer les textes en français :
 
 - L'intitulé de la section, au singulier. Ex : "statut de commande".
 - L'intitulé de la section, au pluriel. Ex : "statuts des commandes".
@@ -69,7 +69,7 @@ Des questions sont de plus posées pour générer les textes en français :
 *Exemple concret d'utilisation :*
 
 ```
-artisan crud:generate params.commande-statuts "App\Models\CommandeStatut" --viewsdir=modules
+php artisan crud:generate params.commande-statuts "App\Models\CommandeStatut" --viewsdir=modules
 ```
 
 ...qui génère les fichiers suivants :
