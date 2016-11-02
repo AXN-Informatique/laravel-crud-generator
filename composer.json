@@ -1,9 +1,9 @@
 {
     "name" : "axn/laravel-crud-generator",
-    "description" : "Génération des écrans de CRUD.",
-    "homepage" : "https://bitbucket.org/axn/laravel-crud-generator",
+    "description" : " Generate CRUD in Laravel 5.1+",
+    "homepage" : "https://github.com/AXN-Informatique/laravel-crud-generator",
     "support" : {
-        "issues" : "https://bitbucket.org/axn/laravel-crud-generator/issues?status=new&status=open"
+        "issues" : "https://github.com/AXN-Informatique/laravel-crud-generator/issues"
     },
     "authors" : [{
             "name" : "AXN Informatique",

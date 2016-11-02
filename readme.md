@@ -6,19 +6,19 @@ Ce package permet de générer les fichiers d'une section CRUD avec le framework
 
 Inclure le package avec Composer :
 
-```
+```sh
 composer require axn/laravel-crud-generator
 ```
 
 Ajouter le service provider au tableau des providers dans `config/app.php` :
 
-```
+```php
 'Axn\CrudGenerator\ServiceProvider',
 ```
 
 Publier si besoin les templates (stubs) du package via la commande :
 
-```
+```sh
 // stubs
 php artisan vendor:publish --tag=crud-generator.stubs
 ```
@@ -31,7 +31,7 @@ Y faire les modifications souhaitées.
 
 Lancer la commande :
 
-```
+```sh
 php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir] [--breadcrumbs|-b]
 ```
 
@@ -60,7 +60,7 @@ php artisan crud:generate <section> <model> [--stubs] [--langdir] [--viewsdir] [
 * **--breadcrumbs (ou -b) :** Si cette option est précisée, les breadcrumbs seront
     concaténés à la fin du fichier app/Http/breadcrumbs.php
 
-D plus, des questions sont posées pour générer les textes en français :
+De plus, des questions sont posées pour générer les textes en français :
 
 - L'intitulé de la section, au singulier. Ex : "statut de commande".
 - L'intitulé de la section, au pluriel. Ex : "statuts des commandes".
@@ -68,7 +68,7 @@ D plus, des questions sont posées pour générer les textes en français :
 
 *Exemple concret d'utilisation :*
 
-```
+```sh
 php artisan crud:generate params.commande-statuts "App\Models\CommandeStatut" --viewsdir=modules
 ```
 
