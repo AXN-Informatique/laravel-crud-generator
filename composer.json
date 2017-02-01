@@ -1,22 +1,22 @@
 {
-    "name" : "axn/laravel-crud-generator",
-    "description" : " Generate CRUD in Laravel 5.1+",
-    "homepage" : "https://github.com/AXN-Informatique/laravel-crud-generator",
-    "support" : {
-        "issues" : "https://github.com/AXN-Informatique/laravel-crud-generator/issues"
-    },
-    "authors" : [{
-            "name" : "AXN Informatique",
-            "email" : "developpement@axn.fr"
-        }
-    ],
-    "license" : "MIT",
-    "require" : {
-        "illuminate/support" : "^5.0"
-    },
-    "autoload" : {
-        "psr-4" : {
-            "Axn\\CrudGenerator\\" : "src/"
-        }
-    }
+	"name" : "axn/laravel-crud-generator",
+	"description" : " Generate CRUD in Laravel 5.1+",
+	"homepage" : "https://github.com/AXN-Informatique/laravel-crud-generator",
+	"support" : {
+		"issues" : "https://github.com/AXN-Informatique/laravel-crud-generator/issues"
+	},
+	"authors" : [{
+			"name" : "AXN Informatique",
+			"email" : "developpement@axn.fr"
+		}
+	],
+	"license" : "MIT",
+	"require" : {
+		"illuminate/support" : "^5.0"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Axn\\CrudGenerator\\" : "src/"
+		}
+	}
 }

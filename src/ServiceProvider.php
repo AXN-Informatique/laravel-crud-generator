@@ -13,7 +13,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->app['command.crud.generate'] = $this->app->singleton(function() {
+        $this->app->singleton('command.crud.generate', function() {
             return new Console\GenerateCommand;
         });
 
