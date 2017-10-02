@@ -10,7 +10,9 @@ Inclure le package avec Composer :
 composer require axn/laravel-crud-generator
 ```
 
-Ajouter le service provider au tableau des providers dans `config/app.php` :
+Avec Laravel 5.5 le service provider sera automatiquement enregistré.
+Dans les anciennes versions du framework, ajoutez simplement ce service provider
+au tableau des providers dans `config/app.php` :
 
 ```php
 'Axn\CrudGenerator\ServiceProvider',
