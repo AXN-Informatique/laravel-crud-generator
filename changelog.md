@@ -1,6 +1,11 @@
 Changelog for Laravel Crud Generator
 ====================================
 
+2.4.1 (2018-04-07)
+------------------
+
+- handle routes path for Laravel >= 5.3
+
 2.4.0 (2017-10-02)
 ------------------
 
