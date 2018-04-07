@@ -149,7 +149,11 @@ class Generator
             return '';
         }
 
-        $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
+        if (version_compare(app()->version(), '5.3.0', '<')) {
+            $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
+        } else {
+            $path = base_path('routes/web/'.implode('/', $this->sectionSegments).'.php');
+        }
 
         if (is_file($path)) {
             return '';
