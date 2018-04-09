@@ -409,6 +409,7 @@ class Generator
     protected function getCommonReplacements()
     {
         return [
+            '{{sectionBaseName}}' => end($this->sectionSegments),
             '{{routeBaseAlias}}' => $this->section,
             '{{langBaseKey}}'    => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
             '{{viewBaseName}}'   => ($this->viewsDir ? $this->viewsDir.'.' : '').$this->section,
