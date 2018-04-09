@@ -1,6 +1,11 @@
 Changelog for Laravel Crud Generator
 ====================================
 
+2.4.2 (2018-04-09)
+------------------
+
+- add {{sectionBaseName}} common replacement
+
 2.4.1 (2018-04-07)
 ------------------
 
