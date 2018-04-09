@@ -410,6 +410,7 @@ class Generator
     {
         return [
             '{{sectionBaseName}}' => end($this->sectionSegments),
+            '{{studlySectionBaseName}}' => end($this->sectionSegmentsStudly),
             '{{routeBaseAlias}}' => $this->section,
             '{{langBaseKey}}'    => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
             '{{viewBaseName}}'   => ($this->viewsDir ? $this->viewsDir.'.' : '').$this->section,
