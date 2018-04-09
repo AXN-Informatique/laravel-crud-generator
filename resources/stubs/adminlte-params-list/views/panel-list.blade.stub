@@ -1,0 +1,105 @@
+<?php use Illuminate\Contracts\Pagination\Paginator; ?>
+
+@if ($list->isEmpty())
+    <div class="well">
+        <p>{{ trans("{$langBaseKey}.list_empty") }}</p>
+    </div>
+@else
+    <?php $sortable = ($list->first()->ordre && empty($record)); ?>
+    <ul class="list-group {!! $sortable ? 'sortable' : '' !!}" id="params-list">
+        @foreach ($list as $item)
+            <li class="list-group-item clearfix {!! !empty($record) ? $record->id == $item->id ? 'active' : 'disabled' : '' !!}" data-sort="{{ $item->id }}">
+                <div class="pull-left">
+                    @if ($sortable)
+                        <i class="fa fa-arrows-v"></i>&nbsp;
+                    @endif
+
+                    @if ($options['contentEditable'] && empty($record))
+                        <span contenteditable="true" data-key="{{ $item->id }}">{{ $item->designation }}</span>
+                    @else
+                        <span>{{ $item->designation }}</span>
+                    @endif
+                </div>
+                @if (empty($record))
+                    <div class="pull-right">
+                        <div class="btn-group btn-group-xs">
+                            @if ($options['activatable'])
+                                @if ($item->actif)
+                                    {!! Form::button('<i class="fa fa-check"></i><span class="hidden-xs hidden-sm"> Actif</span>', [
+                                        'type'        => 'submit',
+                                        'form'        => 'form-disable-'.$item->id,
+                                        'class'       => 'btn btn-success',
+                                        'title'       => trans("{$langBaseKey}.disable_tooltip", ['name' => $item->designation]),
+                                        'data-toggle' => 'tooltip',
+                                    ]) !!}
+                                    @push('hidden-forms')
+                                        {!! Form::open([
+                                            'id' => 'form-disable-'.$item->id,
+                                            'method' => 'patch',
+                                            'route' => ["{$routeBaseAlias}.disable", $item->id],
+                                        ]) !!}
+                                        {!! Form::close() !!}
+                                    @endpush
+                                @else
+                                    {!! Form::button('<i class="fa fa-close"></i><span class="hidden-xs hidden-sm"> Inactif</span>', [
+                                        'type'        => 'submit',
+                                        'form'        => 'form-enable-'.$item->id,
+                                        'class'       => 'btn btn-warning',
+                                        'title'       => trans("{$langBaseKey}.enable_tooltip", ['name' => $item->designation]),
+                                        'data-toggle' => 'tooltip',
+                                    ]) !!}
+                                    @push('hidden-forms')
+                                        {!! Form::open([
+                                            'id' => 'form-enable-'.$item->id,
+                                            'method' => 'patch',
+                                            'route' => ["{$routeBaseAlias}.enable", $item->id],
+                                        ]) !!}
+                                        {!! Form::close() !!}
+                                    @endpush
+                                @endif
+                            @endif
+                            @if ($options['editable'])
+                                <a href="{!! route($routeBaseAlias.'.edit', ['id' => $item->id] + ($list instanceof Paginator && $list->hasPages() ? ['page' => Request::input('page')] : [])) !!}"
+                                   class="btn btn-primary"
+                                   title="{{ trans("{$langBaseKey}.edit_tooltip", ['name' => $item->designation]) }}"
+                                   data-toggle="tooltip">
+                                        <i class="fa fa-pencil"></i><span class="hidden-xs hidden-sm"> Modifier</span>
+                                </a>
+                            @endif
+                            @if ($options['destroyable'])
+                                {!! Form::button('<i class="fa fa-trash"></i><span class="hidden-xs hidden-sm"> Supprimer</span>', [
+                                    'type'         => 'submit',
+                                    'form'        => 'form-destroy-'.$item->id,
+                                    'class'        => 'btn btn-danger',
+                                    'title'        => trans("{$langBaseKey}.destroy_tooltip", ['name' => $item->designation]),
+                                    'data-confirm' => trans("{$langBaseKey}.destroy_confirm", ['name' => $item->designation]),
+                                    'data-toggle'  => 'tooltip'
+                                ]) !!}
+                                @push('hidden-forms')
+                                    {!! Form::open([
+                                        'id' => 'form-destroy-'.$item->id,
+                                        'method' => 'delete',
+                                        'route' => ["{$routeBaseAlias}.destroy", $item->id],
+                                    ]) !!}
+                                    {!! Form::close() !!}
+                                @endpush
+                            @endif
+                        </div>
+                    </div>
+                @elseif ($record->id == $item->id)
+                    <div class="pull-right">
+                        <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default btn-sm">
+                            <i class="fa fa-undo"></i> {!! trans('common::back.list') !!}
+                        </a>
+                    </div>
+                @endif
+            </li>
+        @endforeach
+    </ul>
+
+    @if ($list instanceof Paginator && $list->hasPages())
+        <div class="pull-right">
+            {!! $list->render() !!}
+        </div>
+    @endif
+@endif

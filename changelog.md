@@ -1,6 +1,12 @@
 Changelog for Laravel Crud Generator
 ====================================
 
+2.5.0 (2018-04-09)
+------------------
+
+- add new stubs set "adminlte-params-list"
+- add {{createFormTitle}} and {{editFormTitle}} lang replacements
+
 2.4.3 (2018-04-09)
 ------------------
 

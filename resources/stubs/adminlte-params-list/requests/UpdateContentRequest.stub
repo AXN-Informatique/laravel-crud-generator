@@ -1,0 +1,53 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Http\Requests\Request;
+use Axn\RequestFilters\FilterableFormRequest;
+use {{modelClass}} as Model;
+
+class UpdateContentRequest extends Request
+{
+    use FilterableFormRequest;
+
+    /**
+     * Filtres à appliquer sur les données.
+     *
+     * @var array
+     */
+    public function filters()
+    {
+        return [
+            'content' => 'trim|stripped',
+        ];
+    }
+
+    /**
+     * Règles de validation des données.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        $table = (new Model)->getTable();
+        $id = $this->route('id');
+
+        return [
+            'content' => 'required|max:100|unique:'.$table.',designation,'.$id,
+        ];
+    }
+
+    /**
+     * Messages personnalisés.
+     *
+     * @return array.
+     */
+    public function messages()
+    {
+        return [
+            'content.required' => "Vous ne pouvez saisir un texte vide.",
+            'content.max'      => "Vous ne pouvez saisir plus de 100 caractères.",
+            'content.unique'   => "Ce libellé est déjà utilisé."
+        ];
+    }
+}

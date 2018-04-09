@@ -363,7 +363,9 @@ class Generator
             '{{destroyTooltip}}'   => "Supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
             '{{destroyConfirm}}'   => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
             '{{createTitle}}'      => "Création d’{$lcfUndefArticle} ".($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau'))." $lcfSingular",
+            '{{createFormTitle}}'  => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau'))." $lcfSingular",
             '{{editTitle}}'        => "Modification d’{$lcfUndefArticle} $lcfSingular",
+            '{{editFormTitle}}'    => "Modification d’{$lcfUndefArticle} $lcfSingular",
         ]);
     }
 

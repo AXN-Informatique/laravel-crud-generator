@@ -1,0 +1,56 @@
+<?php
+
+Route::prefix('{{sectionBaseName}}')
+    ->name('{{sectionBaseName}}.')
+    ->group(__DIR__.'/{{baseUrl}}.php');
+
+// Liste des enregistrements
+Route::get('/')
+    ->name('index')
+    ->uses('{{studlySectionBaseName}}Controller@index');
+
+// Formulaire d'ajout
+Route::get('create')
+    ->name('create')
+    ->uses('{{studlySectionBaseName}}Controller@create');
+
+// Formulaire d'édition
+Route::get('{id}/edit')
+    ->name('edit')
+    ->uses('{{studlySectionBaseName}}Controller@edit');
+
+// Ajout d'un enregistrement
+Route::post('create')
+    ->name('store')
+    ->uses('{{studlySectionBaseName}}Controller@store');
+
+// Modification d'un enregistrement
+Route::put('{id}/edit')
+    ->name('update')
+    ->uses('{{studlySectionBaseName}}Controller@update');
+
+// Modification du contenu 'content editable' d'un enregistrement
+Route::patch('{id}/content')
+    ->name('update-content')
+    ->uses('{{studlySectionBaseName}}Controller@updateContent');
+
+// Activation d'un enregistrement
+Route::patch('{id}/enable')
+    ->name('enable')
+    ->uses('{{studlySectionBaseName}}Controller@enable');
+
+// Désactivation d'un enregistrement
+Route::patch('{id}/disable')
+    ->name('disable')
+    ->uses('{{studlySectionBaseName}}Controller@disable');
+
+// Réordonnement des enregistrements
+Route::post('sort')
+    ->name('sort')
+    ->uses('{{studlySectionBaseName}}Controller@sort');
+
+// Suppression d'un enregistrement
+Route::delete('{id}')
+    ->name('destroy')
+    ->uses('{{studlySectionBaseName}}Controller@destroy');
+

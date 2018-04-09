@@ -1,0 +1,21 @@
+{!! Form::open([
+    'route' => "{$routeBaseAlias}.store",
+    'method' => 'post',
+]) !!}
+    <div class="box box-success">
+        <div class="box-header with-border">
+            <h3 class="box-title">{!! trans("{$langBaseKey}.create_form_title" !!}</h3>
+        </div>
+        <div class="box-body">
+            @include($views['form'])
+        </div><!-- .box-body -->
+        <div class="box-footer">
+            <div class="btn-group">
+                {!! Form::button(
+                    '<i class="fa fa-plus"></i> '.trans('common::action.add'),
+                    ['type' => 'submit', 'class' => 'btn btn-success']
+                ) !!}
+            </div>
+        </div><!-- .box-footer -->
+    </div><!-- .box -->
+{!! Form::close() !!}
