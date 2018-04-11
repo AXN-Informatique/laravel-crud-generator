@@ -1,0 +1,39 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Http\Requests\Request;
+use Axn\RequestFilters\FilterableFormRequest;
+use {{modelClass}} as Model;
+
+class UpdateRequest extends Request
+{
+    use FilterableFormRequest;
+
+    /**
+     * Filtres à appliquer sur les données.
+     *
+     * @var array
+     */
+    public function filters()
+    {
+        return [
+            'designation' => 'trim|stripped',
+        ];
+    }
+
+    /**
+     * Règles de validation des données.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        $table = (new Model)->getTable();
+        $id = $this->route('id');
+
+        return [
+            'designation' => 'required|max:100|unique:'.$table.',designation,'.$id,
+        ];
+    }
+}

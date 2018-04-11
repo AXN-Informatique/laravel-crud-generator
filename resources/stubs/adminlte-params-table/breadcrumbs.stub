@@ -1,0 +1,19 @@
+
+// ----------------------------------------------------------------------------
+// CRUD : {{title}}
+// ----------------------------------------------------------------------------
+
+Breadcrumbs::register('{{routeBaseAlias}}.index', function($breadcrumbs) {
+    $breadcrumbs->parent('parametres');
+    $breadcrumbs->push( trans("{{langBaseKey}}.breadcrumbs_index"), route('{{routeBaseAlias}}.index') );
+});
+
+    Breadcrumbs::register('{{routeBaseAlias}}.create', function($breadcrumbs) {
+        $breadcrumbs->parent('{{routeBaseAlias}}.index');
+        $breadcrumbs->push(trans('common::action.add'));
+    });
+
+    Breadcrumbs::register('{{routeBaseAlias}}.edit', function($breadcrumbs) {
+        $breadcrumbs->parent('{{routeBaseAlias}}.index');
+        $breadcrumbs->push(trans('common::action.edit'));
+    });

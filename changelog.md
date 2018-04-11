@@ -1,10 +1,11 @@
 Changelog for Laravel Crud Generator
 ====================================
 
-2.6.0-dev
+2.6.0 (2018-04-11)
 ------------------
 
-- add search to "adminlte-params-list" stubs set
+- add new stubs set "adminlte-params-table"
+- add searchable abilities
 - add {{listSummary}} lang replacements
 
 2.5.0 (2018-04-09)

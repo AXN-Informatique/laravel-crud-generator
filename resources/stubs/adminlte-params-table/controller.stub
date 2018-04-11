@@ -1,0 +1,345 @@
+<?php
+
+namespace {{namespace}};
+
+use {{modelClass}} as Model;
+use {{requestNamespace}}\StoreRequest;
+use {{requestNamespace}}\UpdateRequest;
+use {{requestNamespace}}\UpdateContentRequest;
+use Axn\LaravelNotifier\Facade as Notifier;
+use Exception;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+
+class {{name}} extends BaseController
+{
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * Base des alias des routes nommées.
+     * Exemple : route("{$this->routeBaseAlias}.edit");
+     *
+     * @var string
+     */
+    protected $routeBaseAlias = '{{routeBaseAlias}}';
+
+    /**
+     * Base des clés des traductions.
+     * Exemple : trans("{$this->langBaseKey}.store_success");
+     *
+     * @var string
+     */
+    protected $langBaseKey = '{{langBaseKey}}';
+
+    /**
+     * Noms complets des différentes vues.
+     * Exemple : view($this->views['index']);
+     *
+     * @var array
+     */
+    protected $views = [
+        'index'           => '{{viewBaseName}}.index',
+        'panel-list'      => '{{viewBaseName}}.panel-list',
+        'panel-create'    => '{{viewBaseName}}.panel-create',
+        'panel-edit'      => '{{viewBaseName}}.panel-edit',
+        'form'            => '{{viewBaseName}}.form',
+    ];
+
+    /**
+     * Options permettant d'activer/désactiver rapidement des fonctionnalités
+     * des écrans de CRUD sans avoir à aller rechercher les modifications à
+     * faire dans le code.
+     *
+     * @var array
+     */
+    protected $options = [
+        'creatable'       => true,  // afficher le formulaire de création à côté de la liste
+        'editable'        => true,  // afficher le bouton de modification dans la liste
+        'contentEditable' => true,  // rendre éditable les libellés des enregistrements depuis la liste
+        'activatable'     => false, // afficher le bouton actif/inactif dans la liste
+        'destroyable'     => true,  // afficher le bouton de suppression dans la liste
+        'searchable'      => true,  // rendre possible les recherches
+        'recordsPerPage'  => 15,    // nombre d'éléments par page sur la liste (si paginée)
+    ];
+
+    /**
+     * Constructeur.
+     *
+     * @param Model $model
+     * @param Request $request
+     * @return void
+     */
+    public function __construct(Model $model, Request $request)
+    {
+        $this->model = $model;
+
+        $this->request = $request;
+    }
+
+    /**
+     * Affiche la liste des enregistrements et le formulaire d'ajout.
+     *
+     * @return View
+     */
+    public function index()
+    {
+        $viewData = array_merge($this->compactAttributes(), [
+            'title' => trans("{$this->langBaseKey}.list_title"),
+            'list' => $this->getList(),
+        ]);
+
+        return view($this->views['index'], $viewData);
+    }
+
+    /**
+     * Affiche le formulaire de création d'un enregistrement.
+     *
+     * @return View
+     */
+    public function create()
+    {
+        if (!$this->options['creatable']) {
+            abort(404);
+        }
+
+        $viewData = array_merge($this->compactAttributes(), [
+            'title' => trans("{$this->langBaseKey}.create_title"),
+            'list' => $this->getList(),
+        ]);
+
+        return view($this->views['index'], $viewData);
+    }
+
+    /**
+     * Affiche le formulaire d'édition d'un enregistrement.
+     *
+     * @param  mixed $id
+     * @return View
+     */
+    public function edit($id)
+    {
+        if (!$this->options['editable']) {
+            abort(404);
+        }
+
+        $record = $this->model->findOrFail($id);
+
+        $viewData = array_merge($this->compactAttributes(), [
+            'title' => trans("{$this->langBaseKey}.edit_title"),
+            'list' => $this->getList(),
+            'record' => $record,
+        ]);
+
+        return view($this->views['index'], $viewData);
+    }
+
+    /**
+     * Ajoute un nouvel enregistrement.
+     *
+     * @param  StoreRequest $request
+     * @return Response
+     */
+    public function store(StoreRequest $request)
+    {
+        if (!$this->options['creatable']) {
+            abort(404);
+        }
+
+        $data = [
+            'designation' => $request->input('designation')
+        ];
+
+        // On tente de renseigner l'ordre...
+        try {
+            $ordre = $this->model->max('ordre');
+            $data['ordre'] = $ordre + 1;
+        }
+        catch (Exception $e) {}
+
+        $this->model->create($data);
+
+        Notifier::success( trans("{$this->langBaseKey}.store_success") );
+
+        return redirect()->route($this->routeBaseAlias.'.index');
+    }
+
+    /**
+     * Modifie un enregistrement existant.
+     *
+     * @param  mixed         $id
+     * @param  UpdateRequest $request
+     * @return Response
+     */
+    public function update($id, UpdateRequest $request)
+    {
+        if (!$this->options['editable']) {
+            abort(404);
+        }
+
+        $this->model->findOrFail($id)->update([
+            'designation' => $request->input('designation')
+        ]);
+
+        Notifier::success( trans("{$this->langBaseKey}.update_success") );
+
+        return redirect()->route($this->routeBaseAlias.'.index');
+    }
+
+    /**
+     * Modifie le contenu "content editable" d'un enregistrement.
+     *
+     * @param  mixed                $id
+     * @param  UpdateContentRequest $request
+     * @return Response
+     */
+    public function updateContent($id, UpdateContentRequest $request)
+    {
+        if (!$this->options['contentEditable']) {
+            abort(404);
+        }
+
+        $this->model->findOrFail($id)->update([
+            'designation' => $request->input('content')
+        ]);
+
+        return response()->json([
+            'message' => trans("{$this->langBaseKey}.update_success"),
+            'content' => $request->input('content'),
+        ]);
+    }
+
+    /**
+     * Active un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function enable($id)
+    {
+        if (!$this->options['activatable']) {
+            abort(404);
+        }
+
+        $this->model->findOrFail($id)->update(['actif' => 1]);
+
+        Notifier::success( trans("{$this->langBaseKey}.enable_success") );
+
+        return back();
+    }
+
+    /**
+     * Désactive un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function disable($id)
+    {
+        if (!$this->options['activatable']) {
+            abort(404);
+        }
+
+        $this->model->findOrFail($id)->update(['actif' => 0]);
+
+        Notifier::success( trans("{$this->langBaseKey}.disable_success") );
+
+        return back();
+    }
+
+    /**
+     * Modifie l'ordre des enregistrements.
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    public function sort(Request $request)
+    {
+        $sort = array_map('intval', $request->input('sort', []));
+
+        DB::transaction(function() use ($sort)
+        {
+            foreach ($sort as $value => $id) {
+                $this->model->whereId($id)->update(['ordre' => $value + 1]);
+            }
+        });
+
+        return response()->json([
+            'message' => trans("{$this->langBaseKey}.sort_success")
+        ]);
+    }
+
+    /**
+     * Supprime un enregistrement.
+     *
+     * @param  mixed $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        if (!$this->options['destroyable']) {
+            abort(404);
+        }
+
+        try {
+            $this->model->destroy($id);
+        }
+        catch (Exception $e) {
+            return back()->withErrors( trans("{$this->langBaseKey}.destroy_failure") );
+        }
+
+        Notifier::success( trans("{$this->langBaseKey}.destroy_success") );
+
+        return back();
+    }
+
+    /**
+     * Récupère et retourne la liste des enregistrements.
+     *
+     * @return Collection|Paginator
+     */
+    protected function getList()
+    {
+        $model = $this->model;
+
+        if ($this->options['searchable'] && $this->request->has('q')) {
+            $model = $model->where('designation', 'like', '%'.$this->request->input('q').'%');
+        }
+
+        if (($first = $this->model->first()) && $first->ordre) {
+            // S'il y a un champ "ordre", on retourne toutes la liste ordonnée selon ce champ
+            return $model->orderBy('ordre')->get();
+        }
+        else {
+            // Sinon, on retourne une liste paginée
+            return $model->paginate($this->options['recordsPerPage']);
+        }
+    }
+
+    /**
+     * Compacte les valeurs des attributs pour les passer aux vues.
+     *
+     * @return array
+     */
+    protected function compactAttributes()
+    {
+        return [
+            'routeBaseAlias' => $this->routeBaseAlias,
+            'langBaseKey'    => $this->langBaseKey,
+            'views'          => $this->views,
+            'options'        => $this->options
+        ];
+    }
+}

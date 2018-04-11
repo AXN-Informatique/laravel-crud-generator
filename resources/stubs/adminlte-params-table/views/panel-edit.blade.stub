@@ -1,0 +1,24 @@
+{!! Form::open([
+    'route' => ["{$routeBaseAlias}.update", $record->id],
+    'method' => 'put',
+]) !!}
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">{!! trans('common::action.edit') !!}</h3>
+        </div>
+        <div class="box-body">
+            @include($views['form'])
+        </div><!-- .box-body -->
+        <div class="box-footer text-right">
+            <div class="btn-group">
+                {!! Form::button('<i class="fa fa-check"></i> '.trans('common::action.save'),[
+                    'type' => 'submit',
+                    'class' => 'btn btn-primary',
+                ]) !!}
+                <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default">
+                    <i class="fa fa-undo"></i> {!! trans('common::action.cancel') !!}
+                </a>
+            </div>
+        </div><!-- .box-footer -->
+    </div><!-- .box -->
+{!! Form::close() !!}

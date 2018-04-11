@@ -1,0 +1,34 @@
+<?php
+
+return [
+
+    // Notifications
+    'store_success'      => "{{storeSuccess}}",
+    'update_success'     => "{{updateSuccess}}",
+    'enable_success'     => "{{enableSuccess}}",
+    'disable_success'    => "{{disableSuccess}}",
+    'sort_success'       => "{{sortSuccess}}",
+    'destroy_success'    => "{{destroySuccess}}",
+    'destroy_failure'    => "{{destroyFailure}}",
+
+    // Breadcrumbs
+    'breadcrumbs_index'  => "{{breadcrumbsIndex}}",
+
+    // Liste des enregistrements
+    'list_title'         => "{{listTitle}}",
+    'list_summary'       => '{{listSummary}}',
+    'list_empty'         => "{{listEmpty}}",
+    'edit_tooltip'       => "{{editTooltip}}",
+    'enable_tooltip'     => "{{enableTooltip}}",
+    'disable_tooltip'    => "{{disableTooltip}}",
+    'destroy_tooltip'    => "{{destroyTooltip}}",
+    'destroy_confirm'    => "{{destroyConfirm}}",
+
+    // Formulaire d'ajout
+    'create_title'       => "{{createTitle}}",
+    'create_form_title'  => "{{createFormTitle}}",
+
+    // Formulaire d'édition
+    'edit_title'         => "{{editTitle}}",
+    'edit_form_title'    => "{{editFormTitle}}",
+];
