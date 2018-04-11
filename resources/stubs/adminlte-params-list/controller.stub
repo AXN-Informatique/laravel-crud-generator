@@ -24,6 +24,11 @@ class {{name}} extends BaseController
     protected $model;
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * Base des alias des routes nommées.
      * Exemple : route("{$this->routeBaseAlias}.edit");
      *
@@ -66,18 +71,22 @@ class {{name}} extends BaseController
         'contentEditable' => true,  // rendre éditable les libellés des enregistrements depuis la liste
         'activatable'     => false, // afficher le bouton actif/inactif dans la liste
         'destroyable'     => true,  // afficher le bouton de suppression dans la liste
+        'searchable'      => true,  // rendre possible les recherches
         'recordsPerPage'  => 15,    // nombre d'éléments par page sur la liste (si paginée)
     ];
 
     /**
      * Constructeur.
      *
-     * @param  Model $model
+     * @param Model $model
+     * @param Request $request
      * @return void
      */
-    public function __construct(Model $model)
+    public function __construct(Model $model, Request $request)
     {
         $this->model = $model;
+
+        $this->request = $request;
     }
 
     /**
@@ -303,13 +312,20 @@ class {{name}} extends BaseController
      */
     protected function getList()
     {
-        // S'il y a un champ "ordre", on retourne toutes la liste ordonnée selon ce champ
-        if (($first = $this->model->first()) && $first->ordre) {
-            return $this->model->orderBy('ordre')->get();
+        $model = $this->model;
+
+        if ($this->options['searchable'] && $this->request->has('q')) {
+            $model = $model->where('designation', 'like', '%'.$this->request->input('q').'%');
         }
 
-        // Sinon, on retourne une liste paginée
-        return $this->model->paginate($this->options['recordsPerPage']);
+        if (($first = $this->model->first()) && $first->ordre) {
+            // S'il y a un champ "ordre", on retourne toutes la liste ordonnée selon ce champ
+            return $model->orderBy('ordre')->get();
+        }
+        else {
+            // Sinon, on retourne une liste paginée
+            return $model->paginate($this->options['recordsPerPage']);
+        }
     }
 
     /**

@@ -9,14 +9,14 @@
         <div class="box-body">
             @include($views['form'])
         </div><!-- .box-body -->
-        <div class="box-footer">
+        <div class="box-footer text-right">
             <div class="btn-group">
-                {!! Form::button(
-                    '<i class="fa fa-check"></i> '.trans('common::action.save'),
-                    ['type' => 'submit', 'class' => 'btn btn-primary']
-                ) !!}
+                {!! Form::button('<i class="fa fa-check"></i> '.trans('common::action.save'),[
+                    'type' => 'submit',
+                    'class' => 'btn btn-primary',
+                ]) !!}
                 <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default">
-                    <i class="fa fa-undo"></i> {!! trans('common::back.list') !!}
+                    <i class="fa fa-undo"></i> {!! trans('common::action.cancel') !!}
                 </a>
             </div>
         </div><!-- .box-footer -->

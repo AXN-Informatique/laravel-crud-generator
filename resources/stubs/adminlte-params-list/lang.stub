@@ -16,6 +16,7 @@ return [
 
     // Liste des enregistrements
     'list_title'         => "{{listTitle}}",
+    'list_summary'       => '{{listSummary}}',
     'list_empty'         => "{{listEmpty}}",
     'edit_tooltip'       => "{{editTooltip}}",
     'enable_tooltip'     => "{{enableTooltip}}",
