@@ -1,6 +1,11 @@
 Changelog for Laravel Crud Generator
 ====================================
 
+2.6.2 (2018-04-12)
+------------------
+
+- add {{countZero}} {{countOne}} {{countMany}} lang replacement
+
 2.6.1 (2018-04-12)
 ------------------
 
