@@ -356,6 +356,7 @@ class Generator
             '{{breadcrumbsIndex}}' => ucfirst($lcfPlural),
             '{{listTitle}}'        => "Liste des $lcfPlural",
             '{{listSummary}}'      => "Liste des :count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur un total de :total.",
+            '{{listSummarySimple}}'=> ":count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur :total",
             '{{statusActive}}'     => ($feminine ? trans('common::status.active_fem') : trans('common::status.active')),
             '{{statusInactive}}'   => ($feminine ? trans('common::status.inactive_fem') : trans('common::status.inactive')),
             '{{listEmpty}}'        => "Il n’y a ".($feminine ? 'aucune' : 'aucun')." $lcfSingular à afficher.",

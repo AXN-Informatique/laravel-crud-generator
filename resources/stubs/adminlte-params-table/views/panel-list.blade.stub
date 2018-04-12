@@ -1,107 +1,100 @@
-<?php use Illuminate\Contracts\Pagination\Paginator; ?>
-
-@section('context-zone-first')
-    <p>{!! trans("{$langBaseKey}.list_summary", [
-        'count' => $list->count(),
-        'firstItem' => $list->firstItem(),
-        'lastItem' => $list->lastItem(),
-        'total' => $list->total(),
-    ]) !!}</p>
-@endsection
-
-
-@section('context-zone-second')
-    @if ($options['searchable'])
-        <div class="text-right">
-            {!! Form::open([
-                'route' => "{$routeBaseAlias}.index",
-                'method' => 'get',
-                'class' => 'form-inline',
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <div class="box-title">
+            {!! trans("{$langBaseKey}.list_summary_simple", [
+                'count' => $list->count(),
+                'firstItem' => $list->firstItem(),
+                'lastItem' => $list->lastItem(),
+                'total' => $list->total(),
             ]) !!}
-                <div class="input-group">
-                    <input type="text" class="form-control" name="q" value="{{ old('q') }}" placeholder="{!! trans('common::placeholder.search') !!}">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">
-                            <i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">{!! trans('common::action.search') !!}</span>
-                        </button>
-                    </span>
-                </div><!-- .input-group -->
-            {!! Form::close() !!}
         </div>
-    @endif
-@endsection
-
-
-@if ($list->isEmpty())
-    <div class="well">
-        <p>{{ trans("{$langBaseKey}.list_empty") }}</p>
-    </div>
-@else
-    <?php $sortable = ($list->first()->ordre && empty($record)); ?>
-    <div class="box box-primary">
-      <div class="box-body no-padding">
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">
-                  Désignation
-                </th>
-                <th scope="col" class="text-right">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-            @foreach ($list as $item)
-              <tr class="{!! !empty($record) ? $record->id == $item->id ? 'active' : 'disabled' : '' !!}">
-                <td>
-                  @if ($options['contentEditable'] && empty($record))
-                      <span contenteditable="true" data-key="{{ $item->id }}">{{ $item->designation }}</span>
-                  @else
-                      <span>{{ $item->designation }}</span>
-                  @endif
-                </td>
-                <td class="actions">
-                        @if (empty($record))
-                              <div class="btn-group btn-group-xs">
-                                  @if ($options['activatable'])
-                                      @if ($item->actif)
-                                          {!! Form::button('<i class="fa fa-check"></i><span class="hidden-xs hidden-sm"> {{statusActive}}</span>', [
-                                              'type'        => 'submit',
-                                              'form'        => 'form-disable-'.$item->id,
-                                              'class'       => 'btn btn-success',
-                                              'title'       => trans("{$langBaseKey}.disable_tooltip", ['name' => $item->designation]),
-                                              'data-toggle' => 'tooltip',
-                                          ]) !!}
-                                          @push('hidden-forms')
-                                              {!! Form::open([
-                                                  'id' => 'form-disable-'.$item->id,
-                                                  'method' => 'patch',
-                                                  'route' => ["{$routeBaseAlias}.disable", $item->id],
-                                              ]) !!}
-                                              {!! Form::close() !!}
-                                          @endpush
-                                      @else
-                                          {!! Form::button('<i class="fa fa-close"></i><span class="hidden-xs hidden-sm"> {{statusInactive}}</span>', [
-                                              'type'        => 'submit',
-                                              'form'        => 'form-enable-'.$item->id,
-                                              'class'       => 'btn btn-warning',
-                                              'title'       => trans("{$langBaseKey}.enable_tooltip", ['name' => $item->designation]),
-                                              'data-toggle' => 'tooltip',
-                                          ]) !!}
-                                          @push('hidden-forms')
-                                              {!! Form::open([
-                                                  'id' => 'form-enable-'.$item->id,
-                                                  'method' => 'patch',
-                                                  'route' => ["{$routeBaseAlias}.enable", $item->id],
-                                              ]) !!}
-                                              {!! Form::close() !!}
-                                          @endpush
+        @if ($options['searchable'])
+            <div class="box-tools">
+                {!! Form::open([
+                    'route' => "{$routeBaseAlias}.index",
+                    'method' => 'get',
+                    'class' => 'form-inline',
+                ]) !!}
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" name="q" value="{{ request('q') }}" placeholder="{!! trans('common::placeholder.search') !!}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">{!! trans('common::action.search') !!}</span>
+                            </button>
+                        </span>
+                    </div><!-- .input-group -->
+                {!! Form::close() !!}
+            </div>
+        @endif
+    </div><!-- .box-header -->
+    @if ($list->isEmpty())
+        <div class="box-body">
+            <p><em>{{ trans("{$langBaseKey}.list_empty") }}</em></p>
+        </div>
+    @else
+        <div class="box-body no-padding">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                Désignation
+                            </th>
+                            <th scope="col" class="text-right">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($list as $item)
+                        <tr class="{!! !empty($record) ? $record->id == $item->id ? 'active' : 'disabled' : '' !!}">
+                            <td>
+                                @if ($options['contentEditable'] && empty($record))
+                                    <span contenteditable="true" data-key="{{ $item->id }}">{{ $item->designation }}</span>
+                                @else
+                                    <span>{{ $item->designation }}</span>
+                                @endif
+                            </td>
+                            <td class="actions">
+                            @if (empty($record))
+                                <div class="btn-group btn-group-xs">
+                                    @if ($options['activatable'])
+                                        @if ($item->actif)
+                                            {!! Form::button('<i class="fa fa-check"></i><span class="hidden-xs hidden-sm">'.trans("{$langBaseKey}.status_active").'</span>', [
+                                                'type'        => 'submit',
+                                                'form'        => 'form-disable-'.$item->id,
+                                                'class'       => 'btn btn-success',
+                                                'title'       => trans("{$langBaseKey}.disable_tooltip", ['name' => $item->designation]),
+                                                'data-toggle' => 'tooltip',
+                                            ]) !!}
+                                            @push('hidden-forms')
+                                                {!! Form::open([
+                                                    'id' => 'form-disable-'.$item->id,
+                                                    'method' => 'patch',
+                                                    'url' => route("{$routeBaseAlias}.disable", ['id' => $item->id] + request(['page', 'q'])),
+                                                ]) !!}
+                                                {!! Form::close() !!}
+                                            @endpush
+                                        @else
+                                            {!! Form::button('<i class="fa fa-close"></i><span class="hidden-xs hidden-sm">'.trans("{$langBaseKey}.status_inactive").'</span>', [
+                                                'type'        => 'submit',
+                                                'form'        => 'form-enable-'.$item->id,
+                                                'class'       => 'btn btn-warning',
+                                                'title'       => trans("{$langBaseKey}.enable_tooltip", ['name' => $item->designation]),
+                                                'data-toggle' => 'tooltip',
+                                            ]) !!}
+                                            @push('hidden-forms')
+                                                {!! Form::open([
+                                                    'id' => 'form-enable-'.$item->id,
+                                                    'method' => 'patch',
+                                                    'url' => route("{$routeBaseAlias}.enable", ['id' => $item->id] + request(['page', 'q'])),
+                                                ]) !!}
+                                                {!! Form::close() !!}
+                                            @endpush
                                       @endif
                                   @endif
                                   @if ($options['editable'])
-                                      <a href="{!! route($routeBaseAlias.'.edit', ['id' => $item->id] + ($list instanceof Paginator && $list->hasPages() ? ['page' => Request::input('page')] : [])) !!}"
+                                      <a href="{!! route($routeBaseAlias.'.edit', ['id' => $item->id] + request(['page', 'q'])) !!}"
                                          class="btn btn-primary"
                                          title="{{ trans("{$langBaseKey}.edit_tooltip", ['name' => $item->designation]) }}"
                                          data-toggle="tooltip">
@@ -121,28 +114,28 @@
                                           {!! Form::open([
                                               'id' => 'form-destroy-'.$item->id,
                                               'method' => 'delete',
-                                              'route' => ["{$routeBaseAlias}.destroy", $item->id],
+                                              'url' => route("{$routeBaseAlias}.destroy", ['id' => $item->id] + request(['page', 'q'])),
                                           ]) !!}
                                           {!! Form::close() !!}
                                       @endpush
                                   @endif
                               </div>
-                        @elseif ($record->id == $item->id)
-                              <a href="{!! route($routeBaseAlias.'.index') !!}" class="btn btn-default btn-sm">
-                                  <i class="fa fa-undo"></i> {!! trans('common::back.list') !!}
-                              </a>
-                        @endif
-                </td>
-              </tr>
-            @endforeach
-            </tbody>
-          </table>
-        </div><!-- .table-responsive -->
-      </div><!-- .box-body -->
-    </div><!-- .box -->
-    @if ($list instanceof Paginator && $list->hasPages())
-        <div class="text-right">
-            {!! $list->render() !!}
-        </div>
+                            @elseif ($record->id == $item->id)
+                                <div class="text-right">
+                                    <a href="{!! route($routeBaseAlias.'.index', request(['page', 'q'])) !!}" class="btn btn-default btn-sm">
+                                        <i class="fa fa-undo"></i> {!! trans('common::back.list') !!}
+                                    </a>
+                                </div>
+                            @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div><!-- .table-responsive -->
+        </div><!-- .box-body -->
+        @if ($list instanceof \Illuminate\Contracts\Pagination\Paginator)
+            {!! $list->appends(request(['page', 'q']))->links('partials.pagination.box-footer') !!}
+        @endif
     @endif
-@endif
+</div><!-- .box -->

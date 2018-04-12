@@ -195,7 +195,7 @@ class {{name}} extends BaseController
 
         Notifier::success( trans("{$this->langBaseKey}.update_success") );
 
-        return redirect()->route($this->routeBaseAlias.'.index');
+        return redirect()->route($this->routeBaseAlias.'.index', request(['page', 'q']));
     }
 
     /**

@@ -1,7 +1,8 @@
 
 <div class="form-group">
-    {!! Form::label('designation', "Désignation") !!}
+    {!! Form::labelRequired('designation', 'Désignation') !!}
     {!! Form::text('designation', old('designation', !empty($record) ? $record->designation : ''), [
-        'class' => 'form-control'
+        'class' => 'form-control',
+        'required',
     ]) !!}
 </div>

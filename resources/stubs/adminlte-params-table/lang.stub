@@ -19,6 +19,8 @@ return [
     'list_summary'       => '{{listSummary}}',
     'list_empty'         => "{{listEmpty}}",
     'edit_tooltip'       => "{{editTooltip}}",
+    'status_active'      => "{{statusActive}}",
+    'status_inactive'    => "{{statusInactive}}",
     'enable_tooltip'     => "{{enableTooltip}}",
     'disable_tooltip'    => "{{disableTooltip}}",
     'destroy_tooltip'    => "{{destroyTooltip}}",

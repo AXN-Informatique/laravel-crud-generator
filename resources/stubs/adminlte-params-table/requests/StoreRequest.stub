@@ -18,7 +18,7 @@ class StoreRequest extends Request
     public function filters()
     {
         return [
-            'designation' => 'trim|stripped',
+            'designation' => 'stripped',
         ];
     }
 
@@ -32,7 +32,14 @@ class StoreRequest extends Request
         $table = (new Model)->getTable();
 
         return [
-            'designation' => 'required|max:100|unique:'.$table.',designation',
+            'designation' => 'required|max:190|unique:'.$table.',designation',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'designation' => 'désignation',
         ];
     }
 }

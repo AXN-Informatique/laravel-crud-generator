@@ -33,7 +33,7 @@ class UpdateContentRequest extends Request
         $id = $this->route('id');
 
         return [
-            'content' => 'required|max:100|unique:'.$table.',designation,'.$id,
+            'content' => 'required|max:190|unique:'.$table.',designation,'.$id,
         ];
     }
 
@@ -46,7 +46,7 @@ class UpdateContentRequest extends Request
     {
         return [
             'content.required' => "Vous ne pouvez saisir un texte vide.",
-            'content.max'      => "Vous ne pouvez saisir plus de 100 caractères.",
+            'content.max'      => "Vous ne pouvez saisir plus de 190 caractères.",
             'content.unique'   => "Ce libellé est déjà utilisé."
         ];
     }
