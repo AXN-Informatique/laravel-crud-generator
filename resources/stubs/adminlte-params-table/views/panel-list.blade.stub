@@ -54,10 +54,10 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th scope="col">
+                            <th scope="col" class="col-xs-10">
                                 Désignation
                             </th>
-                            <th scope="col" class="text-right">
+                            <th scope="col" class="col-xs-2 text-right">
                                 Actions
                             </th>
                         </tr>
