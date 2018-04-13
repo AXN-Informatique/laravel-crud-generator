@@ -53,4 +53,3 @@ Route::post('sort')
 Route::delete('{id}')
     ->name('destroy')
     ->uses('{{studlySectionBaseName}}Controller@destroy');
-

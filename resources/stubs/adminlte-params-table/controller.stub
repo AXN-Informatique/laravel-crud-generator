@@ -72,6 +72,7 @@ class {{name}} extends BaseController
         'activatable'     => false, // afficher le bouton actif/inactif dans la liste
         'destroyable'     => true,  // afficher le bouton de suppression dans la liste
         'searchable'      => true,  // rendre possible les recherches
+        'sortable'        => false, // rendre ordonnable manuellement les enregistrements dans la liste
         'recordsPerPage'  => 15,    // nombre d'éléments par page sur la liste (si paginée)
     ];
 
@@ -162,12 +163,9 @@ class {{name}} extends BaseController
             'designation' => $request->input('designation')
         ];
 
-        // On tente de renseigner l'ordre...
-        try {
-            $ordre = $this->model->max('ordre');
-            $data['ordre'] = $ordre + 1;
+        if ($this->options['sortable']) {
+            $data['ordre'] = $this->model->max('ordre') + 1;
         }
-        catch (Exception $e) {}
 
         $this->model->create($data);
 
@@ -267,6 +265,10 @@ class {{name}} extends BaseController
      */
     public function sort(Request $request)
     {
+        if (!$this->options['sortable']) {
+            abort(404);
+        }
+
         $sort = array_map('intval', $request->input('sort', []));
 
         DB::transaction(function() use ($sort)
@@ -318,12 +320,10 @@ class {{name}} extends BaseController
             $model = $model->where('designation', 'like', '%'.$this->request->input('q').'%');
         }
 
-        if (($first = $this->model->first()) && $first->ordre) {
-            // S'il y a un champ "ordre", on retourne toutes la liste ordonnée selon ce champ
+        if ($this->options['sortable']) {
             return $model->orderBy('ordre')->get();
         }
         else {
-            // Sinon, on retourne une liste paginée
             return $model->paginate($this->options['recordsPerPage']);
         }
     }

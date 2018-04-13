@@ -11,12 +11,18 @@ return [
     'destroy_success'    => "{{destroySuccess}}",
     'destroy_failure'    => "{{destroyFailure}}",
 
+    // Counts
+    'count_zero'         => "{{countZero}}",
+    'count_one'          => "{{countOne}}",
+    'count_many'         => "{{countMany}}",
+
     // Breadcrumbs
     'breadcrumbs_index'  => "{{breadcrumbsIndex}}",
 
     // Liste des enregistrements
     'list_title'         => "{{listTitle}}",
-    'list_summary'       => '{{listSummary}}',
+    'list_summary'       => "{{listSummary}}",
+    'list_summary_simple'=> "{{listSummarySimple}}",
     'list_empty'         => "{{listEmpty}}",
     'edit_tooltip'       => "{{editTooltip}}",
     'status_active'      => "{{statusActive}}",

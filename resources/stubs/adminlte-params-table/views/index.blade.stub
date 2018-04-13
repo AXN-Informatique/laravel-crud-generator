@@ -24,7 +24,7 @@
 @push('scripts')
     {!! Html::script(elixir('parametres.js')) !!}
     <script>
-        modules.parametres.index({!! json_encode([
+        modules.parametres.init({!! json_encode([
             'containerId' => str_replace('.', '-', $routeBaseAlias),
             'routeBaseAlias' => $routeBaseAlias
         ]) !!});

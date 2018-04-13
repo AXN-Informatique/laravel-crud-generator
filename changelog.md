@@ -1,6 +1,11 @@
 Changelog for Laravel Crud Generator
 ====================================
 
+2.6.4 (2018-04-13)
+------------------
+
+- fixes on "adminlte-params-table" stubs set
+
 2.6.3 (2018-04-12)
 ------------------
 

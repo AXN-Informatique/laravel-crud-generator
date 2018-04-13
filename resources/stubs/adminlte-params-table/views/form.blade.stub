@@ -1,4 +1,3 @@
-
 <div class="form-group">
     {!! Form::labelRequired('designation', 'Désignation') !!}
     {!! Form::text('designation', old('designation', !empty($record) ? $record->designation : ''), [
