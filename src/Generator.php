@@ -139,6 +139,28 @@ class Generator
     }
 
     /**
+     * Génère le fichier du listing.
+     *
+     * @return string
+     */
+    public function generateListing()
+    {
+        if (!$content = $this->getListingContent()) {
+            return '';
+        }
+
+        $path = app_path('Listings/'.implode('/', $this->sectionSegmentsStudly).'Listing.php');
+
+        if (is_file($path)) {
+            return '';
+        }
+
+        $this->createMissingDirs($path);
+
+        return file_put_contents($path, $content) !== false ? $path : '';
+    }
+
+    /**
      * Génère le fichier des routes.
      *
      * @return string
@@ -278,6 +300,7 @@ class Generator
         $name      = array_pop($sectionSegmentsStudly).'Controller';
         $namespace = $this->appNs.'\Http\Controllers';
         $requestNs = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
+        $listingClass = $this->appNs.'\Listings\\'.implode('\\', $this->sectionSegmentsStudly).'Listing';
 
         if ($sectionSegmentsStudly) {
             $namespace .= '\\'.implode('\\', $sectionSegmentsStudly);
@@ -287,6 +310,33 @@ class Generator
             '{{namespace}}'        => $namespace,
             '{{name}}'             => $name,
             '{{requestNamespace}}' => $requestNs,
+            '{{listingClass}}'     => $listingClass,
+        ]));
+    }
+
+    /**
+     * Retourne le contenu généré pour le listing.
+     *
+     * @return string
+     */
+    protected function getListingContent()
+    {
+        if (!$stub = $this->getListingStub()) {
+            return '';
+        }
+
+        $sectionSegmentsStudly = $this->sectionSegmentsStudly;
+
+        $name      = array_pop($sectionSegmentsStudly).'Listing';
+        $namespace = $this->appNs.'\Listings';
+
+        if ($sectionSegmentsStudly) {
+            $namespace .= '\\'.implode('\\', $sectionSegmentsStudly);
+        }
+
+        return strtr($stub, array_merge($this->getCommonReplacements(), [
+            '{{namespace}}'        => $namespace,
+            '{{name}}'             => $name,
         ]));
     }
 
@@ -439,6 +489,16 @@ class Generator
     protected function getControllerStub()
     {
         return $this->getStub('controller');
+    }
+
+    /**
+     * Retourne le contenu du template du listing.
+     *
+     * @return string
+     */
+    protected function getListingStub()
+    {
+        return $this->getStub('listing');
     }
 
     /**

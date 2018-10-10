@@ -63,6 +63,10 @@ class GenerateCommand extends Command
                 $this->line('<info>Controller generated:</info> '.realpath($generatedFile));
             }
 
+            if ($generatedFile = $generator->generateListing()) {
+                $this->line('<info>Listing generated:</info> '.realpath($generatedFile));
+            }
+
             if ($generatedFile = $generator->generateRoutes()) {
                 $this->line('<info>Routes generated:</info> '.realpath($generatedFile));
             }
