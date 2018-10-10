@@ -1,6 +1,11 @@
 Changelog for Laravel Crud Generator
 ====================================
 
+2.9.0 (2018-10-10)
+------------------
+
+- Ajout de la génération de la classe listing
+
 2.8.0 (2018-09-07)
 ------------------
 

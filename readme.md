@@ -91,6 +91,8 @@ app/
         routes/
             params/
                 commande-statuts.php
+    Listings/
+        CommandeStatutsListing.php
 resources/
     lang/
         fr/
