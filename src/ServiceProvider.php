@@ -1,11 +1,11 @@
 <?php
-
 namespace Axn\CrudGenerator;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
+
     /**
      * Register any application services.
      *
@@ -13,8 +13,8 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('command.crud.generate', function() {
-            return new Console\GenerateCommand;
+        $this->app->singleton('command.crud.generate', function () {
+            return new Console\GenerateCommand();
         });
 
         $this->commands([
@@ -30,7 +30,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../resources/stubs/' => base_path('resources/stubs/vendor/crud-generator'),
+            __DIR__ . '/../resources/stubs/' => base_path('resources/stubs/vendor/crud-generator')
         ], 'crud-generator.stubs');
     }
 

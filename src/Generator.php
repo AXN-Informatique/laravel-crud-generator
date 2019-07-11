@@ -1,9 +1,9 @@
 <?php
-
 namespace Axn\CrudGenerator;
 
 class Generator
 {
+
     /**
      * Nom de la section à générer.
      *
@@ -61,26 +61,65 @@ class Generator
     protected $sectionSegmentsStudly;
 
     /**
+     * Force la génération d'un fichier même s'il existe déjà.
+     *
+     * @var boolean
+     */
+    protected $force = false;
+
+    /**
      * Constructeur.
      *
-     * @param  string $section
-     * @param  string $modelClass
-     * @param  string $stubsGroup
+     * @param string $section
+     * @param string $modelClass
+     * @param string $stubsGroup
+     * @param string $langDir
+     * @param string $viewsDir
      * @return void
      */
-    public function __construct($section, $modelClass, $stubsGroup, $langDir, $viewsDir)
+    public function __construct($section, $modelClass, $stubsGroup, $langDir = null, $viewsDir = null)
     {
         $explodedModelClass = explode('\\', $modelClass);
 
-        $this->section    = $section;
+        $this->section = $section;
         $this->modelClass = $modelClass;
         $this->stubsGroup = $stubsGroup;
-        $this->langDir    = $langDir;
-        $this->viewsDir   = $viewsDir;
+        $this->langDir = $langDir;
+        $this->viewsDir = $viewsDir;
 
         $this->appNs = $explodedModelClass[0];
         $this->sectionSegments = explode('.', $section);
         $this->sectionSegmentsStudly = array_map('studly_case', $this->sectionSegments);
+    }
+
+    /**
+     * Définit s'il faut forcer ou pas la génération d'un fichier même s'il existe déjà.
+     *
+     * @param boolean $force
+     */
+    public function force($force)
+    {
+        $this->force = (bool) $force;
+    }
+
+    /**
+     * Indique s'il faut forcer la génération d'un fichier même s'il existe déjà.
+     *
+     * @return boolean
+     */
+    public function forcing()
+    {
+        return $this->force;
+    }
+
+    /**
+     * Indique s'il ne faut pas forcer la génération d'un fichier quand il existe déjà.
+     *
+     * @return boolean
+     */
+    public function notForcing()
+    {
+        return ! $this->force;
     }
 
     /**
@@ -90,7 +129,7 @@ class Generator
      */
     public function shouldGenerateLang()
     {
-        return $this->getLangStub() !== '' && !is_file($this->getLangPath());
+        return $this->getLangStub() !== '' && ! is_file($this->getLangPath());
     }
 
     /**
@@ -100,16 +139,13 @@ class Generator
      */
     public function getStubsNamesInDirectory($directoryName)
     {
-        if (!$path = $this->getStubDirPath($directoryName)) {
+        if (! $path = $this->getStubDirPath($directoryName)) {
             return [];
         }
 
-        return array_map(
-            function($file) {
-                return basename($file, '.stub');
-            },
-            glob("$path/*.stub")
-        );
+        return array_map(function ($file) {
+            return basename($file, '.stub');
+        }, glob("$path/*.stub"));
     }
 
     // ------------------------------------------------------------------------
@@ -123,13 +159,35 @@ class Generator
      */
     public function generateController()
     {
-        if (!$content = $this->getControllerContent()) {
+        $path = app_path('Http/Controllers/' . implode('/', $this->sectionSegmentsStudly) . 'Controller.php');
+
+        if (is_file($path) && $this->notForcing()) {
             return '';
         }
 
-        $path = app_path('Http/Controllers/'.implode('/', $this->sectionSegmentsStudly).'Controller.php');
+        if (! $content = $this->getControllerContent()) {
+            return '';
+        }
 
-        if (is_file($path)) {
+        $this->createMissingDirs($path);
+
+        return file_put_contents($path, $content) !== false ? $path : '';
+    }
+
+    /**
+     * Génère le fichier d'options.
+     *
+     * @return string
+     */
+    public function generateOptionsTrait()
+    {
+        $path = app_path('Traits/' . implode('/', $this->sectionSegmentsStudly) . 'OptionsTrait.php');
+
+        if (is_file($path) && $this->notForcing()) {
+            return '';
+        }
+
+        if (! $content = $this->getOptionsTraitContent()) {
             return '';
         }
 
@@ -145,13 +203,13 @@ class Generator
      */
     public function generateListing()
     {
-        if (!$content = $this->getListingContent()) {
+        $path = app_path('Listings/' . implode('/', $this->sectionSegmentsStudly) . 'Listing.php');
+
+        if (is_file($path) && $this->notForcing()) {
             return '';
         }
 
-        $path = app_path('Listings/'.implode('/', $this->sectionSegmentsStudly).'Listing.php');
-
-        if (is_file($path)) {
+        if (! $content = $this->getListingContent()) {
             return '';
         }
 
@@ -167,17 +225,17 @@ class Generator
      */
     public function generateRoutes()
     {
-        if (!$content = $this->getRoutesContent()) {
+        if (version_compare(app()->version(), '5.3.0', '<')) {
+            $path = app_path('Http/routes/' . implode('/', $this->sectionSegments) . '.php');
+        } else {
+            $path = base_path('routes/web/' . implode('/', $this->sectionSegments) . '.php');
+        }
+
+        if (is_file($path) && $this->notForcing()) {
             return '';
         }
 
-        if (version_compare(app()->version(), '5.3.0', '<')) {
-            $path = app_path('Http/routes/'.implode('/', $this->sectionSegments).'.php');
-        } else {
-            $path = base_path('routes/web/'.implode('/', $this->sectionSegments).'.php');
-        }
-
-        if (is_file($path)) {
+        if (! $content = $this->getRoutesContent()) {
             return '';
         }
 
@@ -189,20 +247,20 @@ class Generator
     /**
      * Génère le fichier des traductions.
      *
-     * @param  string  $singular
-     * @param  string  $plural
-     * @param  boolean $feminine
+     * @param string $singular
+     * @param string $plural
+     * @param boolean $feminine
      * @return string
      */
     public function generateLang($singular, $plural, $feminine)
     {
-        if (!$content = $this->getLangContent($singular, $plural, $feminine)) {
+        $path = $this->getLangPath();
+
+        if (is_file($path) && $this->notForcing()) {
             return '';
         }
 
-        $path = $this->getLangPath();
-
-        if (is_file($path)) {
+        if (! $content = $this->getLangContent($singular, $plural, $feminine)) {
             return '';
         }
 
@@ -214,18 +272,18 @@ class Generator
     /**
      * Génère le fichier d'une requête.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     public function generateRequest($name)
     {
-        if (!$content = $this->getRequestContent($name)) {
+        $path = app_path('Http/Requests/' . implode('/', $this->sectionSegmentsStudly) . '/' . studly_case($name) . '.php');
+
+        if (is_file($path) && $this->notForcing()) {
             return '';
         }
 
-        $path = app_path('Http/Requests/'.implode('/', $this->sectionSegmentsStudly).'/'.studly_case($name).'.php');
-
-        if (is_file($path)) {
+        if (! $content = $this->getRequestContent($name)) {
             return '';
         }
 
@@ -237,24 +295,24 @@ class Generator
     /**
      * Génère le fichier d'une vue.
      *
-     * @param  string $name
+     * @param string $name
      * @return boolean
      */
     public function generateView($name)
     {
-        if (!$content = $this->getViewContent($name)) {
-            return '';
-        }
-
         $sectionSegments = $this->sectionSegments;
 
         if ($this->viewsDir) {
             array_unshift($sectionSegments, $this->viewsDir);
         }
 
-        $path = base_path('resources/views/'.implode('/', $sectionSegments).'/'.$name.'.php');
+        $path = base_path('resources/views/' . implode('/', $sectionSegments) . '/' . $name . '.php');
 
-        if (is_file($path)) {
+        if (is_file($path) && $this->notForcing()) {
+            return '';
+        }
+
+        if (! $content = $this->getViewContent($name)) {
             return '';
         }
 
@@ -266,16 +324,23 @@ class Generator
     /**
      * Ajoute les breadcrumbs au fichier de breadcrumbs app/Http/breadcrumbs.php
      *
-     * @param  string $title
+     * @param string $title
+     * @param string $path
      * @return string
      */
-    public function appendBreadcrumbs($title)
+    public function appendBreadcrumbs($title, $path = null)
     {
-        if (!$content = $this->getBreadcrumbsContent($title)) {
+        if ($path === null) {
+            $path = app_path('Http/breadcrumbs.php');
+        }
+
+        if (! file_exists($path)) {
             return '';
         }
 
-        $path = app_path('Http/breadcrumbs.php');
+        if (! $content = $this->getBreadcrumbsContent($title)) {
+            return '';
+        }
 
         return file_put_contents($path, $content, FILE_APPEND) !== false ? $path : '';
     }
@@ -291,26 +356,50 @@ class Generator
      */
     protected function getControllerContent()
     {
-        if (!$stub = $this->getControllerStub()) {
+        if (! $stub = $this->getControllerStub()) {
             return '';
         }
 
         $sectionSegmentsStudly = $this->sectionSegmentsStudly;
 
-        $name      = array_pop($sectionSegmentsStudly).'Controller';
-        $namespace = $this->appNs.'\Http\Controllers';
-        $requestNs = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
-        $listingClass = $this->appNs.'\Listings\\'.implode('\\', $this->sectionSegmentsStudly).'Listing';
+        $name = array_pop($sectionSegmentsStudly) . 'Controller';
+        $namespace = $this->appNs . '\\Http\Controllers';
+        $requestNs = $this->appNs . '\\Http\Requests\\' . implode('\\', $this->sectionSegmentsStudly);
 
         if ($sectionSegmentsStudly) {
-            $namespace .= '\\'.implode('\\', $sectionSegmentsStudly);
+            $namespace .= '\\' . implode('\\', $sectionSegmentsStudly);
         }
 
         return strtr($stub, array_merge($this->getCommonReplacements(), [
-            '{{namespace}}'        => $namespace,
-            '{{name}}'             => $name,
-            '{{requestNamespace}}' => $requestNs,
-            '{{listingClass}}'     => $listingClass,
+            '{{namespace}}' => $namespace,
+            '{{name}}' => $name,
+            '{{requestNamespace}}' => $requestNs
+        ]));
+    }
+
+    /**
+     * Retourne le contenu généré pour le trait d'options.
+     *
+     * @return string
+     */
+    protected function getOptionsTraitContent()
+    {
+        if (! $stub = $this->getOptionsTraitStub()) {
+            return '';
+        }
+
+        $sectionSegmentsStudly = $this->sectionSegmentsStudly;
+
+        $name = array_pop($sectionSegmentsStudly) . 'OptionsTrait';
+        $namespace = $this->appNs . '\Traits';
+
+        if ($sectionSegmentsStudly) {
+            $namespace .= '\\' . implode('\\', $sectionSegmentsStudly);
+        }
+
+        return strtr($stub, array_merge($this->getCommonReplacements(), [
+            '{{namespace}}' => $namespace,
+            '{{name}}' => $name
         ]));
     }
 
@@ -321,22 +410,22 @@ class Generator
      */
     protected function getListingContent()
     {
-        if (!$stub = $this->getListingStub()) {
+        if (! $stub = $this->getListingStub()) {
             return '';
         }
 
         $sectionSegmentsStudly = $this->sectionSegmentsStudly;
 
-        $name      = array_pop($sectionSegmentsStudly).'Listing';
-        $namespace = $this->appNs.'\Listings';
+        $name = array_pop($sectionSegmentsStudly) . 'Listing';
+        $namespace = $this->appNs . '\Listings';
 
         if ($sectionSegmentsStudly) {
-            $namespace .= '\\'.implode('\\', $sectionSegmentsStudly);
+            $namespace .= '\\' . implode('\\', $sectionSegmentsStudly);
         }
 
         return strtr($stub, array_merge($this->getCommonReplacements(), [
-            '{{namespace}}'        => $namespace,
-            '{{name}}'             => $name,
+            '{{namespace}}' => $namespace,
+            '{{name}}' => $name
         ]));
     }
 
@@ -347,113 +436,119 @@ class Generator
      */
     protected function getRoutesContent()
     {
-        if (!$stub = $this->getRoutesStub()) {
+        if (! $stub = $this->getRoutesStub()) {
             return '';
         }
 
         return strtr($stub, array_merge($this->getCommonReplacements(), [
-            '{{baseUrl}}'    => implode('/', $this->sectionSegments),
-            '{{controller}}' => implode('\\', $this->sectionSegmentsStudly).'Controller',
+            '{{baseUrl}}' => implode('/', $this->sectionSegments),
+            '{{controller}}' => implode('\\', $this->sectionSegmentsStudly) . 'Controller'
         ]));
     }
 
     /**
      * Retourne le contenu généré pour les breadcrumbs.
      *
-     * @param  string $title
+     * @param string $title
      * @return array
      */
     protected function getBreadcrumbsContent($title)
     {
-        if (!$stub = $this->getBreadcrumbsStub()) {
+        if (! $stub = $this->getBreadcrumbsStub()) {
             return '';
         }
 
         return strtr($stub, array_merge($this->getCommonReplacements(), [
-            '{{title}}' => ucfirst($title),
+            '{{title}}' => ucfirst($title)
         ]));
     }
 
     /**
      * Retourne le contenu généré pour le fichier des traductions (en français).
      *
-     * @param  string  $singular
-     * @param  string  $plural
-     * @param  boolean $feminine
+     * @param string $singular
+     * @param string $plural
+     * @param boolean $feminine
      * @return array
      */
     protected function getLangContent($singular, $plural, $feminine)
     {
-        if (!$stub = $this->getLangStub()) {
+        if (! $stub = $this->getLangStub()) {
             return '';
         }
 
-        $lcfSingular     = lcfirst($singular);
-        $lcfPlural       = lcfirst($plural);
-        $startsWithVowel = starts_with($lcfSingular, ['a', 'e', 'i', 'o', 'u']);
-        $lcfDefArticle   = ($startsWithVowel ? "l’" : ($feminine ? 'la ' : 'le '));
-        $ucfDefArticle   = ucfirst($lcfDefArticle);
+        $lcfSingular = lcfirst($singular);
+        $lcfPlural = lcfirst($plural);
+        $startsWithVowel = starts_with($lcfSingular, [
+            'a',
+            'e',
+            'i',
+            'o',
+            'u'
+        ]);
+        $lcfDefArticle = ($startsWithVowel ? "l’" : ($feminine ? 'la ' : 'le '));
+        $ucfDefArticle = ucfirst($lcfDefArticle);
         $lcfUndefArticle = ($feminine ? 'une' : 'un');
 
         return strtr($stub, [
-            '{{storeSuccess}}'     => "{$ucfDefArticle}$lcfSingular a été ".($feminine ? 'créée' : 'créé')." avec succès.",
-            '{{updateSuccess}}'    => "{$ucfDefArticle}$lcfSingular a été ".($feminine ? 'mise' : 'mis')." à jour avec succès.",
-            '{{enableSuccess}}'    => "{$ucfDefArticle}$lcfSingular a été ".($feminine ? 'activée' : 'activé')." avec succès.",
-            '{{disableSuccess}}'   => "{$ucfDefArticle}$lcfSingular a été ".($feminine ? 'désactivée' : 'désactivé')." avec succès.",
-            '{{sortSuccess}}'      => "L’ordre des $lcfPlural a été modifié avec succès.",
-            '{{destroySuccess}}'   => "{$ucfDefArticle}$lcfSingular a été ".($feminine ? 'supprimée' : 'supprimé')." avec succès.",
-            '{{destroyFailure}}'   => "Suppression impossible : {$lcfDefArticle}$lcfSingular est peut-être ".($feminine ? 'liée' : 'lié')." à d’autres enregistrements.",
-            '{{countZero}}'        => ($feminine ? 'aucune' : 'aucun')." $singular",
-            '{{countOne}}'         => "$lcfUndefArticle $singular",
-            '{{countMany}}'        => ":count $plural",
+            '{{storeSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'créée' : 'créé') . " avec succès.",
+            '{{updateSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'mise' : 'mis') . " à jour avec succès.",
+            '{{enableSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'activée' : 'activé') . " avec succès.",
+            '{{disableSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'désactivée' : 'désactivé') . " avec succès.",
+            '{{sortSuccess}}' => "L’ordre des $lcfPlural a été modifié avec succès.",
+            '{{destroySuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'supprimée' : 'supprimé') . " avec succès.",
+            '{{destroyFailure}}' => "Suppression impossible : {$lcfDefArticle}$lcfSingular est peut-être " . ($feminine ? 'liée' : 'lié') . " à d’autres enregistrements.",
+            '{{countZero}}' => ($feminine ? 'aucune' : 'aucun') . " $singular",
+            '{{countOne}}' => "$lcfUndefArticle $singular",
+            '{{countMany}}' => ":count $plural",
             '{{breadcrumbsIndex}}' => ucfirst($lcfPlural),
-            '{{listTitle}}'        => "Liste des $lcfPlural",
-            '{{listSummary}}'      => "Liste des :count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur un total de :total.",
-            '{{listSummarySimple}}'=> ":count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur :total",
-            '{{statusActive}}'     => ($feminine ? trans('common::status.active_fem') : trans('common::status.active')),
-            '{{statusInactive}}'   => ($feminine ? trans('common::status.inactive_fem') : trans('common::status.inactive')),
-            '{{listEmpty}}'        => "Il n’y a ".($feminine ? 'aucune' : 'aucun')." $lcfSingular à afficher.",
-            '{{createButton}}'     => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau'))." $lcfSingular",
-            '{{editTooltip}}'      => "Modifier {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
-            '{{enableTooltip}}'    => "Activer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
-            '{{disableTooltip}}'   => "Désactiver {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
-            '{{destroyTooltip}}'   => "Supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
-            '{{destroyConfirm}}'   => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
-            '{{createTitle}}'      => "Création d’{$lcfUndefArticle} ".($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau'))." $lcfSingular",
-            '{{createFormTitle}}'  => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau'))." $lcfSingular",
-            '{{editTitle}}'        => "Modification d’{$lcfUndefArticle} $lcfSingular",
-            '{{editFormTitle}}'    => "Modification d’{$lcfUndefArticle} $lcfSingular",
+            '{{listTitle}}' => "Liste des $lcfPlural",
+            '{{listSummary}}' => "Liste des :count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur un total de :total.",
+            '{{listSummarySimple}}' => ":count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur :total",
+            '{{statusActive}}' => ($feminine ? trans('common::status.active_fem') : trans('common::status.active')),
+            '{{statusInactive}}' => ($feminine ? trans('common::status.inactive_fem') : trans('common::status.inactive')),
+            '{{listEmpty}}' => "Il n’y a " . ($feminine ? 'aucune' : 'aucun') . " $lcfSingular à afficher.",
+            '{{createButton}}' => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau')) . " $lcfSingular",
+            '{{editTooltip}}' => "Modifier {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
+            '{{enableTooltip}}' => "Activer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
+            '{{disableTooltip}}' => "Désactiver {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
+            '{{destroyTooltip}}' => "Supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;».",
+            '{{destroyConfirm}}' => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
+            '{{createTitle}}' => "Création d’{$lcfUndefArticle} " . ($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau')) . " $lcfSingular",
+            '{{createFormTitle}}' => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau')) . " $lcfSingular",
+            '{{editTitle}}' => "Modification d’{$lcfUndefArticle} $lcfSingular",
+            '{{editFormTitle}}' => "Modification d’{$lcfUndefArticle} $lcfSingular"
         ]);
     }
 
     /**
      * Retourne le contenu généré pour une requête.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getRequestContent($name)
     {
-        if (!$stub = $this->getRequestStub($name)) {
+        if (! $stub = $this->getRequestStub($name)) {
             return '';
         }
 
-        $namespace = $this->appNs.'\Http\Requests\\'.implode('\\', $this->sectionSegmentsStudly);
+        $namespace = $this->appNs . '\Http\Requests\\' . implode('\\', $this->sectionSegmentsStudly);
 
         return strtr($stub, array_merge($this->getCommonReplacements(), [
-            '{{namespace}}' => $namespace,
+            '{{namespace}}' => $namespace
         ]));
     }
 
     /**
      * Retourne le contenu généré pour une vue.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getViewContent($name)
     {
-        if (!$stub = $this->getViewStub($name)) {
+        if (! $stub = $this->getViewStub($name)) {
             return '';
         }
 
@@ -471,9 +566,11 @@ class Generator
             '{{sectionBaseName}}' => end($this->sectionSegments),
             '{{studlySectionBaseName}}' => end($this->sectionSegmentsStudly),
             '{{routeBaseAlias}}' => $this->section,
-            '{{langBaseKey}}'    => ($this->langDir ? $this->langDir.'/' : '').implode('/', $this->sectionSegments),
-            '{{viewBaseName}}'   => ($this->viewsDir ? $this->viewsDir.'.' : '').$this->section,
-            '{{modelClass}}'     => $this->modelClass,
+            '{{langBaseKey}}' => ($this->langDir ? $this->langDir . '/' : '') . implode('/', $this->sectionSegments),
+            '{{viewBaseName}}' => ($this->viewsDir ? $this->viewsDir . '.' : '') . $this->section,
+            '{{modelClass}}' => $this->modelClass,
+            '{{listingClass}}' => $this->appNs . '\\Listings\\' . implode('\\', $this->sectionSegmentsStudly) . 'Listing',
+            '{{optionsTrait}}' => $this->appNs . '\\Traits\\' . implode('\\', $this->sectionSegmentsStudly) . 'OptionsTrait'
         ];
     }
 
@@ -489,6 +586,16 @@ class Generator
     protected function getControllerStub()
     {
         return $this->getStub('controller');
+    }
+
+    /**
+     * Retourne le contenu du template du trait des options.
+     *
+     * @return string
+     */
+    protected function getOptionsTraitStub()
+    {
+        return $this->getStub('optionsTrait');
     }
 
     /**
@@ -514,7 +621,7 @@ class Generator
     /**
      * Retourne le contenu du template des breadcrumbs.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getBreadcrumbsStub()
@@ -525,7 +632,7 @@ class Generator
     /**
      * Retourne le contenu du template du fichier des traductions.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getLangStub()
@@ -536,7 +643,7 @@ class Generator
     /**
      * Retourne le contenu du template d'une requête.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getRequestStub($name)
@@ -547,7 +654,7 @@ class Generator
     /**
      * Retourne le contenu du template d'une vue.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getViewStub($name)
@@ -558,7 +665,7 @@ class Generator
     /**
      * Retourne le contenu d'un template.
      *
-     * @param  string $name
+     * @param string $name
      * @return string
      */
     protected function getStub($name)
@@ -567,7 +674,7 @@ class Generator
             return file_get_contents($path);
         }
 
-        if (is_file($path = __DIR__."/../resources/stubs/{$this->stubsGroup}/$name.stub")) {
+        if (is_file($path = __DIR__ . "/../resources/stubs/{$this->stubsGroup}/$name.stub")) {
             return file_get_contents($path);
         }
 
@@ -577,7 +684,7 @@ class Generator
     /**
      * Retourne le chemin complet vers un répertoire de remplates.
      *
-     * @param  string $dirName
+     * @param string $dirName
      * @return string
      */
     protected function getStubDirPath($dirName)
@@ -586,7 +693,7 @@ class Generator
             return $path;
         }
 
-        if (is_dir($path = __DIR__."/../resources/stubs/{$this->stubsGroup}/$dirName/")) {
+        if (is_dir($path = __DIR__ . "/../resources/stubs/{$this->stubsGroup}/$dirName/")) {
             return $path;
         }
 
@@ -606,7 +713,7 @@ class Generator
             array_unshift($sectionSegments, $this->langDir);
         }
 
-        return base_path('resources/lang/fr/'.implode('/', $sectionSegments).'.php');
+        return base_path('resources/lang/fr/' . implode('/', $sectionSegments) . '.php');
     }
 
     // ------------------------------------------------------------------------
@@ -616,12 +723,12 @@ class Generator
     /**
      * Crée les sous-dossiers d'un fichier si ceux-ci n'existent pas.
      *
-     * @param  string $filePath
+     * @param string $filePath
      * @return void
      */
     protected function createMissingDirs($filePath)
     {
-        if (!is_dir($dirPath = dirname($filePath))) {
+        if (! is_dir($dirPath = dirname($filePath))) {
             mkdir($dirPath, 0755, true);
         }
     }

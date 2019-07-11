@@ -1,5 +1,4 @@
 <?php
-
 namespace Axn\CrudGenerator\Console;
 
 use ReflectionClass, ReflectionException, Exception;
@@ -10,6 +9,7 @@ use Axn\CrudGenerator\Generator;
 
 class GenerateCommand extends Command
 {
+
     /**
      * Nom de la commande.
      *
@@ -32,69 +32,74 @@ class GenerateCommand extends Command
     public function handle()
     {
         // Arguments
-        $section    = $this->argument('section');
+        $section = $this->argument('section');
         $modelClass = $this->argument('model');
 
-        if (!$this->isValidModel($modelClass)) {
+        if (! $this->isValidModel($modelClass)) {
             $this->error("$modelClass is not instantiable or is not an instance of Illuminate\Database\Eloquent\Model");
             return;
         }
 
         // Options
-        $stubsGroup  = $this->option('stubs');
-        $langDir     = $this->option('langdir');
-        $viewsDir    = $this->option('viewsdir');
+        $stubsGroup = $this->option('stubs');
+        $langDir = $this->option('langdir');
+        $viewsDir = $this->option('viewsdir');
         $breadcrumbs = $this->option('breadcrumbs');
+        $force = $this->option('force');
 
         $generator = new Generator($section, $modelClass, $stubsGroup, $langDir, $viewsDir);
+
+        $generator->force($force);
 
         // Questions, si nécessaire
         if ($generator->shouldGenerateLang()) {
             $singular = $this->fixEncoding($this->ask('Singular name of the section (fr)'));
-            $plural   = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
+            $plural = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
             $feminine = $this->confirm('Feminine? [y|n]', false);
-        }
-        elseif ($breadcrumbs) {
-            $plural   = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
+        } elseif ($breadcrumbs) {
+            $plural = $this->fixEncoding($this->ask('Plural name of the section (fr)'));
         }
 
         try {
             if ($generatedFile = $generator->generateController()) {
-                $this->line('<info>Controller generated:</info> '.realpath($generatedFile));
+                $this->line('<info>Controller generated:</info> ' . realpath($generatedFile));
+            }
+
+            if ($generatedFile = $generator->generateOptionsTrait()) {
+                $this->line('<info>Options trait generated:</info> ' . realpath($generatedFile));
             }
 
             if ($generatedFile = $generator->generateListing()) {
-                $this->line('<info>Listing generated:</info> '.realpath($generatedFile));
+                $this->line('<info>Listing generated:</info> ' . realpath($generatedFile));
             }
 
             if ($generatedFile = $generator->generateRoutes()) {
-                $this->line('<info>Routes generated:</info> '.realpath($generatedFile));
+                $this->line('<info>Routes generated:</info> ' . realpath($generatedFile));
             }
 
             if ($generator->shouldGenerateLang()) {
                 if ($generatedFile = $generator->generateLang($singular, $plural, $feminine)) {
-                    $this->line('<info>Translations generated:</info> '.realpath($generatedFile));
+                    $this->line('<info>Translations generated:</info> ' . realpath($generatedFile));
                 }
             }
 
             foreach ($generator->getStubsNamesInDirectory('requests') as $requestName) {
                 if ($generatedFile = $generator->generateRequest($requestName)) {
-                    $this->line('<info>Request generated:</info> '.realpath($generatedFile));
+                    $this->line('<info>Request generated:</info> ' . realpath($generatedFile));
                 }
             }
 
             foreach ($generator->getStubsNamesInDirectory('views') as $viewName) {
                 if ($generatedFile = $generator->generateView($viewName)) {
-                    $this->line('<info>View generated:</info> '.realpath($generatedFile));
+                    $this->line('<info>View generated:</info> ' . realpath($generatedFile));
                 }
             }
 
             if ($breadcrumbs && ($breadcrumbsFile = $generator->appendBreadcrumbs($plural))) {
-                $this->line('<info>Breadcrumbs appended to:</info> '.realpath($breadcrumbsFile));
+                $this->line('<info>Breadcrumbs appended to:</info> ' . realpath($breadcrumbsFile));
             }
-        }
-        catch (Exception $e) {
-            $this->error('Exception catched: '.$e->getMessage());
+        } catch (Exception $e) {
+            $this->error('Exception catched: ' . $e->getMessage());
             $this->line($e->getTraceAsString());
         }
     }
@@ -103,7 +108,7 @@ class GenerateCommand extends Command
      * Indique si la classe modèle est bien instanciable et est bien une instance
      * de Illuminate\Database\Eloquent\Model.
      *
-     * @param  string $modelClass
+     * @param string $modelClass
      * @return boolean
      */
     protected function isValidModel($modelClass)
@@ -111,10 +116,8 @@ class GenerateCommand extends Command
         try {
             $rc = new ReflectionClass($modelClass);
 
-            return $rc->isInstantiable()
-                && $rc->isSubclassOf('Illuminate\Database\Eloquent\Model');
-        }
-        catch (ReflectionException $e) {
+            return $rc->isInstantiable() && $rc->isSubclassOf('Illuminate\Database\Eloquent\Model');
+        } catch (ReflectionException $e) {
             return false;
         }
     }
@@ -123,7 +126,7 @@ class GenerateCommand extends Command
      * Corrige le problème d'encodage des caractères sous Windows lorsque l'input
      * provient de la console (saisie utilisateur).
      *
-     * @param  string $input
+     * @param string $input
      * @return string
      */
     protected function fixEncoding($input)
@@ -139,30 +142,61 @@ class GenerateCommand extends Command
     }
 
     /**
-	 * Get the console command arguments.
-	 *
-	 * @return array
-	 */
-	protected function getArguments()
-	{
-		return [
-			['section', InputArgument::REQUIRED, 'Section name.'],
-            ['model', InputArgument::REQUIRED, 'Model class name (with namespace).'],
-		];
-	}
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            [
+                'section',
+                InputArgument::REQUIRED,
+                'Section name.'
+            ],
+            [
+                'model',
+                InputArgument::REQUIRED,
+                'Model class name (with namespace).'
+            ]
+        ];
+    }
 
-	/**
-	 * Get the console command options.
-	 *
-	 * @return array
-	 */
-	protected function getOptions()
-	{
-		return [
-            ['stubs', null, InputOption::VALUE_OPTIONAL, 'Stubs group to use.', 'default'],
-            ['langdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for lang file.', ''],
-            ['viewsdir', null, InputOption::VALUE_OPTIONAL, 'Sub-directory for views files.', ''],
-            ['breadcrumbs', 'b', InputOption::VALUE_NONE, 'Append breadcrumbs to breadcrumbs file.'],
-		];
-	}
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            [
+                'stubs',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Stubs group to use.',
+                'default'
+            ],
+            [
+                'langdir',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Sub-directory for lang file.',
+                ''
+            ],
+            [
+                'viewsdir',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Sub-directory for views files.',
+                ''
+            ],
+            [
+                'breadcrumbs',
+                'b',
+                InputOption::VALUE_NONE,
+                'Append breadcrumbs to breadcrumbs file.'
+            ]
+        ];
+    }
 }

@@ -1,64 +1,70 @@
 Changelog
 =========
 
+2.11.0 (2019-07-12)
+-------------------
+
+- Added "force" option
+- Added generation of the "options" trait
+
 2.10.0 (2019-03-07)
 -------------------
 
-- Add Laravel 5.8.* support
+- Added Laravel 5.8.* support
 
 2.9.0 (2018-10-10)
 ------------------
 
-- Ajout de la génération de la classe listing
+- Added generation of the "Listing" class
 
 2.8.0 (2018-09-07)
 ------------------
 
-- Add Laravel 5.7.* support
+- Added Laravel 5.7.* support
 
 2.7.0 (2018-07-04)
 ------------------
 
-- Add Laravel 5.6.* support
+- Added Laravel 5.6.* support
 
 2.6.4 (2018-04-13)
 ------------------
 
-- fixes on "adminlte-params-table" stubs set
+- Fixes on "adminlte-params-table" stubs set
 
 2.6.3 (2018-04-12)
 ------------------
 
-- typo
+- Fixed typo
 
 2.6.2 (2018-04-12)
 ------------------
 
-- add {{countZero}} {{countOne}} {{countMany}} lang replacement
+- Added {{countZero}} {{countOne}} {{countMany}} lang replacement
 
 2.6.1 (2018-04-12)
 ------------------
 
-- enhance "adminlte-params-table" stubs set
-- add {{listSummarySimple}} lang replacement
+- Enhanced "adminlte-params-table" stubs set
+- Added {{listSummarySimple}} lang replacement
 
 2.6.0 (2018-04-11)
 ------------------
 
-- add new stubs set "adminlte-params-table"
-- add searchable abilities
-- add {{listSummary}} lang replacements
+- Added new stubs set "adminlte-params-table"
+- Added searchable abilities
+- Added {{listSummary}} lang replacements
 
 2.5.0 (2018-04-09)
 ------------------
 
-- add new stubs set "adminlte-params-list"
-- add {{createFormTitle}} and {{editFormTitle}} lang replacements
+- Added new stubs set "adminlte-params-list"
+- Added {{createFormTitle}} and {{editFormTitle}} lang replacements
 
 2.4.3 (2018-04-09)
 ------------------
 
-- add {{studlySectionBaseName}} common replacement
+- Added {{studlySectionBaseName}} common replacement
 
 2.4.2 (2018-04-09)
 ------------------
@@ -68,22 +74,22 @@ Changelog
 2.4.1 (2018-04-07)
 ------------------
 
-- handle routes path for Laravel >= 5.3
+- Fixed handle routes path for Laravel >= 5.3
 
 2.4.0 (2017-10-02)
 ------------------
 
-- add support for Laravel 5.5
+- Added Laravel 5.5.* support
 
 2.3.1 (2017-02-01)
 ------------------
 
-- fix singleton method call
+- Fixed singleton method call
 
 2.3.0 (2017-01-31)
 ------------------
 
-- Laravel 5.4.x support
+- Added Laravel 5.4.* support
 
 2.2.1 (2016-11-02)
 ------------------
