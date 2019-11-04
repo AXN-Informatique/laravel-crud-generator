@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.12.1 (2019-11-04)
+-------------------
+
+- Remove ending dot from tooltips translations
+
 2.12.0 (2019-11-04)
 -------------------
 
