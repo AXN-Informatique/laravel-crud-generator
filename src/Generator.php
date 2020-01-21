@@ -1,5 +1,8 @@
 <?php
+
 namespace Axn\CrudGenerator;
+
+use Illuminate\Support\Str;
 
 class Generator
 {
@@ -88,7 +91,7 @@ class Generator
 
         $this->appNs = $explodedModelClass[0];
         $this->sectionSegments = explode('.', $section);
-        $this->sectionSegmentsStudly = array_map('studly_case', $this->sectionSegments);
+        $this->sectionSegmentsStudly = array_map('Str::studly', $this->sectionSegments);
     }
 
     /**
@@ -276,7 +279,7 @@ class Generator
      */
     public function generateRequest($name)
     {
-        $path = app_path('Http/Requests/' . implode('/', $this->sectionSegmentsStudly) . '/' . studly_case($name) . '.php');
+        $path = app_path('Http/Requests/' . implode('/', $this->sectionSegmentsStudly) . '/' . Str::studly($name) . '.php');
 
         if (is_file($path) && $this->notForcing()) {
             return '';
@@ -478,7 +481,7 @@ class Generator
 
         $lcfSingular = lcfirst($singular);
         $lcfPlural = lcfirst($plural);
-        $startsWithVowel = starts_with($lcfSingular, [
+        $startsWithVowel = Str::startsWith($lcfSingular, [
             'a',
             'e',
             'i',
