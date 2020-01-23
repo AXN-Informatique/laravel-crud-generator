@@ -1,10 +1,16 @@
 Changelog
 =========
 
+2.14.0 (2020-01-23)
+-------------------
+
+- Move generated "Listing" classes into "Http\Listings" directory
+
+
 2.13.1 (2020-01-21)
 -------------------
 
-- Remove deprecated str_ helpers
+- Use Illuminate\Support\Str class instead of deleted helpers
 
 
 2.13.0 (2019-12-31)

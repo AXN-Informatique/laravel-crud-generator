@@ -205,7 +205,7 @@ class Generator
      */
     public function generateListing()
     {
-        $path = app_path('Listings/' . implode('/', $this->sectionSegmentsStudly) . 'Listing.php');
+        $path = app_path('Http/Listings/' . implode('/', $this->sectionSegmentsStudly) . 'Listing.php');
 
         if (is_file($path) && $this->notForcing()) {
             return '';
@@ -419,7 +419,7 @@ class Generator
         $sectionSegmentsStudly = $this->sectionSegmentsStudly;
 
         $name = array_pop($sectionSegmentsStudly) . 'Listing';
-        $namespace = $this->appNs . '\Listings';
+        $namespace = $this->appNs . '\\Http\\Listings';
 
         if ($sectionSegmentsStudly) {
             $namespace .= '\\' . implode('\\', $sectionSegmentsStudly);
@@ -583,7 +583,7 @@ class Generator
             '{{viewBaseName}}' => ($this->viewsDir ? $this->viewsDir . '.' : '') . $this->section,
             '{{htmlIdentifierBase}}' => str_replace('.', '-', $this->section),
             '{{modelClass}}' => $this->modelClass,
-            '{{listingClass}}' => $this->appNs . '\\Listings\\' . implode('\\', $this->sectionSegmentsStudly) . 'Listing',
+            '{{listingClass}}' => $this->appNs . '\\Http\\Listings\\' . implode('\\', $this->sectionSegmentsStudly) . 'Listing',
             '{{optionsTrait}}' => $this->appNs . '\\Traits\\' . implode('\\', $this->sectionSegmentsStudly) . 'OptionsTrait'
         ];
     }

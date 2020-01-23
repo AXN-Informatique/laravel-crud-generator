@@ -88,11 +88,8 @@ app/
                     StoreRequest.php
                     UpdateRequest.php
                     UpdateContentRequest.php
-        routes/
-            params/
-                commande-statuts.php
-    Listings/
-        CommandeStatutsListing.php
+        Listings/
+            CommandeStatutsListing.php
 resources/
     lang/
         fr/
@@ -107,6 +104,9 @@ resources/
                     panel-create.blade.php
                     panel-edit.blade.php
                     form.blade.php
+routes/
+    params/
+        commande-statuts.php
 ```
 
 Attention à ne pas oublier d'inclure le fichier de routes :
