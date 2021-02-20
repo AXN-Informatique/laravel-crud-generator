@@ -498,37 +498,54 @@ class Generator
             '{{enableSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'activée' : 'activé') . " avec succès.",
             '{{disableSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'désactivée' : 'désactivé') . " avec succès.",
             '{{sortSuccess}}' => "L’ordre des $lcfPlural a été modifié avec succès.",
+            '{{archiveSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'archivée' : 'archivé') . " avec succès.",
             '{{deleteSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'supprimée' : 'supprimé') . " avec succès.",
             '{{restoreSuccess}}' => "{$ucfDefArticle}$lcfSingular a été " . ($feminine ? 'restaurée' : 'restauré') . " avec succès.",
             '{{destroySuccess}}' => "{$ucfDefArticle}$lcfSingular a été définitivement " . ($feminine ? 'supprimée' : 'supprimé') . " avec succès.",
             '{{destroyFailure}}' => "Suppression impossible : {$lcfDefArticle}$lcfSingular est peut-être " . ($feminine ? 'liée' : 'lié') . " à d’autres enregistrements.",
+
             '{{countZero}}' => ($feminine ? 'aucune' : 'aucun') . " $singular",
             '{{countOne}}' => "$lcfUndefArticle $singular",
             '{{countMany}}' => ":count $plural",
             '{{breadcrumbsIndex}}' => ucfirst($lcfPlural),
             '{{breadcrumbsList}}' => ucfirst($lcfPlural),
+
             '{{listTitle}}' => "Liste des $lcfPlural",
             '{{listSummary}}' => "Liste des :count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur un total de :total",
             '{{listSummarySimple}}' => ":count $lcfPlural de <strong>:firstItem à :lastItem</strong> sur :total",
             '{{listEmpty}}' => "Il n’y a " . ($feminine ? 'aucune' : 'aucun') . " $lcfSingular.",
+
+            '{{archivesTitle}}' => "Liste des $lcfPlural dans les archives",
+            '{{archivesSummary}}' => "Liste des :count $lcfPlural dans les archives de <strong>:firstItem à :lastItem</strong> sur un total de :total",
+            '{{archivesSummarySimple}}' => ":count $lcfPlural dans les archives de <strong>:firstItem à :lastItem</strong> sur :total",
+            '{{archivesEmpty}}' => "Il n’y a " . ($feminine ? 'aucune' : 'aucun') . " $lcfSingular dans les archives.",
+
             '{{recycleBinTitle}}' => "Liste des $lcfPlural dans la corbeille",
             '{{recycleBinSummary}}' => "Liste des :count $lcfPlural dans la corbeille de <strong>:firstItem à :lastItem</strong> sur un total de :total",
             '{{recycleBinSummarySimple}}' => ":count $lcfPlural dans la corbeille de <strong>:firstItem à :lastItem</strong> sur :total",
             '{{recycleBinEmpty}}' => "Il n’y a " . ($feminine ? 'aucune' : 'aucun') . " $lcfSingular dans la corbeille.",
+
             '{{statusActive}}' => ($feminine ? trans('common::status.active_fem') : trans('common::status.active')),
             '{{statusInactive}}' => ($feminine ? trans('common::status.inactive_fem') : trans('common::status.inactive')),
+
             '{{createButton}}' => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau')) . " $lcfSingular",
             '{{editTooltip}}' => "Modifier {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
+
             '{{enableTooltip}}' => "Activer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
             '{{disableTooltip}}' => "Désactiver {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
+            '{{archiveTooltip}}' => "Archiver {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
             '{{deleteTooltip}}' => "Supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
             '{{restoreTooltip}}' => "Restaurer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
             '{{destroyTooltip}}' => "Supprimer définitivement {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»",
+
+            '{{archiveConfirm}}' => "Êtes-vous sûr de vouloir archiver {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
             '{{deleteConfirm}}' => "Êtes-vous sûr de vouloir supprimer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
             '{{restoreConfirm}}' => "Êtes-vous sûr de vouloir restaurer {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
             '{{destroyConfirm}}' => "Êtes-vous sûr de vouloir supprimer définitivement {$lcfDefArticle}$lcfSingular «&nbsp;:name&nbsp;»&nbsp;?",
+
             '{{createTitle}}' => "Création d’{$lcfUndefArticle} " . ($feminine ? 'nouvelle' : ($startsWithVowel ? 'nouvel' : 'nouveau')) . " $lcfSingular",
             '{{createFormTitle}}' => ($feminine ? 'Nouvelle' : ($startsWithVowel ? 'Nouvel' : 'Nouveau')) . " $lcfSingular",
+
             '{{editTitle}}' => "Modification d’{$lcfUndefArticle} $lcfSingular",
             '{{editFormTitle}}' => "Modification d’{$lcfUndefArticle} $lcfSingular"
         ]);
