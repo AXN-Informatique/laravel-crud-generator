@@ -91,7 +91,7 @@ class Generator
 
         $this->appNs = $explodedModelClass[0];
         $this->sectionSegments = explode('.', $section);
-        $this->sectionSegmentsStudly = array_map('Str::studly', $this->sectionSegments);
+        $this->sectionSegmentsStudly = array_map([Str::class, 'studly'], $this->sectionSegments);
     }
 
     /**
