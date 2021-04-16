@@ -1,0 +1,157 @@
+<div class="table-responsive">
+    <table class="table table-hover bg-white border with-sortable-columns"
+            @unless ($options['sortable'])
+                data-sortable-params='@json($sort)'
+            @endunless
+        >
+        <thead>
+            <tr class="text-nowrap">
+                <th scope="col"
+                    @if ($options['sortable_columns'] && !$options['sortable'])
+                        data-sortable-column="designation"
+                    @endif
+                >
+                    Intitulé
+                </th>
+                <th scope="col" class="text-right">
+                    <span class="sr-only">Actions</span>
+                </th>
+            </tr>
+
+            <!-- Recherche avancée -->
+            @if ($options['advanced_search'])
+                <tr id="advanced-search" class="collapse {!! request('as') ? 'show' : '' !!}">
+                    <td>
+                        {!! Form::text(
+                            's[designation]',
+                            $search['designation'] ?? '',
+                            [
+                                'class' => 'form-control form-control-sm search-input',
+                            ]
+                        ) !!}
+                    </td>
+                    <td>
+                        @if ($options['activatable'])
+                            {!! Form::select(
+                                's['.$options['activatable_column_name'].']',
+                                [
+                                    '0' => trans('common::status.active_inactive'),
+                                    '1' => trans('common::status.only_actives'),
+                                    '2' => trans('common::status.only_inactives'),
+                                ],
+                                $search[$options['activatable_column_name']] ?? '',
+                                [
+                                    'class' => 'custom-select custom-select-sm',
+                                    'onchange' => 'this.form.submit()',
+                                ]
+                            ) !!}
+                        @endif
+                    </td>
+                </tr>
+            @endif
+        </thead>
+        <tbody id="{!! $htmlIdentifierBase !!}-sortable-list">
+            @forelse ($list as $item)
+                <tr class="{!! $options['activatable'] && !$item->{$options['activatable_column_name']} ? 'text-muted' : '' !!} {!! $options['sortable'] ? 'sortable-item' : '' !!}" data-id="{{ $item->id }}">
+                    <td>
+                        @if ($options['sortable'])
+                            <span class="sortable-handle mr-3">
+                                <i class="fal fa-arrows-v fa-lg"></i>
+                            </span>
+                        @endif
+                        {{ $item->designation }}
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group btn-group-sm">
+                            @if ($options['activatable'])
+                                @if ($item->{$options['activatable_column_name']})
+                                    <x-lte-btn-disable
+                                        id="item-{!! $item->id !!}"
+                                        url="{!! route($routeBaseAlias.'.disable', $item->id) !!}"
+                                        title="{!! trans($langBaseKey.'.disable_tooltip', ['name' => e($item->designation)]) !!}" />
+                                @else
+                                    <x-lte-btn-enable
+                                        id="item-{!! $item->id !!}"
+                                        url="{!! route($routeBaseAlias.'.enable', $item->id) !!}"
+                                        title="{!! trans($langBaseKey.'.enable_tooltip', ['name' => e($item->designation)]) !!}" />
+                                @endif
+                            @endif
+
+                            @if ($options['editable'])
+                                <x-lte-btn-edit
+                                    url="{!! route($routeBaseAlias.'.edit', $item->id) !!}"
+                                    title="{!! trans($langBaseKey.'.edit_tooltip', ['name' => e($item->designation)]) !!}" />
+                            @endif
+
+                            @if ($options['deletable'])
+                                @if ($options['soft_deletable'])
+                                    <x-lte-btn-delete
+                                        id="item-{!! $item->id !!}"
+                                        url="{!! route($routeBaseAlias.'.delete', $item->id) !!}"
+                                        title="{!! trans($langBaseKey.'.delete_tooltip', ['name' => e($item->designation)]) !!}"
+                                        confirm="{!! trans($langBaseKey.'.delete_confirm', ['name' => e($item->designation)]) !!}" />
+                                @elseif ($options['destroyable'])
+                                    <x-lte-btn-destroy
+                                        id="item-{!! $item->id !!}"
+                                        url="{!! route($routeBaseAlias.'.destroy', $item->id) !!}"
+                                        title="{!! trans($langBaseKey.'.destroy_tooltip', ['name' => e($item->designation)]) !!}"
+                                        confirm="{!! trans($langBaseKey.'.destroy_confirm', ['name' => e($item->designation)]) !!}" />
+                                @endif
+                            @endif
+                            @if ($options['archivable'])
+                                @if ($options['soft_deletable'])
+                                    <x-lte-btn-archive hideText="true"
+                                        id="item-{!! $item->id !!}"
+                                        url="{!! route($routeBaseAlias.'.archive', $item->id) !!}"
+                                        title="{!! trans($langBaseKey.'.archive_tooltip', ['name' => e($item->designation)]) !!}"
+                                        confirm="{!! trans($langBaseKey.'.archive_confirm', ['name' => e($item->designation)]) !!}" />
+                                @elseif ($options['destroyable'])
+                                    <x-lte-btn-destroy
+                                        id="item-{!! $item->id !!}"
+                                        url="{!! route($routeBaseAlias.'.destroy', $item->id) !!}"
+                                        title="{!! trans($langBaseKey.'.destroy_tooltip', ['name' => e($item->designation)]) !!}"
+                                        confirm="{!! trans($langBaseKey.'.destroy_confirm', ['name' => e($item->designation)]) !!}" />
+                                @endif
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    {{--
+                        Important : Selon les options et les colonnes affichées
+                        l'attribut colspan doit être ajusté en conséquence
+                    --}}
+                    <td colspan="2">
+                        <em class="lead">
+                            @include ('search-helpers::no-result')
+                        </em>
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div><!-- .table-responsive -->
+
+@if ($options['sortable'])
+    @push('onload')
+        var sortableList = document.getElementById('{!! $htmlIdentifierBase !!}-sortable-list');
+        var sortable = Sortable.create(sortableList, {
+            //handle: '.sortable-handle',
+            animation: 150,
+            store: {
+                set: function (sortable) {
+                    axios.patch(route('{!! $routeBaseAlias !!}.sort'), {
+                        sort: sortable.toArray()
+                    })
+                    .then(function (response) {
+                        PNotify.success({text: response.data.message});
+                    })
+                    .catch(function (error) {
+                        PNotify.error({text: error});
+                    });
+                }
+            }
+        });
+    @endpush
+@endif

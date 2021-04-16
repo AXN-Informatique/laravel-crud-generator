@@ -1,15 +1,17 @@
 <?php
+
 namespace Axn\CrudGenerator\Console;
 
-use ReflectionClass, ReflectionException, Exception;
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Axn\CrudGenerator\Generator;
+use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Exception;
+use ReflectionClass;
+use ReflectionException;
 
 class GenerateCommand extends Command
 {
-
     /**
      * Nom de la commande.
      *
@@ -50,6 +52,10 @@ class GenerateCommand extends Command
         $generator = new Generator($section, $modelClass, $stubsGroup, $langDir, $viewsDir);
 
         $generator->force($force);
+
+        $singular = null;
+        $plural = null;
+        $feminine = false;
 
         // Questions, si nécessaire
         if ($generator->shouldGenerateLang()) {
@@ -127,7 +133,7 @@ class GenerateCommand extends Command
      * provient de la console (saisie utilisateur).
      *
      * @param string $input
-     * @return string
+     * @return string|false
      */
     protected function fixEncoding($input)
     {
@@ -175,7 +181,7 @@ class GenerateCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Stubs group to use.',
-                'default'
+                'bs4-adminlte3'
             ],
             [
                 'langdir',

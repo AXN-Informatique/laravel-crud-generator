@@ -1,0 +1,40 @@
+@extends('layouts.admin', [
+    'title' => trans($langBaseKey.'.archives_title'),
+    'titlePageComplement' => $list->isEmpty() || !$list instanceof \Illuminate\Contracts\Pagination\Paginator ? null
+        : trans($langBaseKey.'.archives_summary', [
+            'count' => $list->count(),
+            'firstItem' => $list->firstItem(),
+            'lastItem' => $list->lastItem(),
+            'total' => $list->total(),
+        ]),
+])
+
+@section ('context-zone-second')
+    <div class="text-right">
+        <div class="btn-group" role="group">
+            <x-lte-btn-back-list url="{!! route($routeBaseAlias.'.list', session($htmlIdentifierBase.'-qs')) !!}" />
+        </div>
+    </div>
+@endsection
+
+@section ('content')
+    <div id="{!! $htmlIdentifierBase !!}-archives-content-wrapper">
+        @if ($list->isEmpty())
+            <div class="card">
+                <div class="card-body">
+                    <em class="lead">
+                        {{ trans($langBaseKey.'.archives_empty') }}
+                    </em>
+                </div>
+            </div>
+        @else
+            @include ("{$viewBaseName}.partials.archives-table")
+
+            @if ($list instanceof \Illuminate\Contracts\Pagination\Paginator)
+                <div class="d-flex justify-content-end">
+                    {!! $list->links() !!}
+                </div>
+            @endif
+        @endif
+    </div><!-- #{!! $htmlIdentifierBase !!}-archives-content-wrapper -->
+@endsection

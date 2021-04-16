@@ -1,0 +1,31 @@
+
+@if ($options['translatable'])
+    @foreach ($langues as $langue)
+        <div class="form-group">
+            {!! Form::labelRequired('designation_'.$langue->code, "Intitulé en ".e($langue->designation)) !!}
+            {!! Form::text(
+                'designation['.$langue->code.']',
+                old('designation.'.$langue->code, $item->getTranslation('designation', $langue->code)),
+                [
+                    'id' => 'designation_'.$langue->code,
+                    'class' => 'form-control',
+                    'required',
+                ]
+            ) !!}
+        </div>
+    @endforeach
+@else
+    <div class="form-group">
+        {!! Form::labelRequired('designation', "Intitulé") !!}
+        {!! Form::text(
+            'designation',
+            old('designation', $item->designation),
+            [
+                'class' => 'form-control',
+                'required',
+            ]
+        ) !!}
+    </div>
+@endif
+
+{{-- ici les autres champs de formulaire --}}

@@ -1,0 +1,45 @@
+<?php
+
+namespace {{namespace}};
+
+use {{modelClass}} as Model;
+use {{optionsTrait}} as Options;
+use App\Http\Requests\Rules\UniqueTraduction;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreRequest extends FormRequest
+{
+    use CommonTrait;
+
+    /**
+     * Règles de validation des données.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        $table = (new Model)->getTable();
+
+        $rules = $this->commonRules();
+
+        if ($this->options['translatable']) {
+            $rules['designation.*'] = ['required', new UniqueTraduction($table)];
+        } else {
+            $rules['designation'] = 'required|unique:'.$table.',designation';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Noms des champs.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        $attributes = $this->commonAttributes();
+
+        return $attributes;
+    }
+}

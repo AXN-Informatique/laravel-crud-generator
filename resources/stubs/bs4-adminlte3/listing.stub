@@ -1,0 +1,94 @@
+<?php
+
+namespace {{namespace}};
+
+use Axn\SearchHelpers\Listing;
+use {{modelClass}} as Model;
+use {{optionsTrait}} as Options;
+
+class {{name}} extends Listing
+{
+    use Options;
+
+    /**
+     * Constructeur.
+     *
+     * @param  Model $model
+     * @return void
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+
+        // pas de pagination quand on peux trier
+        if ($this->options['sortable']) {
+            $this->setPerPage(0);
+        }
+    }
+
+    /**
+     * Paramètres de tri par défaut.
+     *
+     * @return array
+     */
+    public function getDefaultSortParams()
+    {
+        if ($this->options['sortable']) {
+            return [
+                $this->options['sortable_column_name'] => 1,
+            ];
+        }
+
+        return parent::getDefaultSortParams();
+    }
+
+    /**
+     * Paramètres de recherche par défaut.
+     *
+     * @return array
+     */
+    public function getDefaultSearchParams()
+    {
+        if ($this->options['activatable']) {
+            return [
+                $this->options['activatable_column_name'] => 1
+            ];
+        }
+
+        return parent::getDefaultSearchParams();
+    }
+
+    /**
+     * Applique la recherche sur la requête de listing.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  array|string $search
+     * @return void
+     */
+    protected function applySearch($query, $search)
+    {
+        // Recherche simple
+        if (is_string($search)) {
+
+            $search = $this->like($search);
+
+            $query->where(function($query) use ($search) {
+                $query
+                    ->where('designation', 'like', $search)
+                //    ->orWhere('autre_colonne', 'like', $search)
+                ;
+            });
+        }
+
+        // Recherche avancée
+        else {
+            if (!empty($search['designation'])) {
+                $query->where('designation', 'like', $this->like($search['designation']));
+            }
+
+            if ($this->options['activatable'] && !empty($search[$this->options['activatable_column_name']])) {
+                $query->where($this->options['activatable_column_name'], $search[$this->options['activatable_column_name']] == 1 ? 1 : 0);
+            }
+        }
+    }
+}

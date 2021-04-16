@@ -1,0 +1,16 @@
+
+// ----------------------------------------------------------------------------
+// CRUD : {{title}}
+// ----------------------------------------------------------------------------
+
+Breadcrumbs::register('{{routeBaseAlias}}.list', function($breadcrumbs)
+{
+    $breadcrumbs->parent('admin.parameters');
+    $breadcrumbs->push( trans("{{langBaseKey}}.breadcrumbs_list"), route('{{routeBaseAlias}}.list') );
+});
+
+    Breadcrumbs::register('{{routeBaseAlias}}.edit', function($breadcrumbs)
+    {
+        $breadcrumbs->parent('{{routeBaseAlias}}.list');
+        $breadcrumbs->push( trans("{{langBaseKey}}.breadcrumbs_edit") );
+    });

@@ -1,0 +1,60 @@
+<?php
+
+return [
+
+    // Breadcrumbs
+    'breadcrumbs_list' => "{{breadcrumbsList}}",
+
+    // Liste des enregistrements
+    'list_title' => "{{listTitle}}",
+    'list_summary' => '{{listSummary}}',
+    'list_summary_simple' => '{{listSummarySimple}}',
+    'list_empty' => "{{listEmpty}}",
+
+    // Archives des enregistrements
+    'archives_title' => "{{archivesTitle}}",
+    'archives_summary' => '{{archivesSummary}}',
+    'archives_summary_simple' => '{{archivesSummarySimple}}',
+    'archives_empty' => "{{archivesEmpty}}",
+
+    // Corbeille des enregistrements
+    'recycle_bin_title' => "{{recycleBinTitle}}",
+    'recycle_bin_summary' => '{{recycleBinSummary}}',
+    'recycle_bin_summary_simple' => '{{recycleBinSummarySimple}}',
+    'recycle_bin_empty' => "{{recycleBinEmpty}}",
+
+    // Formulaire d'ajout
+    'create_title' => "{{createTitle}}",
+    'create_form_title' => "{{createFormTitle}}",
+
+    // Formulaire de modification
+    'edit_title' => "{{editTitle}}",
+    'edit_form_title' => "{{editFormTitle}}",
+
+    // Tooltips
+    'edit_tooltip' => "{{editTooltip}}",
+    'enable_tooltip' => "{{enableTooltip}}",
+    'disable_tooltip' => "{{disableTooltip}}",
+    'archive_tooltip' => "{{archiveTooltip}}",
+    'delete_tooltip' => "{{deleteTooltip}}",
+    'restore_tooltip' => "{{restoreTooltip}}",
+    'destroy_tooltip' => "{{destroyTooltip}}",
+
+    // Confirmations
+    'archive_confirm' => "{{archiveConfirm}}",
+    'delete_confirm' => "{{deleteConfirm}}",
+    'restore_confirm' => "{{restoreConfirm}}",
+    'destroy_confirm' => "{{destroyConfirm}}",
+
+    // Notifications
+    'store_success' => "{{storeSuccess}}",
+    'update_success' => "{{updateSuccess}}",
+    'enable_success' => "{{enableSuccess}}",
+    'disable_success' => "{{disableSuccess}}",
+    'sort_success' => "{{sortSuccess}}",
+    'archive_success' => "{{archiveSuccess}}",
+    'delete_success' => "{{deleteSuccess}}",
+    'restore_success' => "{{restoreSuccess}}",
+    'destroy_success' => "{{destroySuccess}}",
+    'destroy_failure' => "{{destroyFailure}}",
+];

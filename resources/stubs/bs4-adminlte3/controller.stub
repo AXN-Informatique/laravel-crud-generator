@@ -1,0 +1,376 @@
+<?php
+
+namespace {{namespace}};
+
+use {{modelClass}} as Model;
+use {{optionsTrait}} as Options;
+use App\Http\Controllers\Controller;
+use {{listingClass}} as Listing;
+use {{requestNamespace}}\StoreRequest;
+use {{requestNamespace}}\UpdateRequest;
+use Axn\LaravelNotifier\Facade as Notifier;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Exception;
+
+class {{name}} extends Controller
+{
+    use Options;
+
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
+     * Base des alias des routes nommées
+     * Exemple : route("{$this->routeBaseAlias}.edit");
+     *
+     * @var string
+     */
+    protected $routeBaseAlias = '{{routeBaseAlias}}';
+
+    /**
+     * Base des clés des traductions
+     * Exemple : trans("{$this->langBaseKey}.store_success");
+     *
+     * @var string
+     */
+    protected $langBaseKey = '{{langBaseKey}}';
+
+    /**
+     * Base des noms des vues
+     * Exemple : view("{$this->viewBaseName}.list", $viewData);
+     *
+     * @var string
+     */
+    protected $viewBaseName = '{{viewBaseName}}';
+
+    /**
+     * Base des identifiants HTML
+     * Exemple : <div class="{!! $htmlIdentifierBase !!}-list">;
+     *
+     * @var string
+     */
+    protected $htmlIdentifierBase = '{{htmlIdentifierBase}}';
+
+    /**
+     * Constructeur
+     *
+     * @param Model $model
+     * @return void
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * Affiche la liste des enregistrements
+     *
+     * @param  Listing $listing
+     * @return \Illuminate\View\View
+     */
+    public function showList(Listing $listing)
+    {
+        session()->put($this->htmlIdentifierBase.'-qs', request()->query());
+
+        $viewData = $this->compactAttributes([
+            'search' => $listing->getSearchParams(),
+            'sort' => $listing->getSortParams(),
+            'list' => $listing->getList(),
+        ]);
+
+        if ($this->options['soft_deletable']) {
+            $viewData['itemsArchives'] =
+            $viewData['itemsInRecycleBin'] =
+                $this->model->query()->onlyTrashed()->count();
+        }
+
+        return view("{$this->viewBaseName}.list", $viewData);
+    }
+
+    /**
+     * Affiche la liste des enregistrements dans les archives
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showArchivesList()
+    {
+        $viewData = $this->compactAttributes([
+            'list' => $this->model->query()->onlyTrashed()->paginate(),
+        ]);
+
+        return view("{$this->viewBaseName}.archives", $viewData);
+    }
+
+    /**
+     * Affiche la liste des enregistrements dans la corbeille
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRecycleBinList()
+    {
+        $viewData = $this->compactAttributes([
+            'list' => $this->model->query()->onlyTrashed()->paginate(),
+        ]);
+
+        return view("{$this->viewBaseName}.recycle-bin", $viewData);
+    }
+
+    /**
+     * Affiche le formulaire de création d'un enregistrement
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        abort_unless($this->options['creatable'], 404);
+
+        $viewData = $this->compactAttributes([
+            'item' => $this->model,
+        ]);
+
+        if ($this->options['translatable']) {
+            $viewData['langues'] = \App\Models\Langue::whereActif(true)->get();
+        }
+
+        return view("{$this->viewBaseName}.create", $viewData);
+    }
+
+    /**
+     * Ajoute un nouvel enregistrement
+     *
+     * @param  StoreRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(StoreRequest $request)
+    {
+        abort_unless($this->options['creatable'], 404);
+
+        $data = [
+            'designation' => $request->input('designation')
+        ];
+
+        $item = $this->model->create($data);
+
+        Notifier::success(trans("{$this->langBaseKey}.store_success"));
+
+        return redirect()->route($this->routeBaseAlias.'.edit', $item->id);
+    }
+
+    /**
+     * Affiche le formulaire de modification d'un enregistrement
+     *
+     * @param  mixed $id
+     * @return \Illuminate\View\View
+     */
+    public function edit($id)
+    {
+        abort_unless($this->options['editable'], 404);
+
+        $item = $this->model->findOrFail($id);
+
+        $viewData = $this->compactAttributes([
+            'item' => $item,
+        ]);
+
+        if ($this->options['translatable']) {
+            $viewData['langues'] = \App\Models\Langue::whereActif(true)->get();
+        }
+
+        return view("{$this->viewBaseName}.edit", $viewData);
+    }
+
+    /**
+     * Modifie un enregistrement existant
+     *
+     * @param  mixed         $id
+     * @param  UpdateRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update($id, UpdateRequest $request)
+    {
+        abort_unless($this->options['editable'], 404);
+
+        $item = $this->model->findOrFail($id);
+
+        $data = [
+            'designation' => $request->input('designation')
+        ];
+
+        $item->update($data);
+
+        Notifier::success(trans("{$this->langBaseKey}.update_success"));
+
+        return redirect()->route($this->routeBaseAlias.'.edit', $item->id);
+    }
+
+    /**
+     * Active un enregistrement
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function enable($id)
+    {
+        abort_unless($this->options['activatable'], 404);
+
+        $this->model->findOrFail($id)
+            ->update([
+                $this->options['activatable_column_name'] => true
+            ]);
+
+        Notifier::success(trans("{$this->langBaseKey}.enable_success"));
+
+        return back();
+    }
+
+    /**
+     * Désactive un enregistrement
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function disable($id)
+    {
+        abort_unless($this->options['activatable'], 404);
+
+        $this->model->findOrFail($id)
+            ->update([
+                $this->options['activatable_column_name'] => false
+            ]);
+
+        Notifier::success(trans("{$this->langBaseKey}.disable_success"));
+
+        return back();
+    }
+
+    /**
+     * Modifie l'ordre des enregistrements
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sort(Request $request)
+    {
+        abort_unless($this->options['sortable'], 404);
+
+        $sort = array_map('intval', $request->input('sort', []));
+
+        DB::transaction(function() use ($sort) {
+            foreach ($sort as $value => $id) {
+                $this->model->findOrFail($id)
+                    ->update([
+                        $this->options['sortable_column_name'] => $value + 1
+                    ]);
+            }
+        });
+
+        return response()->json([
+            'message' => trans("{$this->langBaseKey}.sort_success")
+        ]);
+    }
+
+    /**
+     * Archive un enregistrement (soft delete)
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function archive($id)
+    {
+        abort_unless($this->options['archivable'], 404);
+
+        $item = $this->model->findOrFail($id);
+
+        $item->delete();
+
+        Notifier::success(trans("{$this->langBaseKey}.archive_success"));
+
+        return redirect()->route($this->routeBaseAlias.'.list', session($this->htmlIdentifierBase.'-qs'));
+    }
+
+    /**
+     * Supprime un enregistrement (soft delete)
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete($id)
+    {
+        abort_unless($this->options['deletable'], 404);
+
+        $item = $this->model->findOrFail($id);
+
+        $item->delete();
+
+        Notifier::success(trans("{$this->langBaseKey}.delete_success"));
+
+        return redirect()->route($this->routeBaseAlias.'.list', session($this->htmlIdentifierBase.'-qs'));
+    }
+
+    /**
+     * Restaure un enregistrement
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore($id)
+    {
+        abort_unless($this->options['soft_deletable'], 404);
+
+        $item = $this->model->withTrashed()->findOrFail($id);
+
+        $item->restore();
+
+        Notifier::success(trans("{$this->langBaseKey}.restore_success"));
+
+        return redirect()->route($this->routeBaseAlias.'.edit', $item->id);
+    }
+
+    /**
+     * Supprime définitivement un enregistrement
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        abort_unless($this->options['destroyable'], 404);
+
+        try {
+            if ($this->options['soft_deletable']) {
+                $item = $this->model->withTrashed()->findOrFail($id);
+                $item->forceDelete();
+            } else {
+                $item = $this->model->findOrFail($id);
+                $item->delete();
+            }
+        }
+        catch (Exception $e) {
+            return back()->withErrors(trans("{$this->langBaseKey}.destroy_failure"));
+        }
+
+        Notifier::success(trans("{$this->langBaseKey}.destroy_success"));
+
+        return redirect()->route($this->routeBaseAlias.'.list', session($this->htmlIdentifierBase.'-qs'));
+    }
+
+    /**
+     * Compacte les valeurs des attributs pour les passer aux vues.
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function compactAttributes(array $data = [])
+    {
+        return array_merge([
+            'routeBaseAlias' => $this->routeBaseAlias,
+            'langBaseKey' => $this->langBaseKey,
+            'viewBaseName' => $this->viewBaseName,
+            'htmlIdentifierBase' => $this->htmlIdentifierBase,
+            'options' => $this->options,
+        ], $data);
+    }
+}

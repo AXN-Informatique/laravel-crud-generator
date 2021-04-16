@@ -1,21 +1,15 @@
-# Laravel Crud Generator
+Laravel Crud Generator
+======================
 
-Ce package permet de générer les fichiers d'une section CRUD avec le framework Laravel 5.
+Ce package permet de générer les fichiers d'une section CRUD avec le framework Laravel.
 
-## Installation
+Installation
+------------
 
 Inclure le package avec Composer :
 
 ```sh
 composer require axn/laravel-crud-generator
-```
-
-Avec Laravel 5.5 le service provider sera automatiquement enregistré.
-Dans les anciennes versions du framework, ajoutez simplement ce service provider
-au tableau des providers dans `config/app.php` :
-
-```php
-'Axn\CrudGenerator\ServiceProvider',
 ```
 
 Publier si besoin les templates (stubs) du package via la commande :
@@ -29,7 +23,8 @@ Les templates sont publiés dans `resources/stubs/vendor/crud-generator/`
 
 Y faire les modifications souhaitées.
 
-## Utilisation
+Utilisation
+-----------
 
 Lancer la commande :
 

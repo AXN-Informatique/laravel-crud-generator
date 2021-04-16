@@ -13,7 +13,8 @@
     ],
     "license": "MIT",
     "require": {
-        "illuminate/support": "~5.1 || ^6.0 || ^7.0 || ^8.0"
+        "php": "^7.3",
+        "illuminate/support": "^7.0 || ^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -26,5 +27,9 @@
                 "Axn\\CrudGenerator\\ServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "nunomaduro/larastan": "^0.7.4",
+        "orchestra/testbench": "^6.17"
     }
 }

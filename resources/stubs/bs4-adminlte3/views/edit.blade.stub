@@ -1,0 +1,96 @@
+@extends('layouts.admin', [
+    'title' => trans($langBaseKey.'.edit_title'),
+])
+
+@section ('context-zone-first')
+    <div class="btn-group" role="group">
+        @if ($options['activatable'])
+            @if ($item->{$options['activatable_column_name']})
+                <x-lte-btn-disable
+                    id="item-{!! $item->id !!}"
+                    url="{!! route($routeBaseAlias.'.disable', $item->id) !!}"
+                    title="{!! trans($langBaseKey.'.disable_tooltip', ['name' => e($item->designation)]) !!}" />
+            @else
+                <x-lte-btn-enable
+                    id="item-{!! $item->id !!}"
+                    url="{!! route($routeBaseAlias.'.enable', $item->id) !!}"
+                    title="{!! trans($langBaseKey.'.enable_tooltip', ['name' => e($item->designation)]) !!}" />
+            @endif
+        @endif
+        @if ($options['deletable'])
+            @if ($options['soft_deletable'])
+                <x-lte-btn-delete
+                    id="item-{!! $item->id !!}"
+                    url="{!! route($routeBaseAlias.'.delete', $item->id) !!}"
+                    title="{!! trans($langBaseKey.'.delete_tooltip', ['name' => e($item->designation)]) !!}"
+                    confirm="{!! trans($langBaseKey.'.delete_confirm', ['name' => e($item->designation)]) !!}" />
+            @elseif ($options['destroyable'])
+                <x-lte-btn-destroy
+                    id="item-{!! $item->id !!}"
+                    url="{!! route($routeBaseAlias.'.destroy', $item->id) !!}"
+                    title="{!! trans($langBaseKey.'.destroy_tooltip', ['name' => e($item->designation)]) !!}"
+                    confirm="{!! trans($langBaseKey.'.destroy_confirm', ['name' => e($item->designation)]) !!}" />
+            @endif
+        @endif
+        @if ($options['archivable'])
+            @if ($options['soft_deletable'])
+                <x-lte-btn-archive hideText="true"
+                    id="item-{!! $item->id !!}"
+                    url="{!! route($routeBaseAlias.'.archive', $item->id) !!}"
+                    title="{!! trans($langBaseKey.'.archive_tooltip', ['name' => e($item->designation)]) !!}"
+                    confirm="{!! trans($langBaseKey.'.archive_confirm', ['name' => e($item->designation)]) !!}" />
+            @elseif ($options['destroyable'])
+                <x-lte-btn-destroy
+                    id="item-{!! $item->id !!}"
+                    url="{!! route($routeBaseAlias.'.destroy', $item->id) !!}"
+                    title="{!! trans($langBaseKey.'.destroy_tooltip', ['name' => e($item->designation)]) !!}"
+                    confirm="{!! trans($langBaseKey.'.destroy_confirm', ['name' => e($item->designation)]) !!}" />
+            @endif
+        @endif
+    </div>
+@endsection
+
+@section ('context-zone-second')
+    <div class="text-right">
+        <div class="btn-group" role="group">
+            @if ($options['creatable'])
+                <x-lte-btn-create url="{!! route($routeBaseAlias.'.create') !!}" />
+            @endif
+            <x-lte-btn-back-list url="{!! route($routeBaseAlias.'.list', session($htmlIdentifierBase.'-qs')) !!}" />
+        </div>
+    </div>
+@endsection
+
+@section('content')
+    <div id="{!! $htmlIdentifierBase !!}-edit-content-wrapper">
+        {!! Form::open([
+            'url' => route("{$routeBaseAlias}.update", ['id' => $item->id] + Request::query()),
+            'method' => 'PUT',
+            'files' => !empty($fileUpload),
+        ]) !!}
+            <div class="card card-outline card-primary">
+                <h2 class="card-header h4">
+                    {!! trans($langBaseKey.'.edit_form_title') !!}
+                </h2>
+                <div class="card-body">
+                        @include ("{$viewBaseName}.partials.form")
+                </div><!-- .card-body -->
+            </div><!-- .card -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="btn-group">
+                                <x-lte-btn-save />
+                                <x-lte-btn-back-list url="{!! route($routeBaseAlias.'.list', session($htmlIdentifierBase.'-qs')) !!}" />
+                            </div>
+                        </div><!-- .col-sm-6 -->
+                        <div class="col-sm-6">
+                            <p class="text-right text-muted">{!! Html::infoRequiredFields() !!}</p>
+                        </div><!-- .col-sm-6 -->
+                    </div><!-- .row -->
+                </div><!-- .card-body -->
+            </div><!-- .card -->
+        {!! Form::close() !!}
+    </div><!-- #{!! $htmlIdentifierBase !!}-edit-content-wrapper -->
+@endsection

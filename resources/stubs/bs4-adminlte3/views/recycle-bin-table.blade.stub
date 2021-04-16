@@ -1,0 +1,41 @@
+<div class="table-responsive">
+    <table class="table table-hover bg-white border">
+        <thead>
+            <tr>
+                <th scope="col">Intitulé</th>
+                <th scope="col">Supprimé le</th>
+                <th scope="col" class="text-right">
+                    <span class="sr-only">Actions</span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($list as $item)
+                <tr class="{!! $options['activatable'] && !$item->{$options['activatable_column_name']} ? 'text-muted' : '' !!}">
+                    <td>
+                        {{ $item->designation }}
+                    </td>
+                    <td>
+                        {!! $item->deleted_at->isoFormat('LLLL') !!}
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group btn-group-sm">
+                            <x-lte-btn-restore
+                                id="item-{!! $item->id !!}"
+                                url="{!! route($routeBaseAlias.'.restore', $item->id) !!}"
+                                title="{!! trans($langBaseKey.'.restore_tooltip', ['name' => e($item->designation)]) !!}"
+                                confirm="{!! trans($langBaseKey.'.restore_confirm', ['name' => e($item->designation)]) !!}" />
+                            @if ($options['destroyable'])
+                                <x-lte-btn-destroy
+                                    id="item-{!! $item->id !!}"
+                                    url="{!! route($routeBaseAlias.'.destroy', $item->id) !!}"
+                                    title="{!! trans($langBaseKey.'.destroy_tooltip', ['name' => e($item->designation)]) !!}"
+                                    confirm="{!! trans($langBaseKey.'.destroy_confirm', ['name' => e($item->designation)]) !!}" />
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div><!-- .table-responsive -->

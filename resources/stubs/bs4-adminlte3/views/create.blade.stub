@@ -1,0 +1,45 @@
+@extends('layouts.admin', [
+    'title' => trans($langBaseKey.'.create_title'),
+])
+
+@section ('context-zone-second')
+    <div class="text-right">
+        <div class="btn-group" role="group">
+            <x-lte-btn-back-list url="{!! route($routeBaseAlias.'.list', session($htmlIdentifierBase.'-qs')) !!}" />
+        </div>
+    </div>
+@endsection
+
+@section('content')
+    <div id="{!! $htmlIdentifierBase !!}-create-content-wrapper">
+        {!! Form::open([
+            'url' => route("{$routeBaseAlias}.create"),
+            'method' => 'POST',
+            'files' => !empty($fileUpload),
+        ]) !!}
+            <div class="card card-outline card-primary">
+                <h2 class="card-header h4">
+                    {!! trans($langBaseKey.'.create_form_title') !!}
+                </h2>
+                <div class="card-body">
+                    @include ("{$viewBaseName}.partials.form")
+                </div><!-- .card-body -->
+            </div><!-- .card -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="btn-group">
+                                <x-lte-btn-save />
+                                <x-lte-btn-back-list url="{!! route($routeBaseAlias.'.list', session($htmlIdentifierBase.'-qs')) !!}" />
+                            </div>
+                        </div><!-- .col-sm-6 -->
+                        <div class="col-sm-6">
+                            <p class="text-right text-muted">{!! Html::infoRequiredFields() !!}</p>
+                        </div><!-- .col-sm-6 -->
+                    </div><!-- .row -->
+                </div><!-- .card-body -->
+            </div><!-- .card -->
+        {!! Form::close() !!}
+    </div><!-- #{!! $htmlIdentifierBase !!}-create-content-wrapper -->
+@endsection

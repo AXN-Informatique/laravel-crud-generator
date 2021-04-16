@@ -1,0 +1,94 @@
+<?php
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// 		START GENERATOR INFO
+// Groupe de routes généré à copier/coller dans le fichier appelant
+// A ajuster selon le contexte...
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//
+//    // {{sectionBaseName}}
+//    Route::prefix('{{sectionBaseName}}')
+//        ->name('{{sectionBaseName}}.')
+//        ->group(__DIR__.'/{{baseUrl}}.php');
+//
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// 		END GENERATOR INFO
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+// Liste des enregistrements
+Route::get('/')
+    ->name('list')
+    ->uses('{{studlySectionBaseName}}Controller@showList');
+
+// Archives
+Route::get('/archives')
+    ->name('archives')
+    ->uses('{{studlySectionBaseName}}Controller@showArchivesList');
+
+// Corbeille
+Route::get('/corbeille')
+    ->name('recycle-bin')
+    ->uses('{{studlySectionBaseName}}Controller@showRecycleBinList');
+
+// Réordonnement des enregistrements
+Route::patch('/trier')
+    ->name('sort')
+    ->uses('{{studlySectionBaseName}}Controller@sort');
+
+// Formulaire de création d'un enregistrement
+Route::get('/ajouter')
+    ->name('create')
+    ->uses('{{studlySectionBaseName}}Controller@create');
+
+// Ajout d'un enregistrement
+Route::post('/ajouter')
+    ->name('store')
+    ->uses('{{studlySectionBaseName}}Controller@store');
+
+// Pour un enregistrement donné
+Route::prefix('/{id}')
+    ->where(['id' => '[0-9]+'])
+    ->group(function(){
+
+        // Formulaire de modification d'un enregistrement
+        Route::get('/modifier')
+            ->name('edit')
+            ->uses('{{studlySectionBaseName}}Controller@edit');
+
+        // Modification d'un enregistrement
+        Route::put('/modifier')
+            ->name('update')
+            ->uses('{{studlySectionBaseName}}Controller@update');
+
+        // Activation d'un enregistrement
+        Route::patch('/activer')
+            ->name('enable')
+            ->uses('{{studlySectionBaseName}}Controller@enable');
+
+        // Désactivation d'un enregistrement
+        Route::patch('/desactiver')
+            ->name('disable')
+            ->uses('{{studlySectionBaseName}}Controller@disable');
+
+        // Archivage d'un enregistrement
+        Route::patch('/archiver')
+            ->name('archive')
+            ->uses('{{studlySectionBaseName}}Controller@archive');
+
+        // Suppression d'un enregistrement
+        Route::patch('/supprimer')
+            ->name('delete')
+            ->uses('{{studlySectionBaseName}}Controller@delete');
+
+        // Restauration d'un enregistrement
+        Route::patch('/restaurer')
+            ->name('restore')
+            ->uses('{{studlySectionBaseName}}Controller@restore');
+
+        // Suppression définitive d'un enregistrement
+        Route::delete('/supprimer')
+            ->name('destroy')
+            ->uses('{{studlySectionBaseName}}Controller@destroy');
+
+    });

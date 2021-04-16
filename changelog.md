@@ -1,6 +1,20 @@
 Changelog
 =========
 
+3.0.0 (2021-04-16)
+------------------
+
+- Drop support for PHP < 7.2
+- Drop support for Laravel 6 and older
+- Add stubs "bs4-adminlte3"
+- Renaming "adminlte-params-list" stubs into "bs3-adminlte2-params-list"
+- Renaming "adminlte-params-table" stubs into "bs3-adminlte2-params-table"
+- Renaming "default" stubs into "bs3-simple"
+- Renaming "table" stubs into "bs3-table"
+- Set "bs4-adminlte3" as default stubs
+- Add Larastan for code quality
+
+
 2.17.1 (2021-04-03)
 -------------------
 

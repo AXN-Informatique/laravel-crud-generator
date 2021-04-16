@@ -1,0 +1,58 @@
+@extends('layouts.admin', [
+    'title' => trans($langBaseKey.'.list_title'),
+    'titlePageComplement' => $list->isEmpty() || !$list instanceof \Illuminate\Contracts\Pagination\Paginator ? null
+        : trans($langBaseKey.'.list_summary', [
+            'count' => $list->count(),
+            'firstItem' => $list->firstItem(),
+            'lastItem' => $list->lastItem(),
+            'total' => $list->total(),
+        ]),
+])
+
+@section ('context-zone-first')
+    @includeWhen ($options['searchable'], 'search-helpers::simple-search-form', [
+        'route' => $routeBaseAlias.'.list',
+        'withoutAdvancedSearch' => !$options['advanced_search'],
+    ])
+@endsection
+
+@section ('context-zone-second')
+    <div class="text-right">
+        <div class="btn-group" role="group">
+            @if ($options['creatable'])
+                <x-lte-btn-create url="{!! route($routeBaseAlias.'.create') !!}" />
+            @endif
+            @if ($options['soft_deletable'])
+                @if ($options['archivable'])
+                    <x-lte-btn-archives
+                        url="{!! route($routeBaseAlias.'.archives') !!}"
+                        itemsInArchives="{!! $itemsArchives !!}" />
+                @endif
+                @if ($options['deletable'])
+                    <x-lte-btn-recycle-bin
+                        url="{!! route($routeBaseAlias.'.recycle-bin') !!}"
+                        itemsInRecycleBin="{!! $itemsInRecycleBin !!}" />
+                @endif
+            @endif
+        </div>
+    </div>
+@endsection
+
+@section('content')
+    <div id="{!! $htmlIdentifierBase !!}-list-content-wrapper">
+        @include ('search-helpers::advanced-search-form.open', [
+            'route' => $routeBaseAlias.'.list',
+        ])
+            @include ("{$viewBaseName}.partials.list-table")
+
+        @include ('search-helpers::advanced-search-form.close')
+
+        @if ($list instanceof \Illuminate\Contracts\Pagination\Paginator)
+            <div class="d-flex justify-content-end">
+                {!! $list->appends(session($htmlIdentifierBase.'-qs'))->links() !!}
+            </div>
+        @endif
+    </div><!-- #{!! $htmlIdentifierBase !!}-list-content-wrapper -->
+@endsection
+
+@include ('search-helpers::init-features')

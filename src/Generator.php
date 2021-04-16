@@ -98,6 +98,7 @@ class Generator
      * Définit s'il faut forcer ou pas la génération d'un fichier même s'il existe déjà.
      *
      * @param boolean $force
+     * @return void
      */
     public function force($force)
     {
@@ -137,6 +138,7 @@ class Generator
     /**
      * Retourne les noms de tous les templates contenus dans un répertoire.
      *
+     * @param string $directoryName
      * @return array
      */
     public function getStubsNamesInDirectory($directoryName)
@@ -298,7 +300,7 @@ class Generator
      * Génère le fichier d'une vue.
      *
      * @param string $name
-     * @return boolean
+     * @return string
      */
     public function generateView($name)
     {
@@ -452,7 +454,7 @@ class Generator
      * Retourne le contenu généré pour les breadcrumbs.
      *
      * @param string $title
-     * @return array
+     * @return string
      */
     protected function getBreadcrumbsContent($title)
     {
@@ -471,7 +473,7 @@ class Generator
      * @param string $singular
      * @param string $plural
      * @param boolean $feminine
-     * @return array
+     * @return string
      */
     protected function getLangContent($singular, $plural, $feminine)
     {
@@ -652,7 +654,6 @@ class Generator
     /**
      * Retourne le contenu du template des breadcrumbs.
      *
-     * @param string $name
      * @return string
      */
     protected function getBreadcrumbsStub()
@@ -663,7 +664,6 @@ class Generator
     /**
      * Retourne le contenu du template du fichier des traductions.
      *
-     * @param string $name
      * @return string
      */
     protected function getLangStub()

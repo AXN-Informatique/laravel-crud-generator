@@ -1,0 +1,39 @@
+<?php
+
+namespace {{namespace}};
+
+use {{optionsTrait}} as Options;
+use App\Http\Requests\Rules\UniqueTraduction;
+
+trait CommonTrait
+{
+    use Options;
+
+    public function authorize()
+    {
+        return true;
+    }
+
+    protected function commonRules()
+    {
+        // ici les règles additionnels
+        $rules = [];
+
+        return $rules;
+    }
+
+    protected function commonAttributes()
+    {
+        $attributes = [];
+
+        if ($this->options['translatable']) {
+            $attributes['designation.*'] = '« intitulé »';
+        } else {
+            $attributes['designation'] = '« intitulé »';
+        }
+
+        // ici les attributs additionnels
+
+        return $attributes;
+    }
+}

@@ -1,0 +1,67 @@
+<?php
+
+namespace {{namespace}};
+
+trait {{name}}
+{
+    /**
+     * Configuration des options des {{sectionBaseName}}
+     *
+     * Options permettant d'activer/désactiver rapidement des fonctionnalités
+     * des écrans de CRUD générés sans avoir à aller rechercher
+     * les modifications à faire dans le code.
+     *
+     * @var array
+     */
+    protected $options = [
+
+        // permet ou non la création d'un élément
+        'creatable' => true,
+
+        // permet ou non la modification d'un élément
+        'editable' => true,
+
+        // permet ou non l'archivage d'un élément (vue archives)
+        'archivable' => true,
+
+        // permet ou non la suppression d'un élément (vue corbeille)
+        'deletable' => false,
+
+        // nb : cela n'a pas de sens d'activer à la fois "archivable" et "deletable", il faut choisir
+
+        // permet ou non l'utilisation du "soft delete"
+        // nb : fonctionne seulement si "archivable" ou "deletable" est activé
+        'soft_deletable' => true,
+
+        // permet ou non la suppression définitive d'un élément
+        'destroyable' => true,
+
+        // permet ou non l'activation/désactivation d'un élément
+        // nb : préférez plutôt le soft delete mais indépendant de destroyable
+        'activatable' => false,
+
+            // le nom de la colonne actif/inactif
+            'activatable_column_name' => 'active',
+
+        // rendre possible le tri des listes par glisser/déposer
+        'sortable' => false,
+
+            // le nom de la colonne d'enregistrement de l'ordre
+            'sortable_column_name' => 'order',
+
+        // afficher le tri par colonne
+        // nb : seulement si "sortable" est désactivée
+        'sortable_columns' => true,
+
+        // afficher la recherche simple
+        'searchable' => true,
+
+            // afficher la recherche avancée
+            // nb : seulement si "searchable" est activée
+            'advanced_search' => true,
+
+        // le champ de désignation (ou autre) est traductible
+        // nb : implique potentiellement d'autres modifications
+        'translatable' => false,
+    ];
+}
