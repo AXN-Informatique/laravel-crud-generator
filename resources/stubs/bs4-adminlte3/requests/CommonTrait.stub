@@ -3,7 +3,6 @@
 namespace {{namespace}};
 
 use {{optionsTrait}} as Options;
-use App\Http\Requests\Rules\UniqueTraduction;
 
 trait CommonTrait
 {

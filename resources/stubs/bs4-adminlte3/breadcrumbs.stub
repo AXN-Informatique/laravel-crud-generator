@@ -3,6 +3,8 @@
 // CRUD : {{title}}
 // ----------------------------------------------------------------------------
 
+use Diglactic\Breadcrumbs\Breadcrumbs;
+
 Breadcrumbs::register('{{routeBaseAlias}}.list', function($breadcrumbs)
 {
     $breadcrumbs->parent('admin.parameters');

@@ -1,19 +1,22 @@
 
 @if ($options['translatable'])
-    @foreach ($langues as $langue)
-        <div class="form-group">
-            {!! Form::labelRequired('designation_'.$langue->code, "Intitulé en ".e($langue->designation)) !!}
-            {!! Form::text(
-                'designation['.$langue->code.']',
-                old('designation.'.$langue->code, $item->getTranslation('designation', $langue->code)),
-                [
-                    'id' => 'designation_'.$langue->code,
-                    'class' => 'form-control',
-                    'required',
-                ]
-            ) !!}
-        </div>
-    @endforeach
+    <div data-toggle="languages">
+        @foreach ($languages as $language)
+            <div class="form-group" lang="{{ $language->code }}">
+                {!! Form::labelRequired('designation_'.$language->code, "Intitulé en ".e($language->name)) !!}
+                <span class="btn-group languages-toggler-buttons float-right"></span>
+                {!! Form::text(
+                    'designation['.$language->code.']',
+                    old('designation.'.$language->code, $item->getTranslation('designation', $language->code)),
+                    [
+                        'id' => 'designation_'.$language->code,
+                        'class' => 'form-control',
+                        'required',
+                    ]
+                ) !!}
+            </div>
+        @endforeach
+    </div>
 @else
     <div class="form-group">
         {!! Form::labelRequired('designation', "Intitulé") !!}
@@ -29,3 +32,11 @@
 @endif
 
 {{-- ici les autres champs de formulaire --}}
+
+@if ($options['translatable'])
+    @push ('scripts')
+        <script>
+            languagesToggler({!! $languages->toJson() !!}, '{!! app()->getLocale() !!}', $);
+        </script>
+    @endpush
+@endif

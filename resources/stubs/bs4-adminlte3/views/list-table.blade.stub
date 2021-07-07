@@ -14,6 +14,11 @@
                     Intitulé
                 </th>
                 <th scope="col" class="text-right">
+                    @if ($options['activatable'] && $itemsDisabled > 0)
+                       <small class="text-warning">
+                            {!! $itemsDisabled !!} inactif{!! $itemsDisabled > 1 ? 's' : '' !!}
+                       </small>
+                    @endif
                     <span class="sr-only">Actions</span>
                 </th>
             </tr>

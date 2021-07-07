@@ -7,20 +7,20 @@ return [
 
     // Liste des enregistrements
     'list_title' => "{{listTitle}}",
-    'list_summary' => '{{listSummary}}',
-    'list_summary_simple' => '{{listSummarySimple}}',
+    'list_summary' => "{{listSummary}}",
+    'list_summary_simple' => "{{listSummarySimple}}",
     'list_empty' => "{{listEmpty}}",
 
     // Archives des enregistrements
     'archives_title' => "{{archivesTitle}}",
-    'archives_summary' => '{{archivesSummary}}',
-    'archives_summary_simple' => '{{archivesSummarySimple}}',
+    'archives_summary' => "{{archivesSummary}}",
+    'archives_summary_simple' => "{{archivesSummarySimple}}",
     'archives_empty' => "{{archivesEmpty}}",
 
     // Corbeille des enregistrements
     'recycle_bin_title' => "{{recycleBinTitle}}",
-    'recycle_bin_summary' => '{{recycleBinSummary}}',
-    'recycle_bin_summary_simple' => '{{recycleBinSummarySimple}}',
+    'recycle_bin_summary' => "{{recycleBinSummary}}",
+    'recycle_bin_summary_simple' => "{{recycleBinSummarySimple}}",
     'recycle_bin_empty' => "{{recycleBinEmpty}}",
 
     // Formulaire d'ajout

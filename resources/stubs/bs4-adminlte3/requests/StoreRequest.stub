@@ -3,8 +3,7 @@
 namespace {{namespace}};
 
 use {{modelClass}} as Model;
-use {{optionsTrait}} as Options;
-use App\Http\Requests\Rules\UniqueTraduction;
+use Axn\Multilingual\Rules\UniqueTranslation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -23,7 +22,7 @@ class StoreRequest extends FormRequest
         $rules = $this->commonRules();
 
         if ($this->options['translatable']) {
-            $rules['designation.*'] = ['required', new UniqueTraduction($table)];
+            $rules['designation.*'] = ['required', new UniqueTranslation($table)];
         } else {
             $rules['designation'] = 'required|unique:'.$table.',designation';
         }

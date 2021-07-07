@@ -30,11 +30,9 @@
         @else
             @include ("{$viewBaseName}.partials.archives-table")
 
-            @if ($list instanceof \Illuminate\Contracts\Pagination\Paginator)
-                <div class="d-flex justify-content-end">
-                    {!! $list->links() !!}
-                </div>
-            @endif
+            <div class="d-flex justify-content-end">
+                {!! $list->links() !!}
+            </div>
         @endif
     </div><!-- #{!! $htmlIdentifierBase !!}-archives-content-wrapper -->
 @endsection

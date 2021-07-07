@@ -67,6 +67,7 @@
             'url' => route("{$routeBaseAlias}.update", ['id' => $item->id] + Request::query()),
             'method' => 'PUT',
             'files' => !empty($fileUpload),
+            'novalidate' => $options['translatable'],
         ]) !!}
             <div class="card card-outline card-primary">
                 <h2 class="card-header h4">

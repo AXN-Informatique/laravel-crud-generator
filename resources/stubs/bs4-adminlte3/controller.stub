@@ -87,6 +87,12 @@ class {{name}} extends Controller
                 $this->model->query()->onlyTrashed()->count();
         }
 
+        if ($this->options['activatable']) {
+            $viewData['itemsDisabled'] = $this->model->query()
+                ->where($this->options['activatable_column_name'], false)
+                ->count();
+        }
+
         return view("{$this->viewBaseName}.list", $viewData);
     }
 
@@ -97,8 +103,13 @@ class {{name}} extends Controller
      */
     public function showArchivesList()
     {
+        $list = $this->model->query()
+            ->onlyTrashed()
+            ->orderBy('deleted_at', 'desc')
+            ->paginate();
+
         $viewData = $this->compactAttributes([
-            'list' => $this->model->query()->onlyTrashed()->paginate(),
+            'list' => $list,
         ]);
 
         return view("{$this->viewBaseName}.archives", $viewData);
@@ -111,8 +122,13 @@ class {{name}} extends Controller
      */
     public function showRecycleBinList()
     {
+        $list = $this->model->query()
+            ->onlyTrashed()
+            ->orderBy('deleted_at', 'desc')
+            ->paginate();
+
         $viewData = $this->compactAttributes([
-            'list' => $this->model->query()->onlyTrashed()->paginate(),
+            'list' => $list,
         ]);
 
         return view("{$this->viewBaseName}.recycle-bin", $viewData);
@@ -132,7 +148,7 @@ class {{name}} extends Controller
         ]);
 
         if ($this->options['translatable']) {
-            $viewData['langues'] = \App\Models\Langue::whereActif(true)->get();
+            $viewData['languages'] = languages();
         }
 
         return view("{$this->viewBaseName}.create", $viewData);
@@ -176,7 +192,7 @@ class {{name}} extends Controller
         ]);
 
         if ($this->options['translatable']) {
-            $viewData['langues'] = \App\Models\Langue::whereActif(true)->get();
+            $viewData['languages'] = languages();
         }
 
         return view("{$this->viewBaseName}.edit", $viewData);
